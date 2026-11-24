@@ -3,7 +3,7 @@
 
 Offline by default: recomputes SHA-256 of every vendored file and compares
 against the manifest (which is pinned to HF revision
-31ec2eddecfdf93c8626d9e4dfc0a2aca6070900 of
+c352150aacc7d0ca4f6e4f4994cfe39b1077daa8 of
 Blackfrost-AI/Inkling-2-Mini-Derisked). Also checks the internal hash chain:
 directions.npz digest in s2-summary.json and s3-edit-receipt-a25.json, and the
 hard32 corpus digest asserted by the capture metadata.

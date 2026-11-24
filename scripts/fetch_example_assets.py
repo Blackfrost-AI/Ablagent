@@ -3,7 +3,7 @@
 
 Downloads raw-capture.npz (79 MB, required by the direction battery script)
 from Blackfrost-AI/Inkling-2-Mini-Derisked at revision
-31ec2eddecfdf93c8626d9e4dfc0a2aca6070900, verifies its SHA-256 against
+c352150aacc7d0ca4f6e4f4994cfe39b1077daa8, verifies its SHA-256 against
 PROVENANCE.json, and only then keeps the file. Stdlib only; no implicit
 downloads — this script runs only when you invoke it.
 

@@ -3,7 +3,10 @@
 This directory is the **same duplication kit published with
 [Blackfrost-AI/Inkling-2-Mini-Derisked](https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked)**
 on Hugging Face, vendored byte-identical at revision
-`31ec2eddecfdf93c8626d9e4dfc0a2aca6070900`. It documents one full Domain Weight
+`c352150aacc7d0ca4f6e4f4994cfe39b1077daa8` (the 2026-11-24 documentation
+correction; scripts and artifacts are unchanged from the original release
+revision `31ec2eddecfdf93c8626d9e4dfc0a2aca6070900`). It documents one full
+Domain Weight
 Modification run end to end: architecture reconnaissance, direction capture,
 direction batteries, a loop-enabled weight edit, an edit receipt, and a
 serving recipe — so researchers and their agents can study, verify, and
@@ -40,10 +43,10 @@ shows how the run handled each one:
 The authority for what was done is `DWM_RECIPE/scripts/s3_derisk_edit.py` and
 `DWM_RECIPE/s3-edit-receipt-a25.json`, not the narrative runbook. The shipped
 method is **per-pass consensus column orthogonalization, loop-enabled, α 2.5,
-physical layers 9–18 (10 tensors), attention writer output space**. See
-[Runbook errata](#runbook-errata) below — the vendored `RUNBOOK.md` contains
-several statements that the shipped scripts and receipts contradict. They are
-preserved verbatim for provenance and corrected here.
+physical layers 9–18 (10 tensors), attention writer output space**. The
+vendored `RUNBOOK.md` is the corrected revision and now matches the scripts
+and receipt; the original runbook's inaccurate statements are preserved as
+[correction history](#runbook-correction-history) below.
 
 ## Scope: this kit is not the DWMIP v0 runtime
 
@@ -66,13 +69,13 @@ preserved verbatim for provenance and corrected here.
 
 ```
 DWM_RECIPE/
-  RUNBOOK.md                     # stage-by-stage runbook (verbatim; see errata)
+  RUNBOOK.md                     # stage-by-stage runbook (corrected 2026-11-24)
   scripts/
     s2_capture_directions.py     # residual capture, (layer, visit) tagged
     s2_direction_battery.py      # split-half / permutation / cross-pass stats
     s3_derisk_edit.py            # loop-enabled per-pass orthogonalization
     s3_gate_metrics.py           # token-level ΔNLL / agreement gates
-    s3_verify.py                 # artifact self-test + digest checks
+    s3_verify.py                 # behavioral verification (generation probes)
     v1_corpus_hard32.jsonl       # 32 harmful/safe prompt pairs (capture corpus)
   s2-capture/
     capture-metadata.json        # architecture, environment, corpus bindings
@@ -131,7 +134,7 @@ Requirements the kit does not bundle: Linux + CUDA, ≥80 GiB available RAM
 (the scripts guard on `/proc/meminfo`), the upstream checkpoint
 `thinkingmachines/Inkling-2-Mini` (license: other — review its terms), and a
 torch/transformers environment matching the capture metadata. Then follow
-`DWM_RECIPE/RUNBOOK.md` stage by stage, keeping the errata below in mind.
+`DWM_RECIPE/RUNBOOK.md` stage by stage.
 Model weights for the *shipped derivative* come from the HF repository, not
 from this kit.
 
@@ -156,11 +159,14 @@ sum to 50 per the run record; the grading rubric itself is not vendored.
 The run record's token-gate details are not included in the kit;
 `s3_gate_metrics.py` shows how they were computed.
 
-## Runbook errata
+## Runbook correction history
 
-The vendored `RUNBOOK.md` is preserved byte-identical to the HF publication.
-The following statements in it are contradicted by the shipped scripts,
-metadata, and receipt (verified against the actual bytes):
+The original runbook (HF revision `31ec2edd`, preserved in that revision's
+history) contained six statements contradicted by the shipped scripts,
+metadata, and receipt. They were verified against the actual bytes and
+corrected on HF in revision `c352150a` (2026-11-24); the vendored runbook
+here is the corrected version. No script, capture artifact, weight, or
+receipt was changed. The superseded claims, for the record:
 
 1. **`direction-metadata.json`** is listed as shipped but does not exist in
    the kit. No script reads it; use `capture-metadata.json`.
@@ -219,7 +225,9 @@ license `other` — this repository grants no additional license over them.
 `PROVENANCE.json` records, per file: SHA-256, byte size, HF source path, git
 blob OID at the pinned revision, vendored/fetch-only status, and license
 scope. All 15 vendored files were verified byte-identical to the HF tree at
-vendoring time (2026-11-24). Internal filesystem paths were sanitized to
+vendoring time (2026-11-24, revision `c352150a`; the runbook correction is
+the only change from the original release revision `31ec2edd`). Internal
+filesystem paths were sanitized to
 `<internal-path>` by the publisher before HF upload; no further edits were
 made here. Weights, the 443 measurement corpus, endpoints, and credentials
 are not included.

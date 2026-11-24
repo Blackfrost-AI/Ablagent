@@ -113,7 +113,7 @@ The synthetic runtime formalizes the discipline; the [Inkling-2-Mini-Derisked wo
 - **A hard architecture case.** Inkling-2-Mini is a loop transformer — 24 physical layers, layers 6–17 executed in 3 passes, 48 logical layer-visits. The kit shows physical-vs-logical targeting, per-pass direction capture, and a loop-enabled edit.
 - **The full evidence chain.** Capture scripts, direction batteries, unit directions, an α 2.5 edit receipt bound to the shipped weight shard's SHA-256, and a pinned serving recipe.
 - **Inspectable offline.** `python scripts/verify_example_provenance.py` re-hashes all 15 vendored files against `PROVENANCE.json`; the test suite runs the same checks. The 79 MB raw capture is fetch-only via an explicit, digest-verified helper.
-- **Honest about its own record.** The example README documents where the published runbook contradicts the shipped scripts and receipts — the scripts and receipt are the ground truth.
+- **Honest about its own record.** Six inaccuracies in the original published runbook were verified against the shipped scripts and receipts, corrected on Hugging Face (revision `c352150a`), and preserved as correction history in the example README — the scripts and receipt are the ground truth.
 
 The kit is vendored research material for the GPU/torch pipeline that produced the artifact; it is **not executed by the synthetic v0 runtime**, and reported benchmark numbers are labeled as run-record claims, not re-measured here. Researchers and their agents can study, verify, and reproduce the process with the upstream checkpoint and a CUDA host.
 

@@ -3,23 +3,24 @@
   "example": "inkling-2-mini-derisked",
   "source": {
     "repository": "https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked",
-    "revision": "31ec2eddecfdf93c8626d9e4dfc0a2aca6070900",
+    "revision": "c352150aacc7d0ca4f6e4f4994cfe39b1077daa8",
     "license_tag": "other",
     "upstream_base": "thinkingmachines/Inkling-2-Mini",
     "run": "20261120-inkling2-mini-s0-s2 (closed 2026-11-22; host alias redacted)",
     "vendored_at": "2026-11-24",
-    "note": "Files vendored byte-identical to the pinned HF revision. Internal filesystem paths were already sanitized to <internal-path> by the publisher before upload. No further edits were made in this repository."
+    "note": "Files vendored byte-identical to the pinned HF revision. Revision c352150a is the 2026-11-24 documentation correction: only DWM_RECIPE/RUNBOOK.md changed (the model card README.md on HF was also corrected; it is not vendored here). All scripts, capture artifacts, and receipts are unchanged from the original release revision 31ec2edd. Internal filesystem paths were already sanitized to <internal-path> by the publisher before upload. No further edits were made in this repository.",
+    "original_release_revision": "31ec2eddecfdf93c8626d9e4dfc0a2aca6070900"
   },
   "files": [
     {
       "path": "DWM_RECIPE/RUNBOOK.md",
-      "sha256": "5bbc96fbd6a318c9dfe1ee9a7c16e1536069d47d99339a3d9198f79692b756ba",
-      "size": 6340,
+      "sha256": "dfe2c3b042d9792fa56cc16f4d6e19a9af41d196192acf4ebc961ab70b61d670",
+      "size": 9276,
       "hf_path": "DWM_RECIPE/RUNBOOK.md",
-      "git_oid": "8727c193ec0737aff952b479f15d153757d5fef4",
+      "git_oid": "d6d9ba13d2ecdd33030289509c0950eabe322fb8",
       "vendored": true,
       "license": "Apache-2.0 (Blackfrost-authored documentation)",
-      "note": "Contains documented errata; see README.md section 'Runbook errata'. Shipped verbatim."
+      "note": "Corrected 2026-11-24 (HF revision c352150a) to match the shipped scripts and receipts; see README.md section 'Runbook correction history'. Original at revision 31ec2edd."
     },
     {
       "path": "DWM_RECIPE/scripts/s2_capture_directions.py",
@@ -93,7 +94,7 @@
       "git_oid": "f24e8a652b525c587abbbf153982391b0a8ed28a",
       "vendored": true,
       "license": "research-artifact (derived from upstream model; see NOTICE.md)",
-      "note": "Sanitized at publication (one internal path replaced). The edit receipt binds the pre-sanitization digest 1ec4212bde7f6b990f6c96407cf389ae6dd20bced098b13cd350129bedf49af8; the difference is exactly that one path field. See README errata."
+      "note": "Sanitized at publication (one internal path replaced). The edit receipt binds the pre-sanitization digest 1ec4212bde7f6b990f6c96407cf389ae6dd20bced098b13cd350129bedf49af8; the difference is exactly that one path field. See README 'Runbook correction history'."
     },
     {
       "path": "DWM_RECIPE/s2-capture/s2-summary.json",

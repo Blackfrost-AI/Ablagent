@@ -2,7 +2,7 @@
 
 These tests never download anything. They recompute SHA-256 of every vendored
 file against examples/inkling-2-mini-derisked/PROVENANCE.json (pinned to HF
-revision 31ec2eddecfdf93c8626d9e4dfc0a2aca6070900) and check the kit's internal
+revision c352150aacc7d0ca4f6e4f4994cfe39b1077daa8) and check the kit's internal
 hash chain. The fetch-only raw-capture.npz is verified only when present.
 """
 
@@ -40,7 +40,7 @@ def manifest() -> dict:
 
 def test_manifest_exists_and_pins_revision(manifest: dict) -> None:
     assert manifest["schema"] == "ablagent.example-provenance.v1"
-    assert manifest["source"]["revision"] == "31ec2eddecfdf93c8626d9e4dfc0a2aca6070900"
+    assert manifest["source"]["revision"] == "c352150aacc7d0ca4f6e4f4994cfe39b1077daa8"
     assert manifest["source"]["repository"].endswith("Blackfrost-AI/Inkling-2-Mini-Derisked")
 
 
