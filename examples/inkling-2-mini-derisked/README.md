@@ -151,11 +151,10 @@ artifact with thinking enabled:
 
 These numbers are **reported from the run record, not re-measured by this
 repository**. The 443-corpus prompts, responses, and scores are intentionally
-not shipped. Smoke-50 rows were graded into answered/substituted/refused; the
-three counts need not sum to 50 (ungraded rows), so do not treat them as a
-complete confusion matrix. The run record's token-gate details are not
-included in the vendored kit; `s3_gate_metrics.py` shows how they were
-computed.
+not shipped. The smoke-50 rows are graded answered/substituted/refused and
+sum to 50 per the run record; the grading rubric itself is not vendored.
+The run record's token-gate details are not included in the kit;
+`s3_gate_metrics.py` shows how they were computed.
 
 ## Runbook errata
 
@@ -183,8 +182,9 @@ metadata, and receipt (verified against the actual bytes):
 6. **"verifies file hashes / artifact self-test"** in the edit script — the
    edit script computes digests but does not verify them;
    `source_checkpoint_digest` is a hardcoded 8-hex prefix literal
-   (`sha256:42e765f7`), not a measured full hash. Verification lives in
-   `s3_verify.py`.
+   (`sha256:42e765f7`), not a measured full hash. Behavioral verification
+   (generation probes) lives in `s3_verify.py`; no shipped script verifies
+   the receipt's file digests against the weights.
 
 Additional caveats:
 
@@ -193,8 +193,9 @@ Additional caveats:
   `direction-battery.json` records off-diagonal pass cosines of
   **0.2408–0.8595** for `attention_writer` over the looped layers 6–17 —
   below that threshold. The receipt binds the pre-sanitization battery
-  digest `1ec4212b…`; the shipped battery differs from it only by one
-  sanitized path field. Treat the shipped battery as the inspectable
+  digest `1ec4212b…`; at vendoring time the published battery was diffed
+  against the pre-sanitization original and differs only by one sanitized
+  path field. Treat the shipped battery as the inspectable
   evidence; the run-record cosine range and its gating claim are unverified
   here and appear inconsistent with the shipped statistics.
 - **`S2_BATTERY_MEASURED_NOT_GO`** in `s2-summary.json` is stage-scoped: S2 is

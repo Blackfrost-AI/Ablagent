@@ -6,7 +6,7 @@
     "revision": "31ec2eddecfdf93c8626d9e4dfc0a2aca6070900",
     "license_tag": "other",
     "upstream_base": "thinkingmachines/Inkling-2-Mini",
-    "run": "20261120-inkling2-mini-s0-s2-spark1-v1 (closed 2026-11-22)",
+    "run": "20261120-inkling2-mini-s0-s2 (closed 2026-11-22; host alias redacted)",
     "vendored_at": "2026-11-24",
     "note": "Files vendored byte-identical to the pinned HF revision. Internal filesystem paths were already sanitized to <internal-path> by the publisher before upload. No further edits were made in this repository."
   },
