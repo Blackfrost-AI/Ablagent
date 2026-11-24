@@ -7,7 +7,7 @@
 <p align="center"><strong>Make the architecture explicit. Make the experiment inspectable.</strong></p>
 
 <p align="center">
-  A Domain Weight Modification research protocol and synthetic reference runtime.<br>
+  A Domain Weight Modification research protocol and synthetic reference runtime for false-refusal removal and related weight-space research.<br>
   Explicit spaces. Bounded proposals. Reproducible artifacts. Retained evidence.
 </p>
 
@@ -28,6 +28,8 @@ A tensor name is not an architecture. Matching dimensions do not establish compa
 Domain Weight Modification (DWM) research needs more than a transformation formula: it needs an explicit account of **where an intervention acts, what it changes, and how its result is checked**.
 
 Ablagent brings those questions into one inspectable workflow. Its **DWM Interchange Protocol (DWMIP v0)** connects graph and writer identities, banks, directions, experiment plans, interventions, trials, and evidence. The synthetic runtime makes that contract executable before real-model adapters are introduced.
+
+Much of this field — false-refusal removal, refusal-direction transfer, abliteration — already runs on the rank-one math below, but with implied spaces, discarded negative trials, and no red-line discipline. Ablagent is built to give that work its missing evidence layer. See [refusal removal research](docs/refusal-research.md).
 
 ### What makes it different
 
@@ -118,6 +120,7 @@ Different computation graphs require different intervention semantics. The resea
 | You want to… | Start here |
 |---|---|
 | Run and inspect an experiment | [Quickstart](docs/quickstart.md) |
+| Study refusal removal / abliteration | [Refusal research guide](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
 | Integrate an agent | [Agent integration](docs/agent-integration.md) |
