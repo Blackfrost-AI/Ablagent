@@ -1,0 +1,1 @@
+{"additionalProperties":false,"properties":{"digest":{"pattern":"^sha256:[0-9a-f]{64}$","title":"Digest","type":"string"},"path":{"title":"Path","type":"string"}},"required":["path","digest"],"title":"TrialReference","type":"object"}

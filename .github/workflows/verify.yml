@@ -1,0 +1,48 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -e '.[dev]'
+      - run: pytest --cov=ablagent --cov-report=term-missing
+      - run: ruff check src tests
+      - run: ruff format --check src tests
+      - run: python -m build
+      - run: pip-audit
+      - run: ablagent demo --run-dir .runs/ci
+      - run: ablagent plan bound.direction.json --run-dir .runs/ci --alpha 1 --output one.plan.json
+      - run: ablagent compile bound.direction.json --run-dir .runs/ci --plan one.plan.json --artifact-id ci
+      - run: ablagent verify .runs/ci/ci.manifest.json
+      - run: ablagent conformance --fixtures spec/dwmip/v0/conformance --run-dir .runs/conformance
+      - run: python scripts/export_schemas.py --check
+
+  excluded-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject local paths and common private-key material
+        shell: bash
+        run: |
+          set -o pipefail
+          if git ls-files -z | xargs -0 grep -InE '\.agent_city|home-[0-9]{8}|/Users/craigmac|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|hf_[A-Za-z0-9]{20,}'; then
+            echo 'Excluded local path or credential-like content found.' >&2
+            exit 1
+          fi

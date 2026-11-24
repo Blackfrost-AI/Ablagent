@@ -1,0 +1,1 @@
+{"additionalProperties":false,"properties":{"detail":{"title":"Detail","type":"string"},"gate":{"title":"Gate","type":"string"},"outcome":{"enum":["PASS","FAIL","MISSING","NOT_RUN","ERROR","NOT_APPLICABLE"],"title":"Outcome","type":"string"}},"required":["gate","outcome","detail"],"title":"GateResult","type":"object"}

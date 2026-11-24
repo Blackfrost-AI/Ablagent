@@ -1,0 +1,8 @@
+{
+  "schema_version": "dwmip.conformance.verification.v0",
+  "cases": [
+    {"case_id": "independent-reference-replay", "operation": "valid_compile", "outcome": "accept"},
+    {"case_id": "changed-candidate-bytes-are-rejected", "operation": "tampered_candidate", "outcome": "reject"},
+    {"case_id": "changed-audit-is-rejected", "operation": "tampered_audit", "outcome": "reject"}
+  ]
+}

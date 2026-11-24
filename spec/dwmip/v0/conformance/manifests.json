@@ -1,0 +1,9 @@
+{
+  "schema_version": "dwmip.conformance.manifests.v0",
+  "cases": [
+    {"case_id": "reference-graph-is-declared", "operation": "reference_graph", "outcome": "accept"},
+    {"case_id": "missing-space-is-rejected", "operation": "missing_space", "outcome": "reject"},
+    {"case_id": "recurrent-descriptor-does-not-execute", "operation": "execute_recurrent", "outcome": "reject", "error_code": "unsupported_execution_coordinate"},
+    {"case_id": "unknown-adapter-does-not-execute", "operation": "execute_unknown_adapter", "outcome": "reject"}
+  ]
+}

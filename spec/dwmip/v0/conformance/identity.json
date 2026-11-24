@@ -1,0 +1,9 @@
+{
+  "schema_version": "dwmip.conformance.identity.v0",
+  "cases": [
+    {"case_id": "bound-direction-is-applicable", "operation": "matching_direction", "outcome": "accept"},
+    {"case_id": "unknown-writer-is-rejected", "operation": "unknown_writer", "outcome": "reject"},
+    {"case_id": "wrong-source-space-is-rejected", "operation": "wrong_space", "outcome": "reject"},
+    {"case_id": "non-unit-direction-is-rejected", "operation": "non_unit_direction", "outcome": "reject"}
+  ]
+}
