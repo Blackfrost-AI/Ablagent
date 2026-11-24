@@ -4,7 +4,7 @@ Domain Weight Modification (DWM) grew out of false-refusal removal and abliterat
 
 Read [From refusal removal to DWM](refusal-research.md) for the research lineage and terminology.
 
-> **Executable scope:** v0 runs synthetic, CPU-only reference experiments. Real-checkpoint adapters, neural activation capture, and real refusal-behavior evaluation are not implemented; the checkpoint-specific guidance below is a qualification framework for future adapters.
+> **Executable scope:** v0 runs synthetic, CPU-only reference experiments. Real-checkpoint adapters, neural activation capture, and real refusal-behavior evaluation are not implemented; the checkpoint-specific guidance below is a qualification framework for future adapters. For a published real-model case study of the same discipline — capture, batteries, a loop-enabled edit, and hash-bound receipts on a loop transformer — see the [Inkling-2-Mini-Derisked worked example](../examples/inkling-2-mini-derisked/README.md). It is vendored research material, not part of the v0 runtime.
 
 Domain Weight Modification needs more than a vector and a weight tensor. Ablagent separates **discovery**, **compilation**, **behavioral validation**, and **release eligibility**.
 

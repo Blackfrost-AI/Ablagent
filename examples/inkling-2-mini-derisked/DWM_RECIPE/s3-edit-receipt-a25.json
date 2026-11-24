@@ -1,0 +1,157 @@
+{
+  "schema": "inkling2-mini.s3-derisk-edit.v1",
+  "timestamp_utc": "2026-11-21T22:05:31.037402+00:00",
+  "source_checkpoint": "<internal-path>",
+  "source_checkpoint_digest": "sha256:42e765f7",
+  "alpha": 2.5,
+  "layers": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "surface": "attn.wo_ud.weight (== self_attn.o_proj.linear after pure-rename load conversion)",
+  "edit_method": "per-pass consensus column orthogonalization: W := W - alpha * sum_p d_p d_p^T W / ||d_p||^2 (applied per column; no bias/scale/expert changes)",
+  "directions_sha256": "sha256:6674ddc8f6e8762c10f14aa37fdcef914186fda1276804f37d7bd30365fb1b74",
+  "battery_sha256": "sha256:1ec4212bde7f6b990f6c96407cf389ae6dd20bced098b13cd350129bedf49af8",
+  "edits": [
+    {
+      "layer": 9,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.9.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.114128,
+      "pass_proj_norms_sum": 6.1964,
+      "removed_frac_pass0_dir": -0.694839
+    },
+    {
+      "layer": 10,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.10.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.171233,
+      "pass_proj_norms_sum": 9.2793,
+      "removed_frac_pass0_dir": -0.754153
+    },
+    {
+      "layer": 11,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.11.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.108235,
+      "pass_proj_norms_sum": 4.9749,
+      "removed_frac_pass0_dir": -0.376885
+    },
+    {
+      "layer": 12,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.12.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.1043,
+      "pass_proj_norms_sum": 5.0215,
+      "removed_frac_pass0_dir": -0.501282
+    },
+    {
+      "layer": 13,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.13.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.127599,
+      "pass_proj_norms_sum": 5.5324,
+      "removed_frac_pass0_dir": -0.280934
+    },
+    {
+      "layer": 14,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.14.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.120016,
+      "pass_proj_norms_sum": 5.661,
+      "removed_frac_pass0_dir": -0.58676
+    },
+    {
+      "layer": 15,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.15.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.126961,
+      "pass_proj_norms_sum": 6.5483,
+      "removed_frac_pass0_dir": -0.490255
+    },
+    {
+      "layer": 16,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.16.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.12085,
+      "pass_proj_norms_sum": 5.3839,
+      "removed_frac_pass0_dir": -0.325422
+    },
+    {
+      "layer": 17,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.17.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.117882,
+      "pass_proj_norms_sum": 5.065,
+      "removed_frac_pass0_dir": -0.2485
+    },
+    {
+      "layer": 18,
+      "shard": "model-00001-of-00001.safetensors",
+      "tensor": "model.llm.layers.18.attn.wo_ud.weight",
+      "rel_delta_frobenius": 0.06232,
+      "pass_proj_norms_sum": 1.1975,
+      "removed_frac_pass0_dir": -0.5
+    }
+  ],
+  "candidate_dir": "<internal-path>",
+  "candidate_shards_rewritten": [
+    "model-00001-of-00001.safetensors"
+  ],
+  "candidate_file_digests": {
+    ".cache/huggingface/.gitignore": "sha256:684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+    ".cache/huggingface/CACHEDIR.TAG": "sha256:f6572428f6d5e1575e73a1502895a8731f10757dfbb634909c6e154b849af91d",
+    ".cache/huggingface/download/.gitattributes.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/.gitattributes.metadata": "sha256:7842c56fccdb95df2aea6bdb9dba580f313e71bd31fbba7bf7342e78fb928a02",
+    ".cache/huggingface/download/README.md.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/README.md.metadata": "sha256:184f269164fb8cf3add55ad7f7d194e8b07c8695c831de2a200765f44efffdfe",
+    ".cache/huggingface/download/chat_template.jinja.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/chat_template.jinja.metadata": "sha256:aab1c13d5f37353e748f4ea7ac12a2739ed8e0b61cb05491cf00c80cc5b29429",
+    ".cache/huggingface/download/config.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/config.json.metadata": "sha256:2e333a776db1f949065395c1a3706f2e313b6a854a59ad1988e92174f6ce1091",
+    ".cache/huggingface/download/generation_config.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/generation_config.json.metadata": "sha256:bd975bca3baa39a9a70b484734f67865ad7ee325db641423540bbbbd1aaeef04",
+    ".cache/huggingface/download/hf_quant_config.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/hf_quant_config.json.metadata": "sha256:93eaf6e3a96440a2afe1aa2bfefb79f426677bed9fbfd7ca3460362fa626fbeb",
+    ".cache/huggingface/download/model-00001-of-00001.safetensors.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/model-00001-of-00001.safetensors.metadata": "sha256:79907c078d226b953eeb13744f80c556330f2b1e10bc62e9fc785eb78b00c6f0",
+    ".cache/huggingface/download/model.safetensors.index.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/model.safetensors.index.json.metadata": "sha256:3bd00f9be51770a29b55f3522b537046b656112e7a64e36d73e0244392e2dc3d",
+    ".cache/huggingface/download/mtp.safetensors.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/mtp.safetensors.metadata": "sha256:0749f0f2dcc1fb7abbb2f0b5142a0b7eb685e25f9246ff7c790fa915cd95027b",
+    ".cache/huggingface/download/processor_config.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/processor_config.json.metadata": "sha256:9e935adf9e0c986f8597a7986db646d759b707f583bed1633421b128803185ef",
+    ".cache/huggingface/download/special_tokens_map.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/special_tokens_map.json.metadata": "sha256:86e16a06e0997625bab8fbba44ea05195c6cbbf5db056063c0d5d1d29bc24a0a",
+    ".cache/huggingface/download/tiktoken/tokenizer.model.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/tiktoken/tokenizer.model.metadata": "sha256:b852f15ba8b1fc4f5c156001362854a5bae1f54e56324a14b19b0ad906b233fb",
+    ".cache/huggingface/download/tokenizer.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/tokenizer.json.metadata": "sha256:c09f39b615016359617918baeadcfa865b2f647125d3310059bb0c66c62728ed",
+    ".cache/huggingface/download/tokenizer_config.json.lock": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".cache/huggingface/download/tokenizer_config.json.metadata": "sha256:77dee7a4cf2d70a5e09a5a2fcedc503cf278453b92e7a706dcda57568e19475a",
+    ".cache/huggingface/trees/6e7c8248f75265bdd4fbab5273304243b5d8c2cb.json": "sha256:811575730396b7112bbacf4dc8d935ccbdfc38f81257c61035a54a98e075c1e8",
+    ".gitattributes": "sha256:34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+    "README.md": "sha256:79de83393a10f10f61493704469418a781f661024f2f6bc08be1077508e0044e",
+    "chat_template.jinja": "sha256:53a9035f3255945704b5857657cfb00c1165090c0641c4f782a0cbf268cc16dc",
+    "config.json": "sha256:8216dd43157f5474cfff88f486a1e433fef703c674f694e485a86a761c412b1e",
+    "generation_config.json": "sha256:a08737c07a65a8fdf69f7cf086576210e5aad4b241437090b26d7b0c4f7905f7",
+    "hf_quant_config.json": "sha256:7c656207d3ce37879c7be209a036b0dde43bf01f78159bff06880b868ed57143",
+    "model-00001-of-00001.safetensors": "sha256:b1156b5d53ddabf927a8e3f209eebc5da610d2b90ed8c14a6a945b78080bef21",
+    "model.safetensors.index.json": "sha256:c1631065b7b00787993522dddc66a68b3abee869192977fb3dcb796e63bc5838",
+    "mtp.safetensors": "sha256:7c3b651317f01f73bcf4e1dceba66ef8b7e1a1eac6bc171e882e690a4b10a1d2",
+    "processor_config.json": "sha256:d7350adce18c8be4b607f261c8f0f7eabbf720bb7aaf648a43d4f8372bbacc2d",
+    "special_tokens_map.json": "sha256:c16f44b3594563d82743ddb0417a2be1bfe3e2000dfad2da4b8f32554593e1a0",
+    "tiktoken/tokenizer.model": "sha256:f170372dd655728909228220d77cf6b8104a59f38a91262a7d2c4027906ec0d8",
+    "tokenizer.json": "sha256:7f332727f9a3f093dd452a39cc978e6757627e5dad1b0673aa4e75174f236dd6",
+    "tokenizer_config.json": "sha256:bf09342d285139fd37ce10c70878af1d52cb390e9901e10248654293a80ee636"
+  },
+  "status": "S3_EDIT_APPLIED"
+}

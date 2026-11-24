@@ -1,0 +1,17 @@
+{
+  "status": "S2_BATTERY_MEASURED_NOT_GO",
+  "measurement_complete": false,
+  "reason": "S2 capture/battery only; no S3 derivative, no target family/gate, no writer intervention evidence",
+  "capture_rows": 64,
+  "logical_sites": 48,
+  "cross_pass_cosines_first": true,
+  "families": [
+    "layer_output",
+    "attention_writer",
+    "moe_down",
+    "mlp_output"
+  ],
+  "hard32_corpus_sha256": "sha256:902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+  "directions_sha256": "sha256:6674ddc8f6e8762c10f14aa37fdcef914186fda1276804f37d7bd30365fb1b74",
+  "finished_at": "2026-11-20T23:43:50.421954+00:00"
+}

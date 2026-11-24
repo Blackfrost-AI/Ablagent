@@ -70,6 +70,8 @@ The executable reference runtime is a synthetic, CPU-only implementation of one 
 
 **It does not currently remove refusals from a real checkpoint, capture neural activations, evaluate real refusal behavior, or establish that an intervention is safe or effective.** Those capabilities require separately qualified real-model adapters, capture pipelines, behavioral evaluation, and serving verification.
 
+A published real-model run of exactly this discipline is included as a worked example: [Inkling-2-Mini-Derisked](../examples/inkling-2-mini-derisked/README.md) — the same duplication kit released on Hugging Face, with capture scripts, direction batteries, a loop-enabled α 2.5 edit receipt, and a provenance manifest. It is vendored research material for study and reproduction on a CUDA host; the v0 runtime does not execute it, and its reported results are run-record claims, not measurements made by this repository.
+
 The research direction is to carry the lessons of refusal removal into that broader DWM workflow: explicit hypotheses, architecture-specific evidence, reproducible experiments, and honest negative results. The name is broader because the research is broader; the foundation remains refusal removal.
 
 Continue with [methodology](methodology.md), [architecture navigation](architecture-navigation.md), [bank design](banks.md), and [measurement contracts](measurement.md).

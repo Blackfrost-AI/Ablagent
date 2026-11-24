@@ -13,6 +13,7 @@
 
 <p align="center">
   <a href="#quickstart">Quickstart</a> ·
+  <a href="examples/inkling-2-mini-derisked/README.md">Worked example</a> ·
   <a href="docs/refusal-research.md">Research lineage</a> ·
   <a href="docs/architecture-navigation.md">Architecture research</a> ·
   <a href="spec/dwmip/v0/README.md">DWMIP specification</a> ·
@@ -42,7 +43,7 @@ Ablagent brings those questions into one inspectable workflow. Its **DWM Interch
 - **Proposals are not permissions.** The deterministic planner proposes bounded experiments; compilation requires an explicitly selected intervention.
 - **Artifacts you can replay.** Canonical JSON, safe tensor storage, and digest-bound manifests let verification recompute the reference transformation and observations.
 - **Negative results stay in the record.** Retain rejected trials, lineage, and missing-evidence states instead of presenting only successful candidates.
-- **Research without inherited model baggage.** Original synthetic banks and general architecture guidance; no previous checkpoint work, private prompts, or model-specific recipes.
+- **Research without inherited model baggage.** The runtime ships original synthetic banks and general architecture guidance — no private prompts, credentials, or operational endpoints. One published research artifact is included as a clearly scoped [worked example](examples/inkling-2-mini-derisked/README.md), vendored byte-identical from its public Hugging Face release with a hash-bound provenance manifest.
 
 **Built for** researchers formalizing experiments, engineers qualifying architecture adapters, and agent developers who need a narrow, verifiable integration boundary. It is not yet a turnkey model editor or an autonomous LLM agent.
 
@@ -105,6 +106,17 @@ Now check the gate:
 
 Use a fresh run directory for each demo: existing artifacts are preserved rather than silently overwritten. Continue with the [full quickstart](docs/quickstart.md) to separate planning from compilation and inspect the artifact flow.
 
+## Worked example: a real DWM run, end to end
+
+The synthetic runtime formalizes the discipline; the [Inkling-2-Mini-Derisked worked example](examples/inkling-2-mini-derisked/README.md) shows it applied to a real checkpoint. It is the **same duplication kit published with [Blackfrost-AI/Inkling-2-Mini-Derisked](https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked)** on Hugging Face, vendored byte-identical at a pinned revision:
+
+- **A hard architecture case.** Inkling-2-Mini is a loop transformer — 24 physical layers, layers 6–17 executed in 3 passes, 48 logical layer-visits. The kit shows physical-vs-logical targeting, per-pass direction capture, and a loop-enabled edit.
+- **The full evidence chain.** Capture scripts, direction batteries, unit directions, an α 2.5 edit receipt bound to the shipped weight shard's SHA-256, and a pinned serving recipe.
+- **Inspectable offline.** `python scripts/verify_example_provenance.py` re-hashes all 15 vendored files against `PROVENANCE.json`; the test suite runs the same checks. The 79 MB raw capture is fetch-only via an explicit, digest-verified helper.
+- **Honest about its own record.** The example README documents where the published runbook contradicts the shipped scripts and receipts — the scripts and receipt are the ground truth.
+
+The kit is vendored research material for the GPU/torch pipeline that produced the artifact; it is **not executed by the synthetic v0 runtime**, and reported benchmark numbers are labeled as run-record claims, not re-measured here. Researchers and their agents can study, verify, and reproduce the process with the upstream checkpoint and a CUDA host.
+
 ## Architecture research, without shortcuts
 
 Different computation graphs require different intervention semantics. The research guide explains what an adapter must establish before claiming support.
@@ -125,6 +137,7 @@ Different computation graphs require different intervention semantics. The resea
 | You want to… | Start here |
 |---|---|
 | Run and inspect an experiment | [Quickstart](docs/quickstart.md) |
+| Study a complete real-model DWM run | [Inkling-2-Mini worked example](examples/inkling-2-mini-derisked/README.md) |
 | Study the refusal-removal origins and DWM extension | [Research lineage](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
@@ -157,4 +170,4 @@ Tests cover reference algebra, identity and axis mismatches, tampered artifacts,
 
 ## Licensing
 
-Code is [Apache-2.0](LICENSE). The original presentation artwork is also [Apache-2.0](docs/assets/README.md). Project-authored synthetic bank content is [CC BY 4.0](banks/LICENSE-CC-BY-4.0), with provenance in each manifest. These licenses do not grant rights to third-party model weights, datasets, annotations, or serving stacks.
+Code is [Apache-2.0](LICENSE). The original presentation artwork is also [Apache-2.0](docs/assets/README.md). Project-authored synthetic bank content is [CC BY 4.0](banks/LICENSE-CC-BY-4.0), with provenance in each manifest. These licenses do not grant rights to third-party model weights, datasets, annotations, or serving stacks. The vendored [worked example](examples/inkling-2-mini-derisked/NOTICE.md) has its own per-file license scope: activation-derived research artifacts carry no additional license grant from this repository.

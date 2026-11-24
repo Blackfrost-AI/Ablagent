@@ -1,0 +1,174 @@
+{
+  "schema": "ablagent.example-provenance.v1",
+  "example": "inkling-2-mini-derisked",
+  "source": {
+    "repository": "https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked",
+    "revision": "31ec2eddecfdf93c8626d9e4dfc0a2aca6070900",
+    "license_tag": "other",
+    "upstream_base": "thinkingmachines/Inkling-2-Mini",
+    "run": "20261120-inkling2-mini-s0-s2-spark1-v1 (closed 2026-11-22)",
+    "vendored_at": "2026-11-24",
+    "note": "Files vendored byte-identical to the pinned HF revision. Internal filesystem paths were already sanitized to <internal-path> by the publisher before upload. No further edits were made in this repository."
+  },
+  "files": [
+    {
+      "path": "DWM_RECIPE/RUNBOOK.md",
+      "sha256": "5bbc96fbd6a318c9dfe1ee9a7c16e1536069d47d99339a3d9198f79692b756ba",
+      "size": 6340,
+      "hf_path": "DWM_RECIPE/RUNBOOK.md",
+      "git_oid": "8727c193ec0737aff952b479f15d153757d5fef4",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored documentation)",
+      "note": "Contains documented errata; see README.md section 'Runbook errata'. Shipped verbatim."
+    },
+    {
+      "path": "DWM_RECIPE/scripts/s2_capture_directions.py",
+      "sha256": "a571f69ac09decfafe42962aa1cfaaf0574aec9639a909440063b320d74e5096",
+      "size": 9969,
+      "hf_path": "DWM_RECIPE/scripts/s2_capture_directions.py",
+      "git_oid": "b8ed1d88c9fd42b054ff94dffff1afee2f095239",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/s2_direction_battery.py",
+      "sha256": "7ca02ca2136e98a66d42aa412467ef6bf21ccbf02003fdd60a5b15cf065484d6",
+      "size": 6961,
+      "hf_path": "DWM_RECIPE/scripts/s2_direction_battery.py",
+      "git_oid": "41109469a95b7d0496a9555db999bfe847018b28",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/s3_derisk_edit.py",
+      "sha256": "f0e94abab6309d2b54e7ca6b27a277c9ce86835c0e4eddd43fbca28ba80e980f",
+      "size": 6742,
+      "hf_path": "DWM_RECIPE/scripts/s3_derisk_edit.py",
+      "git_oid": "d4ce608fc367bdeaddd8da1bac3e178eab1239b9",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/s3_gate_metrics.py",
+      "sha256": "c03f90ad7b7f804c90351e20b5488948868f8050674f8843610b1965a962ce7b",
+      "size": 5122,
+      "hf_path": "DWM_RECIPE/scripts/s3_gate_metrics.py",
+      "git_oid": "afd747ef5963d26df4082e244eb5ac45626183cd",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/s3_verify.py",
+      "sha256": "a2b1f4f08d7e925f7aed738c6a42d1645f3724f17c2fb10d5e0fcd809d730d38",
+      "size": 6143,
+      "hf_path": "DWM_RECIPE/scripts/s3_verify.py",
+      "git_oid": "a5b0c4cec32757c71d272a1eb6bd1e3d44d9b9e7",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/v1_corpus_hard32.jsonl",
+      "sha256": "902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+      "size": 6644,
+      "hf_path": "DWM_RECIPE/scripts/v1_corpus_hard32.jsonl",
+      "git_oid": "72c1045b15999912859ba1d45b48d021b96a1684",
+      "vendored": true,
+      "license": "CC-BY-4.0 (Blackfrost-authored prompt pairs; same content license as banks/)",
+      "note": "32 adjacent harmful/safe prompt pairs; the canonical capture corpus asserted by s2_capture_directions.py. Not a DWMIP runtime bank (plain {label,prompt} JSONL, not the bank schema)."
+    },
+    {
+      "path": "DWM_RECIPE/s2-capture/capture-metadata.json",
+      "sha256": "10dcff380da8f2fd5b55cd2d3f44c9e1da1c84b07c31bd6c3fd8254c8fd3cf3d",
+      "size": 9454,
+      "hf_path": "DWM_RECIPE/s2-capture/capture-metadata.json",
+      "git_oid": "cc9fcf4f6560017182bb61dd3ceb16b01af8cea8",
+      "vendored": true,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)"
+    },
+    {
+      "path": "DWM_RECIPE/s2-capture/direction-battery.json",
+      "sha256": "a917eaedfa8fbab08d0e513d6ec8ee2bdaa71cc77ff551a1ad01c8cc00304296",
+      "size": 295542,
+      "hf_path": "DWM_RECIPE/s2-capture/direction-battery.json",
+      "git_oid": "f24e8a652b525c587abbbf153982391b0a8ed28a",
+      "vendored": true,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)",
+      "note": "Sanitized at publication (one internal path replaced). The edit receipt binds the pre-sanitization digest 1ec4212bde7f6b990f6c96407cf389ae6dd20bced098b13cd350129bedf49af8; the difference is exactly that one path field. See README errata."
+    },
+    {
+      "path": "DWM_RECIPE/s2-capture/s2-summary.json",
+      "sha256": "caf35fdfc641594c9c2f259fb89331575be67c01ddd937760e09b1b07edeb98e",
+      "size": 622,
+      "hf_path": "DWM_RECIPE/s2-capture/s2-summary.json",
+      "git_oid": "a62540d230f90d167c4a06ddd44e3f2b8758d309",
+      "vendored": true,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)",
+      "note": "status S2_BATTERY_MEASURED_NOT_GO is stage-scoped: S2 alone is measurement, not an intervention go/no-go. It is not a failure of the shipped artifact."
+    },
+    {
+      "path": "DWM_RECIPE/s2-capture/directions.npz",
+      "sha256": "6674ddc8f6e8762c10f14aa37fdcef914186fda1276804f37d7bd30365fb1b74",
+      "size": 406708,
+      "hf_path": "DWM_RECIPE/s2-capture/directions.npz",
+      "lfs_oid": "6674ddc8f6e8762c10f14aa37fdcef914186fda1276804f37d7bd30365fb1b74",
+      "vendored": true,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)",
+      "note": "48x2304 float32 unit directions (attention_writer family) plus site/layer/visit/label arrays. Hash agrees with s2-summary.json and s3-edit-receipt-a25.json."
+    },
+    {
+      "path": "DWM_RECIPE/s3-edit-receipt-a25.json",
+      "sha256": "27a11bf6012c658b446f9c435e72a4cd781bd26431b9fc6cea6651f100522b51",
+      "size": 9188,
+      "hf_path": "DWM_RECIPE/s3-edit-receipt-a25.json",
+      "git_oid": "1afc63210fba953d371be665e1dab9e4b0b06ce7",
+      "vendored": true,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)",
+      "note": "Alpha-2.5 edit receipt for the shipped artifact: physical layers 9-18 (10 tensors), surface attn.wo_ud.weight (pure rename of self_attn.o_proj.linear at load). source_checkpoint_digest is an 8-hex prefix literal (sha256:42e765f7) recorded by the edit script, not a full measured hash. candidate_file_digests bind the shipped weight shard sha256 b1156b5d53ddabf927a8e3f209eebc5da610d2b90ed8c14a6a945b78080bef21."
+    },
+    {
+      "path": "deployment-kit/AGENT_INSTRUCTIONS.md",
+      "sha256": "460f88de35538d3daaf56cd437072206fb7aa0758cb5e1a14029a095e61b2702",
+      "size": 2669,
+      "hf_path": "deployment-kit/AGENT_INSTRUCTIONS.md",
+      "git_oid": "7d48b358a5e424a8a062a8de581452cf143af13f",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored documentation)"
+    },
+    {
+      "path": "deployment-kit/SERVE.md",
+      "sha256": "71aa4cdcb9c6ac57d721629f7f238680c293d8c0b819c3a6f08f16988102fd88",
+      "size": 2507,
+      "hf_path": "deployment-kit/SERVE.md",
+      "git_oid": "6f0036e7908727a648fbd31c49aa68c126c53447",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored documentation)"
+    },
+    {
+      "path": "deployment-kit/scripts/serve.sh",
+      "sha256": "352cd3b8a667ebf0b8d16bb458296e8fffea9ed82c5f0330e7a577f85f29dffe",
+      "size": 899,
+      "hf_path": "deployment-kit/scripts/serve.sh",
+      "git_oid": "94a9f0ad43328aa3c3765d487df31924f6c5631c",
+      "vendored": true,
+      "license": "Apache-2.0 (Blackfrost-authored code)",
+      "note": "Default BIND_ADDR is 0.0.0.0 with host networking and no authentication; change it before running. Executable bit restored locally (HF download drops it); file bytes unchanged."
+    }
+  ],
+  "fetch_only": [
+    {
+      "path": "DWM_RECIPE/s2-capture/raw-capture.npz",
+      "sha256": "72c9454ff12380005ed3b849b25078f37da2a2dfed8a8af36447586835dd912e",
+      "size": 79118677,
+      "hf_path": "DWM_RECIPE/s2-capture/raw-capture.npz",
+      "lfs_oid": "72c9454ff12380005ed3b849b25078f37da2a2dfed8a8af36447586835dd912e",
+      "vendored": false,
+      "license": "research-artifact (derived from upstream model; see NOTICE.md)",
+      "note": "79 MB full per-prompt residual capture; fetched on explicit request via scripts/fetch_example_assets.py, never implicitly. Required by s2_direction_battery.py."
+    }
+  ],
+  "not_shipped": [
+    "Model weights (model-00001-of-00001.safetensors, mtp.safetensors) and tokenizer/config files: download from the HF repository directly.",
+    "443-row benchmark prompts, responses, and scores: measurement corpus is not redistributed here.",
+    "Internal hostnames, endpoints, credentials, and authority keys: excluded by policy."
+  ]
+}

@@ -49,6 +49,9 @@ addopts = "-ra --strict-markers"
 line-length = 100
 include = ["*.py", "*.pyi"]
 target-version = "py311"
+# Vendored example kit: byte-identical provenance to the published HF revision;
+# never lint or reformat it (see examples/inkling-2-mini-derisked/PROVENANCE.json).
+extend-exclude = ["examples/inkling-2-mini-derisked"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]

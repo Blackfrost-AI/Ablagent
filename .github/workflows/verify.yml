@@ -33,6 +33,7 @@ jobs:
       - run: ablagent verify .runs/ci/ci.manifest.json
       - run: ablagent conformance --fixtures spec/dwmip/v0/conformance --run-dir .runs/conformance
       - run: python scripts/export_schemas.py --check
+      - run: python scripts/verify_example_provenance.py
 
   excluded-content:
     runs-on: ubuntu-latest
@@ -42,7 +43,8 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          if git ls-files -z | xargs -0 grep -InE '\.agent_city|home-[0-9]{8}|/Users/craigmac|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|hf_[A-Za-z0-9]{20,}'; then
+          # Exclude this workflow file: it necessarily contains the detection pattern itself.
+          if git ls-files -z | grep -zv '^\.github/workflows/verify\.yml$' | xargs -0 grep -InE '\.agent_city|home-[0-9]{8}|/Users/craigmac|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|hf_[A-Za-z0-9]{20,}'; then
             echo 'Excluded local path or credential-like content found.' >&2
             exit 1
           fi
