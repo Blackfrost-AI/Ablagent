@@ -21,10 +21,10 @@ The supplied renders use Helvetica from the local system. A different licensed l
 
 ## GitHub social preview
 
-An authorized repository administrator can open **Settings → General → Social preview**, upload `ablagent-social.png`, and save. This is a manual setup asset, not an already-configured remote setting. Keep the repository private until a separate publication decision.
+An authorized repository administrator can open **Settings → General → Social preview**, upload `ablagent-social.png`, and save. This is a manual setup asset, not an already-configured remote setting. The repository was made public by operator decision on 2026-11-24.
 
 ## GitHub Pages site
 
-`docs/index.html` is a fully static, dependency-free site (no build step, no CDN, no tracking). The `og:image`/`twitter:image` tags point at `https://blackfrost-ai.github.io/Ablagent/assets/ablagent-site-og.png`; they resolve only once Pages is enabled and serving. Enabling Pages on a private repository requires a plan that supports it, and **a published Pages site is public to anyone with the URL regardless of repository visibility** — enabling it is a publication decision covering everything under `docs/`.
+`docs/index.html` is a fully static, dependency-free site (no build step, no CDN, no tracking). The `og:image`/`twitter:image` tags point at `https://blackfrost-ai.github.io/Ablagent/assets/ablagent-site-og.png`. Pages is enabled from `main` `/docs` and live at <https://blackfrost-ai.github.io/Ablagent/>. **A published Pages site is public to anyone with the URL** — it publishes everything under `docs/`; the repository itself was made public on 2026-11-24.
 
 The README uses local PNGs with opaque dark backgrounds, so artwork colors do not depend on GitHub's light/dark theme. Important content is repeated in Markdown for narrow screens and assistive technology. No externally hosted badges or tracking images are used.

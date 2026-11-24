@@ -2,7 +2,7 @@
 
 ## Reporting
 
-This repository is currently private. Report suspected vulnerabilities privately to the repository maintainers through an existing trusted maintainer channel. GitHub private vulnerability reporting was not enabled during initial repository setup. Do not open a public issue containing exploit details, credentials, private prompts, operational endpoints, partner data, or third-party secrets.
+This repository is public. Report suspected vulnerabilities privately through GitHub's **Security → Report a vulnerability** flow (private vulnerability reporting is enabled). Do not open a public issue containing exploit details, credentials, private prompts, operational endpoints, partner data, or third-party secrets.
 
 Include the affected commit, environment, reproduction steps, impact, and suggested remediation where known. Do not include real credentials or private evaluation material in a report.
 
