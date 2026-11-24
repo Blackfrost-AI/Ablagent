@@ -246,13 +246,13 @@ def compile_plan(args: argparse.Namespace) -> int:
 def gate(args: argparse.Namespace) -> int:
     store = ArtifactStore(Path(args.evidence).parent)
     bank = _bank(Path(args.bank))
-    verified = verify_evidence(store, Path(args.evidence).name, release_bank=bank)
     decision = evaluate_eligibility(
         EligibilityRequest(
             visibility=args.visibility,
-            evidence=verified,
+            evidence_path=Path(args.evidence).name,
             release_bank=bank,
-        )
+        ),
+        store,
     )
     if args.output:
         write_json(Path(args.output), decision)

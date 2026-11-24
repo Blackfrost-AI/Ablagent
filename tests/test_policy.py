@@ -1,16 +1,14 @@
 import pytest
 
 from ablagent.banks import BankManifest
-from ablagent.canonical import digest_model, read_json
-from ablagent.errors import PolicyBlocked, ValidationError
+from ablagent.canonical import read_json
+from ablagent.errors import ValidationError
 from ablagent.evidence import (
     REQUIRED_REDLINE,
     EvidenceBundle,
-    EvidenceVerification,
     MetricResult,
     TrialRecord,
     TrialReference,
-    VerifiedEvidence,
     record_trial,
     verify_evidence,
     write_evidence,
@@ -21,49 +19,57 @@ from tests.conftest import compiled_case
 from tests.test_evidence import make_bundle
 
 
-def verified_fixture(prepared, bundle, release_bank):
-    verification = EvidenceVerification(
-        store_root=str(prepared[0].root.resolve()),
-        evidence_path=str(prepared[0].path("candidate.evidence.json").resolve()),
-        evidence_id=digest_model("evidence", bundle),
-        binding=bundle.binding,
-        bank_digest=release_bank.digest(),
-        evidence_digest=digest_model("evidence", bundle),
+def request_bundle(prepared, request):
+    return EvidenceBundle.model_validate(read_json(prepared[0].path(request.evidence_path)))
+
+
+def write_bundle(prepared, request, bundle, artifact_id):
+    selected = TrialRecord.model_validate(read_json(prepared[0].path(bundle.trials[-1].path)))
+    retained = selected.model_copy(
+        update={"trial_id": f"{artifact_id}-selected", "metrics": bundle.metrics}
     )
-    return VerifiedEvidence(evidence=bundle, verification=verification)
+    record_trial(prepared[0], retained)
+    bundle = bundle.model_copy(update={"trials": (*bundle.trials[:-1], retained.reference())})
+    write_evidence(prepared[0], bundle, artifact_id)
+    return request.model_copy(update={"evidence_path": f"{artifact_id}.evidence.json"})
 
 
 def request_for(prepared, mock_bank):
-    compiled, trial = compiled_case(prepared)
+    compiled, trial = compiled_case(prepared, record=False)
     bundle = make_bundle(prepared, compiled, trial)
+    retained = trial.model_copy(update={"metrics": bundle.metrics})
+    record_trial(prepared[0], retained)
+    bundle = bundle.model_copy(update={"trials": (retained.reference(),)})
+    write_evidence(prepared[0], bundle, "candidate")
     return EligibilityRequest(
         visibility="public",
-        evidence=verified_fixture(prepared, bundle, mock_bank),
+        evidence_path="candidate.evidence.json",
         release_bank=mock_bank,
     )
 
 
 def attested_request(prepared, mock_bank, visibility="private"):
     request = request_for(prepared, mock_bank)
+    bundle = request_bundle(prepared, request)
     attestation = write_mock_redlines(
-        prepared[0], mock_bank, request.evidence.evidence.binding, "mock-redline.raw.json"
+        prepared[0], mock_bank, bundle.binding, "mock-redline.raw.json"
     )
-    metrics = request.evidence.evidence.metrics + tuple(mock_redline_metrics(attestation))
+    metrics = bundle.metrics + tuple(mock_redline_metrics(attestation))
     selected = TrialRecord(
         trial_id="attested-candidate",
         parent_trial_id="candidate-trial",
         status="promoted",
-        binding=request.evidence.evidence.binding,
+        binding=bundle.binding,
         reason="Selected trial with reproducible inert policy fixtures.",
         metrics=metrics,
     )
     record_trial(prepared[0], selected)
-    evidence = request.evidence.evidence.model_copy(
+    evidence = bundle.model_copy(
         update={
             "metrics": metrics,
             "mock_redlines": attestation,
             "trials": (
-                *request.evidence.evidence.trials,
+                *bundle.trials,
                 TrialReference(path=selected.reference_path(), digest=selected.digest()),
             ),
         }
@@ -71,16 +77,14 @@ def attested_request(prepared, mock_bank, visibility="private"):
     write_evidence(prepared[0], evidence, "attested")
     return request.model_copy(
         update={
-            "evidence": verify_evidence(
-                prepared[0], "attested.evidence.json", release_bank=mock_bank
-            ),
+            "evidence_path": "attested.evidence.json",
             "visibility": visibility,
         }
     )
 
 
 def test_missing_required_redlines_block_even_with_perfect_other_scores(prepared, mock_bank):
-    decision = evaluate_eligibility(request_for(prepared, mock_bank))
+    decision = evaluate_eligibility(request_for(prepared, mock_bank), prepared[0])
     assert decision.status == "blocked"
     assert {gate.outcome for gate in decision.gates if gate.gate.startswith("redline.")} == {
         "MISSING"
@@ -92,10 +96,8 @@ def test_missing_required_redlines_block_even_with_perfect_other_scores(prepared
 @pytest.mark.parametrize("outcome", ["FAIL", "NOT_RUN", "ERROR", "MISSING"])
 def test_every_nonpass_redline_blocks(prepared, mock_bank, outcome):
     request = request_for(prepared, mock_bank)
-    metrics = list(request.evidence.evidence.metrics)
+    metrics = list(request_bundle(prepared, request).metrics)
     for name in sorted(REQUIRED_REDLINE):
-        from ablagent.evidence import MetricResult
-
         metrics.append(
             MetricResult(
                 category="redline_observation",
@@ -108,16 +110,9 @@ def test_every_nonpass_redline_blocks(prepared, mock_bank, outcome):
                 details="Synthetic policy fixture only.",
             )
         )
-    request = request.model_copy(
-        update={
-            "evidence": verified_fixture(
-                prepared,
-                request.evidence.evidence.model_copy(update={"metrics": tuple(metrics)}),
-                mock_bank,
-            )
-        }
-    )
-    decision = evaluate_eligibility(request)
+    bundle = request_bundle(prepared, request).model_copy(update={"metrics": tuple(metrics)})
+    request = write_bundle(prepared, request, bundle, f"nonpass-{outcome.lower()}")
+    decision = evaluate_eligibility(request, prepared[0])
     assert decision.status == "blocked"
     gate = next(gate for gate in decision.gates if gate.gate == "redline.cyber")
     assert gate.outcome == outcome
@@ -135,13 +130,15 @@ def test_passing_observations_require_attestation(prepared, mock_bank):
         evidence_digest=mock_bank.digest(),
         details="Unsupported passing observation.",
     )
-    evidence = request.evidence.evidence.model_copy(
-        update={"metrics": (*request.evidence.evidence.metrics, passing)}
+    evidence = request_bundle(prepared, request).model_copy(
+        update={"metrics": (*request_bundle(prepared, request).metrics, passing)}
     )
-    with pytest.raises(PolicyBlocked, match="passing redline observations"):
-        evaluate_eligibility(
-            request.model_copy(update={"evidence": verified_fixture(prepared, evidence, mock_bank)})
-        )
+    write_evidence(prepared[0], evidence, "policy-passing-observation")
+    request = request.model_copy(
+        update={"evidence_path": "policy-passing-observation.evidence.json"}
+    )
+    with pytest.raises(ValidationError, match="passing redline observations"):
+        evaluate_eligibility(request, prepared[0])
 
 
 def test_verifier_rejects_passing_observations(prepared, mock_bank):
@@ -156,30 +153,28 @@ def test_verifier_rejects_passing_observations(prepared, mock_bank):
         evidence_digest=mock_bank.digest(),
         details="Unsupported passing observation.",
     )
-    evidence = request.evidence.evidence.model_copy(
-        update={"metrics": (*request.evidence.evidence.metrics, passing)}
+    evidence = request_bundle(prepared, request).model_copy(
+        update={"metrics": (*request_bundle(prepared, request).metrics, passing)}
     )
     write_evidence(prepared[0], evidence, "passing-observation")
-    with pytest.raises(ValidationError, match="passing redline metrics"):
+    with pytest.raises(ValidationError, match="passing redline observations"):
         verify_evidence(prepared[0], "passing-observation.evidence.json", release_bank=mock_bank)
 
 
-def test_policy_rejects_forged_verified_receipt(prepared, mock_bank):
+def test_serialized_request_rejects_verification_metadata(prepared, mock_bank):
     request = request_for(prepared, mock_bank)
-    forged = request.evidence.model_copy(
-        update={
-            "verification": request.evidence.verification.model_copy(
-                update={"bank_digest": "sha256:" + "0" * 64}
-            )
-        }
-    )
-    with pytest.raises(PolicyBlocked, match="receipt does not match"):
-        evaluate_eligibility(request.model_copy(update={"evidence": forged}))
+    raw = request.model_dump(mode="json")
+    raw["evidence"] = {"evidence": request_bundle(prepared, request).model_dump(mode="json")}
+    with pytest.raises(ValueError, match="Extra inputs are not permitted"):
+        EligibilityRequest.model_validate(raw)
+    schema = EligibilityRequest.model_json_schema(mode="validation")
+    assert "VerifiedEvidence" not in str(schema)
+    assert "EvidenceVerification" not in str(schema)
 
 
 def test_private_attested_fixture_is_not_release_authorization(prepared, mock_bank):
     request = attested_request(prepared, mock_bank)
-    decision = evaluate_eligibility(request)
+    decision = evaluate_eligibility(request, prepared[0])
     assert decision.status == "eligible"
     assert decision.authorization == "not_granted"
     assert decision.assurance_scope == "synthetic_policy_conformance_only"
@@ -192,7 +187,7 @@ def test_private_attested_fixture_is_not_release_authorization(prepared, mock_ba
 @pytest.mark.parametrize("outcome", ["FAIL", "NOT_RUN", "ERROR", "MISSING"])
 def test_attested_evidence_cannot_mask_nonpass_observation(prepared, mock_bank, outcome):
     request = attested_request(prepared, mock_bank)
-    evidence = request.evidence.evidence
+    evidence = request_bundle(prepared, request)
     selected = TrialRecord.model_validate(read_json(prepared[0].path(evidence.trials[-1].path)))
     observed = MetricResult(
         category="redline_observation",
@@ -216,16 +211,17 @@ def test_attested_evidence_cannot_mask_nonpass_observation(prepared, mock_bank, 
         }
     )
     write_evidence(prepared[0], updated, "contradictory-attested")
-    verified = verify_evidence(
-        prepared[0], "contradictory-attested.evidence.json", release_bank=mock_bank
-    )
-    decision = evaluate_eligibility(request.model_copy(update={"evidence": verified}))
+    verify_evidence(prepared[0], "contradictory-attested.evidence.json", release_bank=mock_bank)
+    request = request.model_copy(update={"evidence_path": "contradictory-attested.evidence.json"})
+    decision = evaluate_eligibility(request, prepared[0])
     assert decision.status == "blocked"
     assert next(g for g in decision.gates if g.gate == "redline.cyber").outcome == outcome
 
 
 def test_public_mock_fixture_remains_synthetic_only(prepared, mock_bank):
-    decision = evaluate_eligibility(attested_request(prepared, mock_bank, visibility="public"))
+    decision = evaluate_eligibility(
+        attested_request(prepared, mock_bank, visibility="public"), prepared[0]
+    )
     assert decision.status == "eligible"
     assert decision.authorization == "not_granted"
     assert decision.assurance_scope == "synthetic_policy_conformance_only"
@@ -251,18 +247,16 @@ def test_bare_zero_digest_redline_scores_are_not_evidence(prepared, mock_bank):
         )
         for name in sorted(REQUIRED_REDLINE)
     )
-    evidence = request.evidence.evidence.model_copy(
-        update={"metrics": request.evidence.evidence.metrics + redlines}
-    )
-    with pytest.raises(PolicyBlocked, match="supported inert mock attestation"):
-        evaluate_eligibility(
-            request.model_copy(update={"evidence": verified_fixture(prepared, evidence, mock_bank)})
-        )
+    bundle = request_bundle(prepared, request)
+    evidence = bundle.model_copy(update={"metrics": bundle.metrics + redlines})
+    request = write_bundle(prepared, request, evidence, "bare-redline")
+    with pytest.raises(ValidationError, match="bound mock-evidence attestation"):
+        evaluate_eligibility(request, prepared[0])
 
 
 def test_mock_evidence_fails_closed_when_raw_or_selected_bank_changes(prepared, mock_bank):
     request = attested_request(prepared, mock_bank)
-    raw_path = prepared[0].path(request.evidence.evidence.mock_redlines.raw.path)
+    raw_path = prepared[0].path(request_bundle(prepared, request).mock_redlines.raw.path)
     original = raw_path.read_bytes()
     raw_path.write_bytes(original + b"\n")
     with pytest.raises(ValidationError, match="raw file digest"):
@@ -287,10 +281,9 @@ def test_private_bank_blocks_public_eligibility(prepared, bank):
     request = request.model_copy(
         update={
             "release_bank": changed_bank,
-            "evidence": verified_fixture(prepared, request.evidence.evidence, changed_bank),
         }
     )
-    decision = evaluate_eligibility(request)
+    decision = evaluate_eligibility(request, prepared[0])
     assert decision.status == "blocked"
     assert (
         next(gate for gate in decision.gates if gate.gate == "bank_publication").outcome == "FAIL"
@@ -314,7 +307,7 @@ def test_duplicate_contradictory_redline_is_fail_closed(prepared, mock_bank):
     failing = passing.model_copy(
         update={"outcome": "FAIL", "score": None, "observed": None, "eligible": None}
     )
-    bundle = request.evidence.evidence
+    bundle = request_bundle(prepared, request)
     with pytest.raises(ValueError, match="identities must be unique"):
         EvidenceBundle.model_validate(
             bundle.model_copy(update={"metrics": (*bundle.metrics, passing, failing)}).model_dump(

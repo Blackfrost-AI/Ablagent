@@ -4,18 +4,19 @@ from typing import Literal
 
 from pydantic import Field
 
+from ablagent.artifacts import ArtifactStore
 from ablagent.banks import BankManifest, require_publicly_bundlable
 from ablagent.canonical import digest_model
 from ablagent.contracts import Contract
 from ablagent.errors import PolicyBlocked
-from ablagent.evidence import EvidenceBundle, MetricResult, VerifiedEvidence
+from ablagent.evidence import EvidenceBundle, MetricResult, verify_evidence
 from ablagent.mock_redlines import MOCK_CATEGORIES, mock_redline_metrics
 
 
 class EligibilityRequest(Contract):
     schema_version: Literal["dwmip.eligibility-request.v0"] = "dwmip.eligibility-request.v0"
     visibility: Literal["public", "private"]
-    evidence: VerifiedEvidence
+    evidence_path: str = Field(min_length=1, max_length=4096)
     release_bank: BankManifest
     structural_minimum: float = Field(default=1.0, ge=0, le=1)
     evaluation_minimum: float = Field(default=0.7, ge=0, le=1)
@@ -50,21 +51,12 @@ def _metric(evidence: EvidenceBundle, category: str, name: str) -> MetricResult 
     return None
 
 
-def evaluate_eligibility(request: EligibilityRequest) -> EligibilityDecision:
-    """Pure eligibility evaluation; no publishing or approval is performed."""
+def evaluate_eligibility(request: EligibilityRequest, store: ArtifactStore) -> EligibilityDecision:
+    """Verify the referenced evidence, then evaluate eligibility without publishing."""
     gates: list[GateResult] = []
-    verified = request.evidence
-    evidence = verified.evidence
-    verification = verified.verification
-    if verification.evidence_id != digest_model("evidence", evidence):
-        raise PolicyBlocked("evidence receipt does not match the submitted bundle identity")
-    if verification.evidence_digest != digest_model("evidence", evidence):
-        raise PolicyBlocked("evidence receipt does not match the submitted bundle")
-    if (
-        verification.binding != evidence.binding
-        or verification.bank_digest != request.release_bank.digest()
-    ):
-        raise PolicyBlocked("evidence receipt does not match the selected bank and artifact")
+    evidence = verify_evidence(
+        store, request.evidence_path, release_bank=request.release_bank
+    ).evidence
     redline_metrics = [metric for metric in evidence.metrics if metric.category == "redline"]
     if redline_metrics:
         if evidence.mock_redlines is None or request.release_bank.role != "mock_release_redline":

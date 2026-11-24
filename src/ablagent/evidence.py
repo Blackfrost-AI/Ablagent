@@ -207,6 +207,10 @@ def verify_evidence(
                 "observation does not reproduce from the bound baseline and candidate"
             )
     for metric in bundle.metrics:
+        if metric.category == "redline_observation" and metric.outcome == "PASS":
+            raise ValidationError(
+                "passing redline observations require a complete mock attestation"
+            )
         if (
             metric.category == "structural"
             and metric.evidence_digest != compiled.structural_check.target_digest_after

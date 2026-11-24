@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError as PydanticValidationError
 
 from ablagent.artifacts import file_digest, load_tensors
-from ablagent.canonical import read_json, write_json
+from ablagent.canonical import digest_model, read_json, write_json
 from ablagent.errors import ValidationError
 from ablagent.evidence import (
     EvidenceBundle,
@@ -58,7 +58,7 @@ def make_bundle(prepared, compiled, trial):
     )
 
 
-def test_evidence_replays_without_database(prepared):
+def test_evidence_replays_without_database(prepared, mock_bank):
     store = prepared[0]
     compiled, trial = compiled_case(prepared, record=False)
     bundle = make_bundle(prepared, compiled, trial)
@@ -72,7 +72,16 @@ def test_evidence_replays_without_database(prepared):
         }
     )
     relative = write_evidence(store, bundle, "candidate")
-    assert verify_evidence(store, relative).evidence == bundle
+    verified = verify_evidence(store, relative)
+    assert verified.evidence == bundle
+    receipt = verified.verification
+    assert receipt.store_root == str(store.root.resolve())
+    assert receipt.evidence_path == str(store.path(relative).resolve())
+    assert receipt.evidence_id == receipt.evidence_digest == digest_model("evidence", bundle)
+    assert receipt.binding == bundle.binding
+    assert receipt.bank_digest == "sha256:" + "0" * 64
+    bank_bound = verify_evidence(store, relative, release_bank=mock_bank)
+    assert bank_bound.verification.bank_digest == mock_bank.digest()
 
 
 @pytest.mark.parametrize(

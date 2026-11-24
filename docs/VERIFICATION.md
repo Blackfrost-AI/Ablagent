@@ -13,7 +13,9 @@ Verified locally on 2026-11-24 with Python 3.14.3 on macOS arm64.
 | DWMIP fixtures | 13 of 13 passed from a clean wheel installation |
 | Wheel workflow | Demo, one-proposal plan, compile, verification, and conformance passed |
 | Mock policy paths | Incomplete evidence blocked; bound inert attestation verified; private mock decision eligible with authorization not granted |
-| Independent reviews | Multiple reviews completed; verified-evidence, red-line observation precedence, and plan-binding corrections added with passing regressions |
+| Independent reviews | Multiple reviews completed; path-based verification, red-line observation precedence, and plan-binding corrections added with passing regressions |
+
+Eligibility requests identify an evidence file within an explicit `ArtifactStore`; `evaluate_eligibility` verifies that file and its selected bank before evaluating gates. Verification receipts are returned for inspection but are not accepted in serialized requests as proof that verification ran.
 
 The clean wheel was installed into an isolated environment and executed against the checked-in conformance fixtures. Generated artifacts remained outside the source package. These results do not validate a real checkpoint, a particular GPU/serving stack, a capability claim, or a publishing decision.
 
