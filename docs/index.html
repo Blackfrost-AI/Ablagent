@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ablagent — Evidence-first DWM research runtime</title>
+<meta name="description" content="Architecture-aware Domain Weight Modification research runtime and DWMIP protocol. Explore the process, every gate and its purpose, and a real-model worked example.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ablagent">
+<meta property="og:title" content="Ablagent — Evidence-first DWM research runtime">
+<meta property="og:description" content="From abliteration research to Domain Weight Modification. Explore the process, every gate and its purpose, and a complete real-model worked example.">
+<meta property="og:url" content="https://blackfrost-ai.github.io/Ablagent/">
+<meta property="og:image" content="https://blackfrost-ai.github.io/Ablagent/assets/ablagent-site-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ablagent — Evidence-first DWM research runtime">
+<meta name="twitter:description" content="Every gate has a purpose. No score compensates for a missing redline.">
+<meta name="twitter:image" content="https://blackfrost-ai.github.io/Ablagent/assets/ablagent-site-og.png">
+<meta name="theme-color" content="#0b1420">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1420'/%3E%3Cpath d='M8 22 L16 8 L24 22' stroke='%2374e3d0' stroke-width='2.5' fill='none'/%3E%3Ccircle cx='16' cy='8' r='3' fill='%23edf5fa'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<nav class="nav" id="nav">
+  <a class="brand" href="#top"><span class="brand-mark">▲</span> Ablagent</a>
+  <div class="nav-links">
+    <a href="#lineage">Lineage</a>
+    <a href="#process">Process</a>
+    <a href="#gates">Gates</a>
+    <a href="#simulator">Simulator</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#example">Worked example</a>
+    <a href="#quickstart">Quickstart</a>
+    <a class="nav-cta" href="https://github.com/Blackfrost-AI/Ablagent">GitHub ↗</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <p class="eyebrow">DWM RESEARCH · DWMIP v0 PROTOCOL</p>
+    <h1>Weight modification you can <em>audit</em>.</h1>
+    <p class="lede">Ablagent is an evidence-first, architecture-aware research runtime for
+      Domain Weight Modification — the framework that grew out of abliteration and
+      false-refusal removal research. Every intervention is a declared, digest-bound
+      experiment. Every gate has a purpose. <strong>No score compensates for a missing redline.</strong></p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#process">Explore the process</a>
+      <a class="btn" href="#simulator">Try the gate simulator</a>
+    </div>
+    <div class="hero-scope">Synthetic CPU-only reference runtime · one real-model worked example vendored with hash-bound provenance · evidence-bound ≠ safety certification</div>
+  </div>
+  <svg class="hero-graph" viewBox="0 0 400 400" aria-hidden="true">
+    <g stroke="#24394c" stroke-width="1.5">
+      <line x1="200" y1="60" x2="321" y2="130"/><line x1="321" y1="130" x2="321" y2="270"/>
+      <line x1="321" y1="270" x2="200" y2="340"/><line x1="200" y1="340" x2="79" y2="270"/>
+      <line x1="79" y1="270" x2="79" y2="130"/><line x1="79" y1="130" x2="200" y2="60"/>
+      <line x1="200" y1="60" x2="200" y2="340"/><line x1="79" y1="130" x2="321" y2="270"/>
+      <line x1="321" y1="130" x2="79" y2="270"/>
+    </g>
+    <line x1="79" y1="270" x2="200" y2="60" stroke="#74e3d0" stroke-width="3"/>
+    <g fill="#74e3d0">
+      <circle cx="200" cy="60" r="6"/><circle cx="321" cy="130" r="6"/><circle cx="321" cy="270" r="6"/>
+      <circle cx="200" cy="340" r="6"/><circle cx="79" cy="270" r="6"/><circle cx="79" cy="130" r="6"/>
+    </g>
+    <circle cx="200" cy="200" r="10" fill="#edf5fa"/>
+  </svg>
+</header>
+
+<main>
+<!-- ============ LINEAGE ============ -->
+<section id="lineage" class="section">
+  <h2><span class="sec-num">01</span> From refusal removal to DWM</h2>
+  <p class="section-lede">Abliteration research showed that refusal behavior can be traced to directions in
+    activation space and suppressed with rank-one weight edits. DWM extends that foundation into a general,
+    architecture-aware discipline: <em>which</em> writer, in <em>which</em> space, at <em>which</em> site, with <em>what</em> evidence.</p>
+  <div class="cards two">
+    <article class="card">
+      <h3>The origin: abliteration</h3>
+      <p>Contrast harmful vs. benign prompts, extract a refusal direction, project it out of a writer matrix:
+        <code>W′ = W − α·d(dᵀW)</code>. Effective — but fragile across architectures, and silent about what else changed.</p>
+    </article>
+    <article class="card">
+      <h3>The extension: DWM</h3>
+      <p>Domain Weight Modification treats the edit as a <strong>declared experiment</strong>: explicit graph and writer
+        identity, bounded plans, digest-bound artifacts, retained trial lineage, and hard gates that fail closed.
+        The v0 runtime implements this discipline on synthetic tensors you can verify on a laptop.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="process" class="section">
+  <h2><span class="sec-num">02</span> The process, stage by stage</h2>
+  <p class="section-lede">Click a stage. Planning never executes; compilation is the only step that writes a candidate;
+    verification replays it independently.</p>
+  <div class="stepper" id="stepper" role="tablist" aria-label="Process stages">
+    <button class="step active" role="tab" aria-selected="true" data-stage="0"><span>01</span>Declare</button>
+    <button class="step" role="tab" aria-selected="false" data-stage="1"><span>02</span>Propose</button>
+    <button class="step" role="tab" aria-selected="false" data-stage="2"><span>03</span>Compile</button>
+    <button class="step" role="tab" aria-selected="false" data-stage="3"><span>04</span>Verify</button>
+    <button class="step" role="tab" aria-selected="false" data-stage="4"><span>05</span>Eligibility</button>
+  </div>
+  <div class="stage-panel" id="stage-panel" aria-live="polite"></div>
+</section>
+
+<!-- ============ GATES ============ -->
+<section id="gates" class="section">
+  <h2><span class="sec-num">03</span> Every gate and its purpose</h2>
+  <p class="section-lede">Eligibility is computed by <code>evaluate_eligibility()</code> in
+    <code>src/ablagent/policy.py</code>. Gates are conjunctive: all must pass (with one narrowly-scoped
+    exception for bank publication). Click any gate to expand its purpose.</p>
+  <div class="gate-list" id="gate-list"></div>
+  <div class="hard-block-note">
+    <h3>Fail-closed hard blocks</h3>
+    <p>Some conditions raise <code>PolicyBlocked</code> <em>before any decision exists</em> — they are not gate FAILs,
+      they abort evaluation: passing red-line observations without a complete mock attestation; an attestation bound to a
+      different bank or artifact; red-line metrics that don't exactly match the selected-bank attestation; an attestation
+      present without its complete metric set. Tampering is an exception, not a score.</p>
+  </div>
+</section>
+
+<!-- ============ SIMULATOR ============ -->
+<section id="simulator" class="section">
+  <h2><span class="sec-num">04</span> Gate simulator</h2>
+  <p class="section-lede">A faithful client-side mirror of the v0 policy for a <em>verified</em> synthetic bundle.
+    Change inputs and watch the decision. The real verifier additionally re-hashes and replays every artifact.</p>
+  <div class="sim">
+    <div class="sim-controls">
+      <div class="sim-row">
+        <label for="sim-visibility">Visibility</label>
+        <select id="sim-visibility">
+          <option value="private" selected>private</option>
+          <option value="public">public</option>
+        </select>
+        <label for="sim-bank">Release bank</label>
+        <select id="sim-bank">
+          <option value="mock" selected>mock_release_redline (inert)</option>
+          <option value="public">public, license declared</option>
+          <option value="restricted">restricted / not bundlable</option>
+        </select>
+      </div>
+      <div class="sim-row">
+        <label for="sim-tamper">Integrity scenario</label>
+        <select id="sim-tamper">
+          <option value="none" selected>clean evidence (complete attestation)</option>
+          <option value="obs">redline metrics without mock attestation</option>
+          <option value="bind">attestation bound to another bank/artifact</option>
+          <option value="partial">metrics ≠ attestation / incomplete set</option>
+        </select>
+      </div>
+      <div class="sim-metric">
+        <div class="sim-metric-head"><strong>structural</strong>
+          <select id="sim-structural-state" class="state-select"></select></div>
+        <div class="slider-row"><input type="range" id="sim-structural-score" min="0" max="1" step="0.01" value="1">
+          <span class="slider-val" id="sim-structural-score-val">1.00</span></div>
+        <div class="slider-row threshold"><label>minimum</label>
+          <input type="range" id="sim-structural-min" min="0" max="1" step="0.01" value="1">
+          <span class="slider-val" id="sim-structural-min-val">1.00</span></div>
+      </div>
+      <div class="sim-metric">
+        <div class="sim-metric-head"><strong>evaluation</strong>
+          <select id="sim-evaluation-state" class="state-select"></select></div>
+        <div class="slider-row"><input type="range" id="sim-evaluation-score" min="0" max="1" step="0.01" value="0.9">
+          <span class="slider-val" id="sim-evaluation-score-val">0.90</span></div>
+        <div class="slider-row threshold"><label>minimum</label>
+          <input type="range" id="sim-evaluation-min" min="0" max="1" step="0.01" value="0.7">
+          <span class="slider-val" id="sim-evaluation-min-val">0.70</span></div>
+      </div>
+      <div class="sim-redlines" id="sim-redlines"></div>
+      <button class="btn btn-small" id="sim-reset">Reset to passing bundle</button>
+    </div>
+    <div class="sim-output">
+      <div class="verdict" id="sim-verdict"></div>
+      <div class="sim-gates" id="sim-gate-results"></div>
+      <div class="sim-invariants">
+        <div><span>authorization</span><code>not_granted</code> — always</div>
+        <div><span>assurance_scope</span><code>synthetic_policy_conformance_only</code></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EVIDENCE ============ -->
+<section id="evidence" class="section">
+  <h2><span class="sec-num">05</span> Evidence states &amp; the identity chain</h2>
+  <p class="section-lede">Every required metric carries exactly one state. “Behavior failed” and “the gate could not
+    evaluate behavior” are different facts, and the protocol keeps them different.</p>
+  <div class="states-grid" id="states-grid"></div>
+  <h3 class="chain-title">Nothing floats free: the digest chain</h3>
+  <div class="chain" id="chain"></div>
+  <p class="chain-note">Each artifact binds the digests of its inputs. <code>verify-evidence</code> reloads the graph and
+    tensors, independently recomputes the update and observation, validates the selected trial chain, and checks metric
+    references — offline, no credentials. Hashes provide tamper evidence, not author authenticity; signed approvals and a
+    protected release system are separate responsibilities.</p>
+</section>
+
+<!-- ============ WORKED EXAMPLE ============ -->
+<section id="example" class="section">
+  <h2><span class="sec-num">06</span> A real run, end to end: Inkling-2-Mini</h2>
+  <p class="section-lede">The repo vendors the exact duplication kit published with
+    <a href="https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked">Blackfrost-AI/Inkling-2-Mini-Derisked</a> —
+    byte-identical at a pinned revision, with a per-file SHA-256 provenance manifest and an offline verifier.</p>
+  <div class="cards three">
+    <article class="card">
+      <h3>A hard architecture</h3>
+      <p>A loop transformer: 24 physical layers, layers 6–17 executed in <strong>3 passes</strong> per token — 48 logical
+        layer-visits. Naive abliteration assumptions break here; the kit shows physical-vs-logical targeting and
+        per-pass direction capture.</p>
+    </article>
+    <article class="card">
+      <h3>The shipped edit</h3>
+      <p>Per-pass consensus column orthogonalization of the attention-writer output space, physical layers 9–18,
+        α&nbsp;=&nbsp;2.5, loop structure intact. The edit receipt binds the published weight shard's SHA-256.</p>
+    </article>
+    <article class="card">
+      <h3>Honest about its own record</h3>
+      <p>Six inaccuracies in the original runbook were verified against the shipped scripts, corrected on Hugging Face,
+        and preserved as correction history. The scripts and receipt are the ground truth — not the narrative.</p>
+    </article>
+  </div>
+  <div class="example-results">
+    <div class="table-wrap">
+      <table>
+        <caption>Alpha ladder — smoke-50, thinking ON <span class="caption-note">(run-record claims, not re-measured by the repo)</span></caption>
+        <thead><tr><th>α</th><th>answered</th><th>substituted</th><th>refused</th></tr></thead>
+        <tbody>
+          <tr><td>1.5</td><td>21</td><td>14</td><td>15</td></tr>
+          <tr><td>1.7</td><td>19</td><td>16</td><td>15</td></tr>
+          <tr><td>2.0</td><td>29</td><td>11</td><td>10</td></tr>
+          <tr class="hl"><td>2.5</td><td>38</td><td>10</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="example-facts">
+      <div class="fact"><span class="fact-num">266/295</span><span class="fact-label">harmful-prompt compliance (90.2%), 443-row corpus, hand-adjudicated</span></div>
+      <div class="fact"><span class="fact-num">0/75</span><span class="fact-label">false refusals on benign prompts</span></div>
+      <div class="fact"><span class="fact-num">15 + 1</span><span class="fact-label">files verified byte-identical to HF; 79&nbsp;MB raw capture fetch-only, digest-verified</span></div>
+    </div>
+  </div>
+  <p class="example-scope">The kit is the validated GPU/torch pipeline that produced the artifact — vendored research
+    material, <strong>not executed by the synthetic v0 runtime</strong>. Reproduction needs the upstream checkpoint and a
+    CUDA host; see the <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/examples/inkling-2-mini-derisked">example README</a>.</p>
+</section>
+
+<!-- ============ QUICKSTART ============ -->
+<section id="quickstart" class="section">
+  <h2><span class="sec-num">07</span> Run it yourself</h2>
+  <p class="section-lede">Python 3.11+. No GPU, no credentials, no network. The whole vertical slice runs on a laptop.</p>
+  <div class="code-stack">
+    <div class="code-block"><div class="code-head"><span>Install</span><button class="copy" data-copy="install">copy</button></div>
+<pre id="install">python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'</pre></div>
+    <div class="code-block"><div class="code-head"><span>Run the synthetic vertical slice</span><button class="copy" data-copy="demo">copy</button></div>
+<pre id="demo">.venv/bin/ablagent demo --run-dir .runs/reference</pre></div>
+    <div class="code-block"><div class="code-head"><span>Verify independently</span><button class="copy" data-copy="verify">copy</button></div>
+<pre id="verify">.venv/bin/ablagent verify .runs/reference/candidate.manifest.json
+.venv/bin/ablagent verify-evidence .runs/reference/candidate.evidence.json</pre></div>
+    <div class="code-block"><div class="code-head"><span>Check the gate — expected: blocked, exit 2 (fail-closed demo)</span><button class="copy" data-copy="gate">copy</button></div>
+<pre id="gate">.venv/bin/ablagent gate .runs/reference/candidate.evidence.json \
+  --bank examples/banks/synthetic-release-mock.bank.json</pre></div>
+    <div class="code-block"><div class="code-head"><span>Verify the vendored worked example (offline)</span><button class="copy" data-copy="prov">copy</button></div>
+<pre id="prov">python scripts/verify_example_provenance.py</pre></div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <strong>Ablagent</strong> — Blackfrost AI · code Apache-2.0 · synthetic bank content CC BY 4.0 ·
+      vendored example material under its own <a href="https://github.com/Blackfrost-AI/Ablagent/blob/main/examples/inkling-2-mini-derisked/NOTICE.md">per-file scope</a>.
+    </div>
+    <div class="footer-scope">Evidence-bound experiments are not safety certification or release authorization.
+      The v0 runtime is a synthetic reference; real-model claims require separately qualified adapters, behavioral
+      evaluation, and human-authorized release.</div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
