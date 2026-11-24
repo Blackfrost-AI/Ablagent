@@ -18,9 +18,9 @@
   "records": [
     {"record_id":"mock-biological","prompt":"inert schema fixture: biological","group":"control","domain":"mock","pair_id":null},
     {"record_id":"mock-chemical","prompt":"inert schema fixture: chemical","group":"control","domain":"mock","pair_id":null},
-    {"record_id":"mock-explosives","prompt":"inert schema fixture: explosives_incendiary","group":"control","domain":"mock","pair_id":null},
-    {"record_id":"mock-wmd","prompt":"inert schema fixture: strategic_wmd","group":"control","domain":"mock","pair_id":null},
+    {"record_id":"mock-explosives_incendiary","prompt":"inert schema fixture: explosives_incendiary","group":"control","domain":"mock","pair_id":null},
+    {"record_id":"mock-strategic_wmd","prompt":"inert schema fixture: strategic_wmd","group":"control","domain":"mock","pair_id":null},
     {"record_id":"mock-cyber","prompt":"inert schema fixture: cyber","group":"control","domain":"mock","pair_id":null},
-    {"record_id":"mock-control","prompt":"inert schema fixture: loss_of_control","group":"control","domain":"mock","pair_id":null}
+    {"record_id":"mock-loss_of_control","prompt":"inert schema fixture: loss_of_control","group":"control","domain":"mock","pair_id":null}
   ]
 }

@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from ablagent.artifacts import load_tensors
-from ablagent.canonical import read_json
+from ablagent.artifacts import file_digest, load_tensors
+from ablagent.canonical import read_json, write_json
 from ablagent.errors import ValidationError
 from ablagent.evidence import (
     EvidenceBundle,
@@ -15,6 +15,8 @@ from ablagent.evidence import (
     verify_evidence,
     write_evidence,
 )
+from ablagent.mock_redlines import FileReference
+from ablagent.planner import ExperimentRequest, propose_experiment
 from ablagent.synthetic import observation_digest, observe_synthetic
 from tests.conftest import compiled_case, dump_json
 
@@ -70,7 +72,7 @@ def test_evidence_replays_without_database(prepared):
         }
     )
     relative = write_evidence(store, bundle, "candidate")
-    assert verify_evidence(store, relative) == bundle
+    assert verify_evidence(store, relative).evidence == bundle
 
 
 @pytest.mark.parametrize(
@@ -118,12 +120,17 @@ def test_negative_trial_is_retained_and_cannot_be_promoted(prepared):
     store = prepared[0]
     compiled, _ = compiled_case(prepared)
     binding = bind_compiled("candidate.manifest.json", compiled)
+    write_json(store.path("negative.json"), {"rejected": True})
     rejected = TrialRecord(
         trial_id="rejected",
         status="rejected",
         binding=binding,
         reason="Analytic fixture rejected by structural test.",
-        retained_outputs=("negative.json",),
+        retained_outputs=(
+            FileReference(
+                path="negative.json", file_digest=file_digest(store.path("negative.json"))
+            ),
+        ),
     )
     relative = record_trial(store, rejected)
     assert store.path(relative).exists()
@@ -189,4 +196,152 @@ def test_bundle_metrics_must_be_retained_in_its_trial(prepared):
     bundle = make_bundle(prepared, compiled, trial)
     relative = write_evidence(store, bundle, "candidate")
     with pytest.raises(ValidationError, match="metrics"):
+        verify_evidence(store, relative)
+
+
+def test_retained_trial_output_must_exist_and_match_its_digest(prepared):
+    store = prepared[0]
+    compiled, trial = compiled_case(prepared)
+    bundle = make_bundle(prepared, compiled, trial)
+    relative = write_evidence(store, bundle, "candidate")
+    record = TrialRecord.model_validate(read_json(store.path("candidate-trial.trial.json")))
+    retained = TrialRecord(
+        trial_id="retained-output",
+        parent_trial_id=record.trial_id,
+        status="promoted",
+        binding=record.binding,
+        reason="Selected lineage output integrity fixture.",
+        metrics=bundle.metrics,
+        retained_outputs=(
+            FileReference(
+                path="candidate.manifest.json",
+                file_digest=file_digest(store.path("candidate.manifest.json")),
+            ),
+        ),
+    )
+    record_trial(store, retained)
+    bundle = bundle.model_copy(update={"trials": (*bundle.trials, retained.reference())})
+    relative = write_evidence(store, bundle, "retained-output")
+    output_path = store.path(retained.retained_outputs[0].path)
+    output_path.write_bytes(output_path.read_bytes() + b"\n")
+    with pytest.raises(ValidationError, match="retained trial output"):
+        verify_evidence(store, relative)
+
+
+def test_missing_parent_and_unused_trial_references_fail_closed(prepared):
+    store = prepared[0]
+    compiled, _ = compiled_case(prepared)
+    parent = TrialRecord(
+        trial_id="parent-with-audit",
+        status="completed",
+        binding=bind_compiled("candidate.manifest.json", compiled),
+        reason="Complete parent lineage fixture.",
+        metrics=(
+            MetricResult(
+                category="structural",
+                name="candidate_audit",
+                outcome="PASS",
+                score=1,
+                observed=1,
+                eligible=1,
+                evidence_digest=compiled.structural_check.target_digest_after,
+                details="Parent structural audit.",
+            ),
+        ),
+    )
+    child = promote_trial(parent, "selected")
+    record_trial(store, parent)
+    record_trial(store, child)
+    bundle = make_bundle(prepared, compiled, child)
+    bundle = bundle.model_copy(update={"trials": (child.reference(),)})
+    relative = write_evidence(store, bundle, "orphan")
+    with pytest.raises(ValidationError, match="parent chain"):
+        verify_evidence(store, relative)
+
+
+def test_retained_plan_must_match_compiled_intervention(prepared):
+    store = prepared[0]
+    compiled, trial = compiled_case(prepared)
+    bound = prepared[5]
+    unrelated = propose_experiment(
+        ExperimentRequest(request_id="unrelated-plan", direction=bound, alpha_values=(0.25,))
+    )
+    write_json(store.path("unrelated.plan.json"), unrelated)
+    original = TrialRecord.model_validate(read_json(store.path("candidate-trial.trial.json")))
+    altered = original.model_copy(
+        update={
+            "trial_id": "unrelated-plan-trial",
+            "plan_digest": unrelated.digest(),
+            "plan_reference": FileReference(
+                path="unrelated.plan.json",
+                file_digest=file_digest(store.path("unrelated.plan.json")),
+            ),
+            "metrics": make_bundle(prepared, compiled, trial).metrics,
+        }
+    )
+    record_trial(store, altered)
+    bundle = make_bundle(prepared, compiled, trial).model_copy(
+        update={"trials": (altered.reference(),)}
+    )
+    relative = write_evidence(store, bundle, "unrelated-plan")
+    with pytest.raises(ValidationError, match="compiled intervention"):
+        verify_evidence(store, relative)
+
+
+def test_promoted_lineage_cannot_switch_plan_identity(prepared):
+    store = prepared[0]
+    compiled, trial = compiled_case(prepared)
+    bound = prepared[5]
+    plan = propose_experiment(
+        ExperimentRequest(request_id="selected-plan", direction=bound, alpha_values=(1.0,))
+    )
+    write_json(store.path("selected.plan.json"), plan)
+    reference = FileReference(
+        path="selected.plan.json", file_digest=file_digest(store.path("selected.plan.json"))
+    )
+    parent = trial.model_copy(
+        update={
+            "trial_id": "planned-parent",
+            "plan_digest": plan.digest(),
+            "plan_reference": reference,
+            "metrics": make_bundle(prepared, compiled, trial).metrics,
+        }
+    )
+    record_trial(store, parent)
+    child = promote_trial(parent, "switched-plan")
+    child = child.model_copy(
+        update={
+            "plan_digest": None,
+            "plan_reference": None,
+            "metrics": make_bundle(prepared, compiled, trial).metrics,
+        }
+    )
+    record_trial(store, child)
+    bundle = make_bundle(prepared, compiled, trial).model_copy(
+        update={"trials": (parent.reference(), child.reference())}
+    )
+    relative = write_evidence(store, bundle, "switched-plan")
+    with pytest.raises(ValidationError, match=r"cannot change.*plan identity"):
+        verify_evidence(store, relative)
+
+
+def test_typed_plan_reference_is_verified(prepared):
+    store = prepared[0]
+    compiled, trial = compiled_case(prepared)
+    record = TrialRecord.model_validate(read_json(store.path("candidate-trial.trial.json")))
+    write_json(store.path("other.json"), {"not_a_plan": True})
+    altered = record.model_copy(
+        update={
+            "trial_id": "plan-check",
+            "plan_digest": "sha256:" + "0" * 64,
+            "plan_reference": FileReference(
+                path="other.json", file_digest=file_digest(store.path("other.json"))
+            ),
+        }
+    )
+    record_trial(store, altered)
+    bundle = make_bundle(prepared, compiled, trial)
+    bundle = bundle.model_copy(update={"trials": (altered.reference(),)})
+    relative = write_evidence(store, bundle, "bad-plan")
+    with pytest.raises(ValidationError, match="retained plan"):
         verify_evidence(store, relative)

@@ -32,7 +32,12 @@ The run creates:
 .venv/bin/ablagent verify-evidence .runs/reference/candidate.evidence.json
 ```
 
-Verification recomputes the operation and observation from the stored graph and baseline, validates candidate metadata and non-target tensor bytes, and loads the retained trial.
+Verification recomputes the operation and observation from the stored graph and baseline, validates candidate metadata and non-target tensor bytes, and verifies the selected trial chain and retained-output digests. For an attested inert mock bundle, pass its selected bank explicitly:
+
+```bash
+.venv/bin/ablagent verify-evidence run/attested.evidence.json \
+  --bank examples/banks/synthetic-release-mock.bank.json
+```
 
 ## Evaluate eligibility
 

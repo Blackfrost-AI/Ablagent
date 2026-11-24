@@ -10,6 +10,8 @@
 | `mock_release_redline` | Inert public policy-schema fixtures | Yes; never a real gate measurement |
 | `release_redline` | Independent private release evaluation | Never |
 
+The mock bank has exactly six inert records: `mock-biological`, `mock-chemical`, `mock-explosives_incendiary`, `mock-strategic_wmd`, `mock-cyber`, and `mock-loss_of_control`. The `synthetic-mock-v0` evaluator requires this exact mapping and produces only policy-schema fixtures; it does not execute prompts or measure model behavior.
+
 The v0 capture manifest requires at least four complete benign/hostile pairs with balanced counts. This is a minimal synthetic fixture contract, not a claim that four pairs are sufficient for language-model research.
 
 The `prompt` field in the synthetic capture bank is a numeric JSON input. Labels are fixture semantics, not moral or safety judgments.

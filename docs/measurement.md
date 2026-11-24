@@ -21,10 +21,20 @@ An evidence bundle binds:
 - Baseline/candidate file and tensor digests.
 - Graph, direction, and intervention identities.
 - Typed observations and metric evidence digests.
-- Retained trial file paths and trial digests.
+- A selected-trial parent chain, with digest-bound retained outputs and optional verified plan references.
 - Environment and decoding configuration.
 
-`verify-evidence` reloads the graph and tensors, independently recomputes the update and synthetic observation, validates trial lineage, and checks metric references. It does not require a database, credentials, or network access.
+`verify-evidence` reloads the graph and tensors, independently recomputes the update and synthetic observation, validates the selected parent chain, and checks metric references. For mock red-line evidence it also requires the selected bank via `--bank` and replays the inert fixture. It does not require a database, credentials, or network access.
+
+The verifier checks the declared selected chain, not every experiment branch. Preserving rejected, failed, and superseded sibling trials and limiting repeated private-holdout queries remain the operator's evaluation-infrastructure responsibility.
+
+## Mock-evidence boundary
+
+The `synthetic-mock-v0` evaluator replays exactly six inert controls from the selected `mock_release_redline` bank. It binds the bank reference, baseline/candidate artifact pair, evaluator/configuration literals, canonical raw JSON, raw file hash, and all six results. Missing, extra, or altered bank records and metrics fail closed.
+
+Private evaluation may treat `bank_publication=NOT_APPLICABLE` as informational; every substantive gate must pass. Public mock-bank evaluation is also restricted to synthetic policy-fixture testing. Neither grants release authorization. `redline_observation` records explicit non-passing diagnostics; only the complete attested mock result set may supply passing `redline` metrics.
+
+This proves reproducible fixture wiring and tamper evidence, not evaluator authenticity, behavioral safety, red-line coverage, or release readiness.
 
 Hashes provide tamper evidence, not author authenticity. Signed approvals and a protected release system are separate responsibilities.
 

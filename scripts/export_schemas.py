@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from ablagent.banks import BankManifest, BankRecord, BankReference, LicenseTerms
-from ablagent.canonical import canonical_bytes, read_json, write_json
+from ablagent.canonical import canonical_bytes, read_json
 from ablagent.contracts import Contract
 from ablagent.evidence import (
     ArtifactBinding,
@@ -29,6 +29,12 @@ from ablagent.interventions import (
     DirectionCandidate,
     InterventionSpec,
     StructuralCheck,
+)
+from ablagent.mock_redlines import (
+    FileReference,
+    MockRedlineAttestation,
+    MockRedlineRaw,
+    RawEvidenceReference,
 )
 from ablagent.planner import ExperimentRequest, ProposedPlan
 from ablagent.policy import EligibilityDecision, EligibilityRequest, GateResult
@@ -57,6 +63,10 @@ CONTRACTS = {
     "observation": SyntheticObservation,
     "adapter-capabilities": AdapterCapabilities,
     "metric-result": MetricResult,
+    "file-reference": FileReference,
+    "raw-evidence-reference": RawEvidenceReference,
+    "mock-redline-raw": MockRedlineRaw,
+    "mock-redline-attestation": MockRedlineAttestation,
     "trial": TrialRecord,
     "trial-reference": TrialReference,
     "evidence": EvidenceBundle,
@@ -89,11 +99,22 @@ def check_schemas(destination: Path) -> list[str]:
 
 
 def export_schemas(destination: Path) -> list[str]:
+    import os
+
     written = []
+    destination.mkdir(parents=True, exist_ok=True)
     for name, contract in CONTRACTS.items():
         schema = contract.model_json_schema(mode="validation")
         path = destination / f"{name}.schema.json"
-        write_json(path, schema)
+        expected = canonical_bytes(schema) + b"\n"
+        if path.exists() and path.read_bytes() == expected:
+            continue
+        temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+        try:
+            temporary.write_bytes(expected)
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
         written.append(path.name)
     return written
 

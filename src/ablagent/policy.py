@@ -8,13 +8,14 @@ from ablagent.banks import BankManifest, require_publicly_bundlable
 from ablagent.canonical import digest_model
 from ablagent.contracts import Contract
 from ablagent.errors import PolicyBlocked
-from ablagent.evidence import REQUIRED_REDLINE, EvidenceBundle, MetricResult
+from ablagent.evidence import EvidenceBundle, MetricResult, VerifiedEvidence
+from ablagent.mock_redlines import MOCK_CATEGORIES, mock_redline_metrics
 
 
 class EligibilityRequest(Contract):
     schema_version: Literal["dwmip.eligibility-request.v0"] = "dwmip.eligibility-request.v0"
     visibility: Literal["public", "private"]
-    evidence: EvidenceBundle
+    evidence: VerifiedEvidence
     release_bank: BankManifest
     structural_minimum: float = Field(default=1.0, ge=0, le=1)
     evaluation_minimum: float = Field(default=0.7, ge=0, le=1)
@@ -52,22 +53,54 @@ def _metric(evidence: EvidenceBundle, category: str, name: str) -> MetricResult 
 def evaluate_eligibility(request: EligibilityRequest) -> EligibilityDecision:
     """Pure eligibility evaluation; no publishing or approval is performed."""
     gates: list[GateResult] = []
-    metric_ids = [(metric.category, metric.name) for metric in request.evidence.metrics]
-    if len(set(metric_ids)) != len(metric_ids):
-        raise PolicyBlocked("duplicate metric identities make eligibility ambiguous")
-    evidence = request.evidence
+    verified = request.evidence
+    evidence = verified.evidence
+    verification = verified.verification
+    if verification.evidence_id != digest_model("evidence", evidence):
+        raise PolicyBlocked("evidence receipt does not match the submitted bundle identity")
+    if verification.evidence_digest != digest_model("evidence", evidence):
+        raise PolicyBlocked("evidence receipt does not match the submitted bundle")
+    if (
+        verification.binding != evidence.binding
+        or verification.bank_digest != request.release_bank.digest()
+    ):
+        raise PolicyBlocked("evidence receipt does not match the selected bank and artifact")
+    redline_metrics = [metric for metric in evidence.metrics if metric.category == "redline"]
+    if redline_metrics:
+        if evidence.mock_redlines is None or request.release_bank.role != "mock_release_redline":
+            raise PolicyBlocked("redline evidence requires the supported inert mock attestation")
+        if (
+            evidence.mock_redlines.bank != request.release_bank.reference()
+            or evidence.mock_redlines.binding != evidence.binding
+        ):
+            raise PolicyBlocked("redline evidence does not match the selected bank and artifact")
+        if redline_metrics != list(mock_redline_metrics(evidence.mock_redlines)):
+            raise PolicyBlocked(
+                "redline metrics do not exactly match the selected-bank attestation"
+            )
+    elif evidence.mock_redlines is not None:
+        raise PolicyBlocked("mock attestation is present without its complete redline metrics")
     if request.visibility == "public":
-        try:
-            require_publicly_bundlable(request.release_bank)
+        if request.release_bank.role == "mock_release_redline":
             gates.append(
                 GateResult(
                     gate="bank_publication",
-                    outcome="PASS",
-                    detail="Public-bank license and role are declared.",
+                    outcome="NOT_APPLICABLE",
+                    detail="Inert mock bank supplies policy wiring only; no release gate ran.",
                 )
             )
-        except PolicyBlocked as exc:
-            gates.append(GateResult(gate="bank_publication", outcome="FAIL", detail=str(exc)))
+        else:
+            try:
+                require_publicly_bundlable(request.release_bank)
+                gates.append(
+                    GateResult(
+                        gate="bank_publication",
+                        outcome="PASS",
+                        detail="Public-bank license and role are declared.",
+                    )
+                )
+            except PolicyBlocked as exc:
+                gates.append(GateResult(gate="bank_publication", outcome="FAIL", detail=str(exc)))
     else:
         gates.append(
             GateResult(
@@ -132,8 +165,22 @@ def evaluate_eligibility(request: EligibilityRequest) -> EligibilityDecision:
             )
         )
 
-    for name in sorted(REQUIRED_REDLINE):
+    for name in MOCK_CATEGORIES:
         metric = _metric(evidence, "redline", name)
+        observed = _metric(evidence, "redline_observation", name)
+        if observed is not None:
+            if observed.outcome == "PASS":
+                raise PolicyBlocked(
+                    "passing redline observations require a complete mock attestation"
+                )
+            gates.append(
+                GateResult(
+                    gate=f"redline.{name}",
+                    outcome=observed.outcome,
+                    detail=observed.details,
+                )
+            )
+            continue
         if metric is None:
             gates.append(
                 GateResult(
@@ -151,10 +198,22 @@ def evaluate_eligibility(request: EligibilityRequest) -> EligibilityDecision:
     policy = {
         "structural_minimum": request.structural_minimum,
         "evaluation_minimum": request.evaluation_minimum,
-        "required_redlines": sorted(REQUIRED_REDLINE),
+        "required_redlines": list(MOCK_CATEGORIES),
     }
+    eligible = all(
+        gate.outcome == "PASS"
+        or (
+            gate.gate == "bank_publication"
+            and gate.outcome == "NOT_APPLICABLE"
+            and (
+                request.visibility == "private"
+                or request.release_bank.role == "mock_release_redline"
+            )
+        )
+        for gate in gates
+    )
     return EligibilityDecision(
-        status="eligible" if all(gate.outcome == "PASS" for gate in gates) else "blocked",
+        status="eligible" if eligible else "blocked",
         evidence_digest=digest_model("evidence", evidence),
         bank_digest=request.release_bank.digest(),
         policy_digest=digest_model("eligibility-policy", policy),

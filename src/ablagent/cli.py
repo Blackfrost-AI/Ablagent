@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 from pydantic import ValidationError as PydanticValidationError
 
 from ablagent import __version__
-from ablagent.artifacts import ArtifactStore, load_tensors
+from ablagent.artifacts import ArtifactStore, file_digest, load_tensors
 from ablagent.banks import BankManifest
 from ablagent.canonical import canonical_bytes, read_json, write_json
 from ablagent.conformance import run_conformance
@@ -23,6 +23,7 @@ from ablagent.evidence import (
     verify_evidence,
     write_evidence,
 )
+from ablagent.mock_redlines import FileReference
 from ablagent.planner import ExperimentRequest, ProposedPlan, propose_experiment
 from ablagent.policy import EligibilityRequest, evaluate_eligibility
 from ablagent.synthetic import (
@@ -123,7 +124,7 @@ def demo(args: argparse.Namespace) -> int:
             details="Analytic output observation only; not a language or capability evaluation.",
         ),
         MetricResult(
-            category="redline",
+            category="redline_observation",
             name="cyber",
             outcome="NOT_RUN",
             evidence_digest=observation_digest(observation),
@@ -138,12 +139,20 @@ def demo(args: argparse.Namespace) -> int:
         status="completed",
         binding=binding,
         plan_digest=plan.digest(),
+        plan_reference=FileReference(
+            path="proposed.plan.json", file_digest=file_digest(store.path("proposed.plan.json"))
+        ),
         reason=(
             "Synthetic analytic vertical slice; structural evidence is not behavioral "
             "or release proof."
         ),
         metrics=metrics,
-        retained_outputs=("candidate.manifest.json",),
+        retained_outputs=(
+            FileReference(
+                path="candidate.manifest.json",
+                file_digest=file_digest(store.path("candidate.manifest.json")),
+            ),
+        ),
     )
     record_trial(store, trial)
     bundle = EvidenceBundle(
@@ -218,8 +227,16 @@ def compile_plan(args: argparse.Namespace) -> int:
         status="completed",
         binding=binding,
         plan_digest=proposal.digest(),
+        plan_reference=FileReference(
+            path=args.plan, file_digest=file_digest(store.path(args.plan))
+        ),
         reason="Explicit CLI compile request for one bounded intervention.",
-        retained_outputs=(f"{args.artifact_id}.manifest.json",),
+        retained_outputs=(
+            FileReference(
+                path=f"{args.artifact_id}.manifest.json",
+                file_digest=file_digest(store.path(f"{args.artifact_id}.manifest.json")),
+            ),
+        ),
     )
     record_trial(store, trial)
     _print(compiled)
@@ -228,12 +245,12 @@ def compile_plan(args: argparse.Namespace) -> int:
 
 def gate(args: argparse.Namespace) -> int:
     store = ArtifactStore(Path(args.evidence).parent)
-    bundle = verify_evidence(store, Path(args.evidence).name)
     bank = _bank(Path(args.bank))
+    verified = verify_evidence(store, Path(args.evidence).name, release_bank=bank)
     decision = evaluate_eligibility(
         EligibilityRequest(
             visibility=args.visibility,
-            evidence=bundle,
+            evidence=verified,
             release_bank=bank,
         )
     )
@@ -267,6 +284,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         verify_parser.add_argument("path")
         verify_parser.set_defaults(handler=handler)
+        if command == "verify-evidence":
+            verify_parser.add_argument(
+                "--bank", help="selected bank; required for mock redline evidence"
+            )
     plan_parser = commands.add_parser(
         "plan", help="produce a bounded proposal without executing it"
     )
@@ -310,7 +331,8 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.handler == "evidence":
             store = ArtifactStore(Path(args.path).parent)
-            _print(verify_evidence(store, Path(args.path).name))
+            bank = _bank(Path(args.bank)) if args.bank else None
+            _print(verify_evidence(store, Path(args.path).name, release_bank=bank))
             return 0
         return args.handler(args)
     except (AblagentError, OSError, json.JSONDecodeError) as exc:

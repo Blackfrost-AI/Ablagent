@@ -3,7 +3,11 @@ import os
 import subprocess
 from pathlib import Path
 
+from ablagent.artifacts import ArtifactStore
+from ablagent.canonical import read_json
 from ablagent.cli import main
+from ablagent.evidence import TrialRecord, record_trial, verify_evidence, write_evidence
+from ablagent.mock_redlines import mock_redline_metrics, write_mock_redlines
 
 ROOT = Path(__file__).parents[1]
 
@@ -156,3 +160,69 @@ def test_invalid_input_is_nonzero_and_does_not_create_candidate(tmp_path, capsys
     output = json.loads(capsys.readouterr().out)
     assert output["status"] == "blocked_or_invalid"
     assert not (tmp_path / "run/candidate.safetensors").exists()
+
+
+def test_cli_private_gate_accepts_verified_mock_fixture(tmp_path):
+    run = tmp_path / "run"
+    assert main(["demo", "--run-dir", str(run)]) == 0
+    store = ArtifactStore(run)
+    from ablagent.evidence import EvidenceBundle
+
+    bundle = EvidenceBundle.model_validate(read_json(run / "candidate.evidence.json"))
+    bank = ROOT / "examples/banks/synthetic-release-mock.bank.json"
+    from ablagent.cli import _bank
+
+    selected_bank = _bank(bank)
+    attestation = write_mock_redlines(store, selected_bank, bundle.binding, "mock.raw.json")
+    metrics = tuple(
+        metric for metric in bundle.metrics if metric.category != "redline_observation"
+    ) + tuple(mock_redline_metrics(attestation))
+    parent = TrialRecord.model_validate(read_json(store.path(bundle.trials[-1].path)))
+    selected = TrialRecord(
+        trial_id="attested",
+        parent_trial_id=parent.trial_id,
+        status="promoted",
+        binding=bundle.binding,
+        plan_digest=parent.plan_digest,
+        plan_reference=parent.plan_reference,
+        reason="CLI inert policy wiring test; no behavioral claim.",
+        metrics=metrics,
+    )
+    record_trial(store, selected)
+    evidence = bundle.model_copy(
+        update={
+            "metrics": metrics,
+            "mock_redlines": attestation,
+            "trials": (*bundle.trials, selected.reference()),
+        }
+    )
+    write_evidence(store, evidence, "attested")
+    verify_evidence(store, "attested.evidence.json", release_bank=selected_bank)
+    assert (
+        main(
+            [
+                "verify-evidence",
+                str(run / "attested.evidence.json"),
+                "--bank",
+                str(bank),
+            ]
+        )
+        == 0
+    )
+    decision = run / "private.decision.json"
+    assert (
+        main(
+            [
+                "gate",
+                str(run / "attested.evidence.json"),
+                "--bank",
+                str(bank),
+                "--visibility",
+                "private",
+                "--output",
+                str(decision),
+            ]
+        )
+        == 0
+    )
+    assert decision.is_file()

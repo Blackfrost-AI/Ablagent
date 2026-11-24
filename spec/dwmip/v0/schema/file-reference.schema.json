@@ -1,0 +1,1 @@
+{"additionalProperties":false,"properties":{"file_digest":{"pattern":"^sha256:[0-9a-f]{64}$","title":"File Digest","type":"string"},"path":{"title":"Path","type":"string"}},"required":["path","file_digest"],"title":"FileReference","type":"object"}
