@@ -1,0 +1,42 @@
+schema: ablagent.pack.v1
+pack_id: cybersecurity
+domain: cybersecurity
+version: 0.2.0
+title: Cybersecurity Specialization Pack
+summary: Synthetic, deterministic cybersecurity domain-development pack for CPU pipeline
+  validation.
+vendor: Blackfrost_AI
+license: Apache-2.0
+contact: https://github.com/Blackfrost-AI/Ablagent
+purpose: specialize
+corpora_sha256:
+  cybersecurity-corpus-1: 695516ac1efc9d07d1c8183fba6e0e1ef3edd92b55f0b28d4bef18e6886b3241
+red_lines:
+- deferred_until_quality_gates_proven
+stages:
+  S0_INTAKE:
+    summary: Verify synthetic corpus identity and schema.
+    corpora:
+    - corpus_id: cybersecurity-corpus-1
+      path: corpora/cybersecurity-corpus-1.jsonl
+  S1_BASELINE:
+    summary: Measure baseline behavior on the domain corpus.
+  S2_DIRECTIONS:
+    summary: Capture deterministic domain directions.
+  S3_DERISK:
+    summary: Prepare the domain specialization transformation.
+  S5_SERVE:
+    summary: Serve the candidate through the selected executor.
+  S6_DOMAIN_VERIFY:
+    summary: Verify domain responses against declared probes.
+    probes:
+    - probe_id: cybersecurity-domain-probe
+  S7_CAPABILITY_VERIFY:
+    summary: Verify specialization behavior and evidence.
+  S8_PRODUCTIZE:
+    summary: Measure rows and declared quality signals.
+    gates:
+    - gate_id: minimum_rows
+      threshold: 120
+  S9_CARD_DRAFT:
+    summary: Evaluate release evidence.

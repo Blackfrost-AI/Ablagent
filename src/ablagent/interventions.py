@@ -12,6 +12,10 @@ from ablagent.errors import ValidationError
 from ablagent.identity import SiteCoordinate
 
 ALGORITHM_ID = "synthetic.contrast.unit.v0"
+# Additive widening: real torch-forward captures declare their own provenance
+# id. Existing synthetic instances keep their exact string, so every existing
+# digest is unchanged.
+HF_ALGORITHM_ID = "hf.contrast.unit.v0"
 UPDATE_ALGORITHM_ID = "dense.rank_one_output.v0"
 NORM_TOLERANCE = 1e-6
 
@@ -26,7 +30,7 @@ class DirectionCandidate(Contract):
     coordinate: SiteCoordinate
     space_id: Identifier
     capture_bank: BankReference
-    algorithm_id: Literal[ALGORITHM_ID] = ALGORITHM_ID
+    algorithm_id: Literal[ALGORITHM_ID, HF_ALGORITHM_ID] = ALGORITHM_ID
     statistic: Literal["mean_difference"] = "mean_difference"
     vector: tuple[float, ...] = Field(min_length=1, max_length=1_000_000)
     benign_count: int = Field(ge=4)
@@ -92,7 +96,7 @@ class BoundDirection(Contract):
     tensor_name: Identifier
     dtype: Literal["float32", "float64"]
     shape: tuple[int, int]
-    source_algorithm_id: Literal[ALGORITHM_ID]
+    source_algorithm_id: Literal[ALGORITHM_ID, HF_ALGORITHM_ID]
     source_vector_digest: Digest
     unit_vector: tuple[float, ...] = Field(min_length=1, max_length=1_000_000)
     unit_norm_tolerance: float = Field(default=NORM_TOLERANCE, gt=0, le=1e-3)

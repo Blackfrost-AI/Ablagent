@@ -127,7 +127,9 @@ class AdapterCapabilities(Contract):
     executable_topologies: tuple[Literal["dense_linear"], ...] = ()
     supported_operations: tuple[Literal["rank_one_output"], ...] = ()
     supported_codecs: tuple[Literal["safetensors"], ...] = ()
-    real_checkpoint_support: Literal[False] = False
+    # Additive widening (was Literal[False]): the hf-dense-linear-v0 adapter
+    # declares True. Default stays False; existing payloads are unchanged.
+    real_checkpoint_support: bool = False
     execution_requires: tuple[str, ...] = (
         "execution_supported=true",
         "one writer per site",

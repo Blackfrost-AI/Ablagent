@@ -31,3 +31,4 @@ secrets/
 # Fetch-only example assets (downloaded explicitly via scripts/fetch_example_assets.py).
 examples/inkling-2-mini-derisked/DWM_RECIPE/s2-capture/raw-capture.npz
 .scratch-hf-kit/
+.scratch/

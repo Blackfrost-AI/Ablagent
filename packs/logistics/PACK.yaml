@@ -1,0 +1,42 @@
+schema: ablagent.pack.v1
+pack_id: logistics
+domain: logistics
+version: 0.2.0
+title: Logistics Specialization Pack
+summary: Synthetic, deterministic logistics domain-development pack for CPU pipeline
+  validation.
+vendor: Blackfrost_AI
+license: Apache-2.0
+contact: https://github.com/Blackfrost-AI/Ablagent
+purpose: specialize
+corpora_sha256:
+  logistics-corpus-1: 6e10b1bd121aa10183f47c04683d5a38e57384612a451283e9b1c75a407ce8bf
+red_lines:
+- deferred_until_quality_gates_proven
+stages:
+  S0_INTAKE:
+    summary: Verify synthetic corpus identity and schema.
+    corpora:
+    - corpus_id: logistics-corpus-1
+      path: corpora/logistics-corpus-1.jsonl
+  S1_BASELINE:
+    summary: Measure baseline behavior on the domain corpus.
+  S2_DIRECTIONS:
+    summary: Capture deterministic domain directions.
+  S3_DERISK:
+    summary: Prepare the domain specialization transformation.
+  S5_SERVE:
+    summary: Serve the candidate through the selected executor.
+  S6_DOMAIN_VERIFY:
+    summary: Verify domain responses against declared probes.
+    probes:
+    - probe_id: logistics-domain-probe
+  S7_CAPABILITY_VERIFY:
+    summary: Verify specialization behavior and evidence.
+  S8_PRODUCTIZE:
+    summary: Measure rows and declared quality signals.
+    gates:
+    - gate_id: minimum_rows
+      threshold: 120
+  S9_CARD_DRAFT:
+    summary: Evaluate release evidence.

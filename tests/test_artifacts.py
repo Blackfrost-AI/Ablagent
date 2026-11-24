@@ -122,3 +122,17 @@ def test_structural_audit_compares_observed_candidate_tensors(prepared):
             edited=observed,
             expected=expected,
         )
+
+
+def test_perturbed_f32_candidate_fails_verify(prepared):
+    """A deliberately perturbed persisted candidate must fail re-verification."""
+    from tests.conftest import compiled_case
+
+    store, _, tensors, _, _, _ = prepared
+    compiled_case(prepared)
+    path = store.path("candidate.safetensors")
+    perturbed = {name: arr.copy() for name, arr in tensors.items()}
+    perturbed["writer0"][0, 0] += np.float32(1e-3)  # far above f32 rounding
+    save_file(perturbed, str(path))
+    with pytest.raises(ValidationError):
+        store.verify_compiled("candidate.manifest.json")

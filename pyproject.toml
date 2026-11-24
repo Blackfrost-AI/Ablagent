@@ -23,10 +23,16 @@ classifiers = [
 dependencies = [
   "numpy>=1.26,<3",
   "pydantic>=2.8,<3",
+  "PyYAML>=6.0,<7",
   "safetensors>=0.4.3,<1",
 ]
 
 [project.optional-dependencies]
+real = [
+  "huggingface_hub>=0.24,<2",
+  "torch>=2.3",
+  "transformers>=4.44,<6",
+]
 dev = [
   "pytest>=8,<10",
   "pytest-cov>=5,<8",
@@ -44,6 +50,9 @@ packages = ["src/ablagent"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
+markers = [
+  "real: needs the [real] extra (torch/transformers); builds tiny local checkpoints, no network",
+]
 
 [tool.ruff]
 line-length = 100

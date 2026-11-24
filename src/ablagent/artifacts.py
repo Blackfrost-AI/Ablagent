@@ -333,6 +333,10 @@ class ArtifactStore:
             raise ValidationError(
                 "candidate metadata did not preserve the exact transformation chain"
             )
+        # Persisted audit contract (identical in compile and verify_compiled):
+        # ``expected`` is the exact float64 edit; ``edited`` is the persisted
+        # dtype-recast result. maximum_deviation therefore records the REAL
+        # dtype rounding error and tolerance bounds it.
         check = _structural_check(
             graph=graph,
             baseline=baseline,
@@ -341,8 +345,8 @@ class ArtifactStore:
             original_tensors=tensors,
             candidate_tensors=candidate_tensors,
             original=original,
-            edited=edited,
-            expected=result,
+            edited=result,
+            expected=edited,
         )
         compiled = CompiledArtifact(
             adapter_id=graph.adapter_id,
@@ -391,6 +395,8 @@ class ArtifactStore:
             raise ValidationError("compiled direction graph mismatch")
         original = base[writer.tensor_name]
         vector = np.array(direction.unit_vector, dtype=np.float64)
+        # Exact float64 recomputation; _structural_check owns the deterministic
+        # dtype recast for digest comparison (identical semantics to compile).
         expected = original.astype(np.float64) - compiled.intervention.alpha * np.outer(
             vector, vector @ original.astype(np.float64)
         )
@@ -436,8 +442,12 @@ def _find_writer(graph: GraphSpec, writer_id: str) -> WriterSpec:
 
 
 def _validate_execution(graph: GraphSpec) -> None:
-    if graph.adapter_id != "synthetic-cpu-v0":
-        raise ValidationError("only the declared synthetic-cpu-v0 adapter can execute in v0")
+    from ablagent.constants import HF_ADAPTER_ID
+
+    if graph.adapter_id not in {"synthetic-cpu-v0", HF_ADAPTER_ID}:
+        raise ValidationError(
+            "only declared adapters (synthetic-cpu-v0, hf-dense-linear-v0) can execute in v0"
+        )
     if graph.topology != "dense_linear" or not graph.execution_supported:
         raise ValidationError("graph is descriptive but not executable by the synthetic adapter")
     if any(
@@ -479,10 +489,18 @@ def _structural_check(
     edited: np.ndarray,
     expected: np.ndarray,
 ) -> StructuralCheck:
-    expected_tensors = {**original_tensors, intervention.direction.tensor_name: expected}
+    # ``expected`` is the exact float64 edit; the persisted checkpoint dtype is
+    # restored by a deterministic recast. Digests compare the recast expectation;
+    # maximum_deviation records the real dtype rounding error against exact math.
+    expected_recast = np.array(expected, dtype=original.dtype, copy=True)
+    expected_tensors = {**original_tensors, intervention.direction.tensor_name: expected_recast}
     maximum_deviation = (
         float(np.max(np.abs(expected.astype(np.float64) - edited))) if expected.size else 0.0
     )
+    # Tolerance dominates worst-case round-to-nearest error of the recast:
+    # |recast(x) - x| <= 0.5*eps*|x| and |x| <= (1+alpha)*max|W| <= 2*max|W|
+    # for alpha in (0,1], so the bound is eps*max|W|; 4x gives margin. The
+    # digest equality above is the hard check — tolerance only bounds rounding.
     tolerance = float(np.finfo(original.dtype).eps) * max(1.0, float(np.max(np.abs(original)))) * 4
     expected_digests = _per_tensor_digests(expected_tensors)
     observed_digests = _per_tensor_digests(candidate_tensors)
@@ -509,7 +527,7 @@ def _structural_check(
         expected_tensor_digests=expected_digests,
         candidate_tensor_digests=observed_digests,
         target_digest_before=_one_tensor_digest(original),
-        target_digest_after=_one_tensor_digest(expected),
+        target_digest_after=_one_tensor_digest(expected_recast),
         maximum_deviation=maximum_deviation,
         tolerance=tolerance,
         passed=passed,

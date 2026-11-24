@@ -1,4 +1,8 @@
-"""Command-line boundary. The runtime makes no network requests."""
+"""Command-line boundary.
+
+The default (synthetic/mock) paths make no network requests. Only the explicit
+`run --executor real` path downloads a pinned HuggingFace snapshot.
+"""
 
 import argparse
 import json
@@ -260,6 +264,156 @@ def gate(args: argparse.Namespace) -> int:
     return 0 if decision.status == "eligible" else 2
 
 
+def _packs_dir_default() -> Path:
+    return Path(__file__).resolve().parents[2] / "packs"
+
+
+def doctor(args: argparse.Namespace) -> int:
+    import platform
+
+    from ablagent.constants import DEPENDENCIES, STAGES
+    from ablagent.packs import PackError, discover_packs
+
+    ok = True
+    print(f"python    {platform.python_version()} ({platform.machine()})")
+    try:
+        import yaml  # noqa: F401
+
+        print("pyyaml    ok")
+    except ImportError:
+        print("pyyaml    MISSING (pip install PyYAML>=6.0)")
+        ok = False
+    dag_ok = True
+    for stage, deps in DEPENDENCIES.items():
+        for dep in deps:
+            if dep not in STAGES:
+                print(f"dag       BROKEN: {stage} depends on unknown {dep}")
+                dag_ok = False
+    ok = ok and dag_ok
+    print("dag       ok" if dag_ok else "dag       see errors above")
+    root = Path(args.packs_dir) if args.packs_dir else _packs_dir_default()
+    if root.is_dir():
+        try:
+            packs = discover_packs(root)
+            if not packs and args.packs_dir is not None:
+                print(f"packs     BROKEN: no packs found under explicit directory {root}")
+                ok = False
+            else:
+                print(f"packs     ok ({len(packs)} discovered under {root})")
+        except (PackError, OSError, ValueError) as exc:
+            print(f"packs     BROKEN: {exc}")
+            ok = False
+    else:
+        print(f"packs     none at {root} (ok for source-only installs)")
+    return 0 if ok else 1
+
+
+def packs_command(args: argparse.Namespace) -> int:
+    from ablagent.packs import discover_packs, load_pack
+
+    root = Path(args.packs_dir) if args.packs_dir else _packs_dir_default()
+    if args.pack_id:
+        pack = load_pack(root / args.pack_id)
+        print(f"{pack.pack_id}  v{pack.version}  [{pack.domain}/{pack.purpose}]")
+        print(f"  title:    {pack.title}")
+        print(f"  summary:  {pack.summary}")
+        print(f"  manifest: {pack.manifest_path}")
+        print(f"  sha256:   {pack.manifest_sha256}")
+        for stage in pack.stage_names():
+            print(f"  stage {stage}: {pack.stage_config(stage).get('summary', '')}")
+        return 0
+    packs = discover_packs(root)
+    if not packs:
+        print(f"no packs found under {root}")
+        return 1
+    for pack in packs.values():
+        print(f"{pack.pack_id}  v{pack.version}  [{pack.domain}/{pack.purpose}]  {pack.title}")
+    return 0
+
+
+def stages_command(_args: argparse.Namespace) -> int:
+    from ablagent.constants import DEPENDENCIES, STAGES
+
+    print("Ablagent pipeline DAG (domain-pack driven):")
+    for stage in STAGES:
+        deps = DEPENDENCIES.get(stage, ())
+        print(f"  {stage}  <- {', '.join(deps) if deps else '(root)'}")
+    return 0
+
+
+def init_command(args: argparse.Namespace) -> int:
+    from ablagent.control import ControlStore
+
+    store = ControlStore.initialize(Path(args.run_dir))
+    print(f"initialized control: {store.control_path}")
+    print(f"anchor: {store.anchor_path}")
+    return 0
+
+
+def status_command(args: argparse.Namespace) -> int:
+    from ablagent.control import ControlStore
+
+    control = ControlStore(Path(args.run_dir)).load()
+    print(f"revision: {control['revision']}")
+    print(f"event_head: {control['event_head']}")
+    for stage, state in control["stages"].items():
+        print(
+            f"{stage}: {state['execution']} / {state['authorization']}"
+            f" / {state['measurement']} / {state['release']}"
+        )
+    return 0
+
+
+def run_command(args: argparse.Namespace) -> int:
+    from ablagent.packs import load_pack
+
+    pack = load_pack(Path(args.packs_dir) / args.pack)
+    if args.executor == "real":
+        from ablagent.adapters.hf_intake import parse_model_ref, require_real_deps
+        from ablagent.pipeline_real import run_real
+
+        # Preflight BEFORE any run state is created (fail closed, no litter).
+        require_real_deps()
+        parse_model_ref(args.model)
+        if not 4 <= args.max_pairs <= 16:
+            raise ValidationError("--max-pairs must be in 4..16")
+        if not 1 <= args.baseline_rows <= 64:
+            raise ValidationError("--baseline-rows must be in 1..64")
+        if args.skip_redline:
+            raise ValidationError(
+                "--skip-redline is a mock-path flag; the real executor always "
+                "records SR_RELEASE_REDLINE as an operator-supplied skip"
+            )
+        result = run_real(
+            pack,
+            model=args.model,
+            runs_root=Path(args.runs_dir),
+            alpha=args.alpha,
+            writer=args.writer,
+            max_pairs=args.max_pairs,
+            baseline_rows=args.baseline_rows,
+        )
+        print(f"run: {result['run_directory']}")
+        print("completed: " + ", ".join(result["completed_stages"]))
+        print("skipped (untested, recorded): " + ", ".join(result["skipped_stages"]))
+        print(f"selected writer: {result['selected_writer']} (alpha {result['alpha']})")
+        print(f"manifest: {result['manifest']}")
+        print(f"export: {result['export_dir']}")
+        print("release: not_eligible — verification gates were not run; do not publish")
+        return 0
+    from ablagent.pipeline import run_mock
+
+    result = run_mock(
+        pack,
+        runs_root=Path(args.runs_dir),
+        model=args.model,
+        skip_redline=args.skip_redline,
+    )
+    print(f"run: {result['run_directory']}")
+    print("completed: " + ", ".join(result["completed_stages"]))
+    return 0
+
+
 def conformance_command(args: argparse.Namespace) -> int:
     report = run_conformance(Path(args.fixtures), Path(args.run_dir))
     _print(report)
@@ -270,7 +424,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ablagent", description=__doc__)
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("capabilities", help="print exact synthetic-adapter capabilities")
+    capabilities_parser = commands.add_parser(
+        "capabilities", help="print exact adapter capabilities"
+    )
+    capabilities_parser.add_argument("--adapter", choices=("synthetic", "hf"), default="synthetic")
     demo_parser = commands.add_parser(
         "demo", help="run the offline analytic synthetic vertical slice"
     )
@@ -320,10 +477,71 @@ def main(argv: list[str] | None = None) -> int:
     conformance_parser.add_argument("--fixtures", type=Path, required=True)
     conformance_parser.add_argument("--run-dir", type=Path, required=True)
     conformance_parser.set_defaults(handler=conformance_command)
+    doctor_parser = commands.add_parser("doctor", help="verify local environment and packs")
+    doctor_parser.add_argument("--packs-dir", default=None)
+    doctor_parser.set_defaults(handler=doctor)
+    packs_parser = commands.add_parser("packs", help="list or inspect domain packs")
+    packs_parser.add_argument("--packs-dir", default=None, help="packs root (default: repo packs/)")
+    packs_parser.add_argument("pack_id", nargs="?", default=None)
+    packs_parser.set_defaults(handler=packs_command)
+    stages_parser = commands.add_parser("stages", help="print the pipeline DAG")
+    stages_parser.set_defaults(handler=stages_command)
+    init_parser = commands.add_parser("init", help="initialize a control-plane run")
+    init_parser.add_argument("run_dir")
+    init_parser.set_defaults(handler=init_command)
+    status_parser = commands.add_parser("status", help="verify and show a control-plane run")
+    status_parser.add_argument("run_dir")
+    status_parser.set_defaults(handler=status_command)
+    run_parser = commands.add_parser("run", help="run a pack with an executor")
+    run_parser.add_argument("--pack", required=True)
+    run_parser.add_argument("--model", default="mock://tiny")
+    run_parser.add_argument("--executor", choices=("mock", "real"), default="mock")
+    run_parser.add_argument(
+        "--alpha", type=float, default=1.0, help="real executor: rank-one edit strength in (0, 1]"
+    )
+    run_parser.add_argument(
+        "--writer",
+        default=None,
+        help="real executor: writer_id or tensor_name to edit "
+        "(default: strongest captured contrast)",
+    )
+    run_parser.add_argument(
+        "--max-pairs", type=int, default=16, help="real executor: capture pairs (4..16)"
+    )
+    run_parser.add_argument(
+        "--baseline-rows", type=int, default=8, help="real executor: S1 baseline generation rows"
+    )
+    run_parser.add_argument("--packs-dir", default="packs")
+    run_parser.add_argument("--runs-dir", default="runs")
+    run_parser.add_argument(
+        "--skip-redline",
+        action="store_true",
+        help="exploratory mode: skip SR red-line gate (recorded as skipped, not passed)",
+    )
+    run_parser.set_defaults(handler=run_command)
     args = parser.parse_args(argv)
     try:
         if args.command == "capabilities":
-            _print(capabilities())
+            if getattr(args, "adapter", "synthetic") == "hf":
+                from ablagent.adapters.hf_intake import require_real_deps
+                from ablagent.constants import HF_ADAPTER_ID
+                from ablagent.identity import AdapterCapabilities
+
+                versions = require_real_deps()
+                _print(
+                    {
+                        "capabilities": AdapterCapabilities(
+                            adapter_id=HF_ADAPTER_ID,
+                            executable_topologies=("dense_linear",),
+                            supported_operations=("rank_one_output",),
+                            supported_codecs=("safetensors",),
+                            real_checkpoint_support=True,
+                        ).model_dump(mode="json"),
+                        "dependency_versions": versions,
+                    }
+                )
+            else:
+                _print(capabilities())
             return 0
         if args.handler == "verify":
             store = ArtifactStore(Path(args.path).parent)

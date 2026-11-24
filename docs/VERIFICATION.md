@@ -44,3 +44,35 @@ ablagent verify .artifacts/verification/candidate.manifest.json
 ablagent conformance --fixtures spec/dwmip/v0/conformance \
   --run-dir .artifacts/conformance
 ```
+
+## Real executor verification (2026-11-24)
+
+Verified locally with Python 3.14.3 on macOS arm64, torch 2.15 / transformers
+5.24 (the `[real]` extra), CPU only.
+
+| Check | Result |
+|---|---|
+| Full test suite | 163 passed (includes 15 real-adapter tests building tiny local bf16 checkpoints; no network) |
+| Ruff lint + format (new real-path files) | Passed |
+| Exported schemas freshness | Passed after additive re-export (`hf-dense-linear-v0` adapter id; `weight_rank_one` operation) |
+| Vendored example provenance | Re-verified, hashes intact |
+| Tiny local llama end-to-end | S0–S3 + S8/S9 completed; S4/S5/S6/S7/SR/S10 recorded skipped with reasons; all release states `not_eligible` |
+| Live HF smoke: HuggingFaceTB/SmolLM2-135M | Pinned commit downloaded + hashed; 211-writer surface; capture → bake → export completed |
+| Live export independence | `AutoModelForCausalLM.from_pretrained(export)` loads and generates coherent text; exactly one tensor differs from the pinned snapshot (`model.layers.29.mlp.down_proj.weight`), bf16 restored |
+| Manifest re-verification | `verify_compiled` passed independently; float32 candidate deviation 1.2e-07; exported bf16 recast deviation 0.0114 recorded in the export receipt (within bf16 rounding) |
+| Tied weights | Alias excluded when present in shards; ties preserved through export reload |
+| Envelope + failure paths | Oversize surface (pre-download shard-size preflight + local cap), non-safetensors dir, non-finite tensors, unknown writer, alpha out of range, Conv1D families (gpt2/gpt_neo/gptj) all fail closed (tested) |
+| Perturbation regression | A deliberately perturbed persisted f32 candidate fails `verify_compiled` (tested) |
+| Export numeric receipt | `ABLAGENT-EXPORT-RECEIPT.json` records `edited_tensor_recast_max_deviation` (measured, e.g. 0.000122 on the tiny bf16 llama) |
+| Capture evidence completeness | Receipt records chat-template usage, prompt token cap, and pairs dropped for prefill truncation; secret-scan evidence lists unscanned files with reasons |
+
+Audit-semantics correction made during this work: `compile` and
+`verify_compiled` now share one persisted audit contract — expected values are
+the exact float64 edit, digests compare the deterministic dtype recast, and
+`maximum_deviation` records the real dtype rounding error. Previously the two
+paths disagreed for non-float32 checkpoints.
+
+These results validate the v0 real-adapter envelope only: CPU, dense
+safetensors, one rank-one site. They do not validate behavior change, safety,
+capability preservation, quantization, serving, or any release decision —
+those stages are recorded as skipped (untested) in every real run.

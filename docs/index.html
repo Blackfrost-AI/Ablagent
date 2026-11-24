@@ -48,7 +48,7 @@
       <a class="btn btn-primary" href="#process">Explore the process</a>
       <a class="btn" href="#simulator">Try the gate simulator</a>
     </div>
-    <div class="hero-scope">Synthetic CPU-only reference runtime · one real-model worked example vendored with hash-bound provenance · evidence-bound ≠ safety certification</div>
+    <div class="hero-scope">CPU-only research runtime · real HF-checkpoint executor for small dense models · one worked example vendored with hash-bound provenance · evidence-bound ≠ safety certification</div>
   </div>
   <svg class="hero-graph" viewBox="0 0 400 400" aria-hidden="true">
     <g stroke="#24394c" stroke-width="1.5">
@@ -84,7 +84,8 @@
       <h3>The extension: DWM</h3>
       <p>Domain Weight Modification treats the edit as a <strong>declared experiment</strong>: explicit graph and writer
         identity, bounded plans, digest-bound artifacts, retained trial lineage, and hard gates that fail closed.
-        The v0 runtime implements this discipline on synthetic tensors you can verify on a laptop.</p>
+        The v0 runtime implements this discipline on synthetic tensors you can verify on a laptop — and, with the
+        optional <code>[real]</code> extra, on small dense HuggingFace checkpoints you name by URL.</p>
     </article>
   </div>
 </section>
@@ -246,7 +247,8 @@
 <!-- ============ QUICKSTART ============ -->
 <section id="quickstart" class="section">
   <h2><span class="sec-num">07</span> Run it yourself</h2>
-  <p class="section-lede">Python 3.11+. No GPU, no credentials, no network. The whole vertical slice runs on a laptop.</p>
+  <p class="section-lede">Python 3.11+. No GPU, no credentials. The synthetic slice is fully offline; the real
+    executor downloads only the checkpoint you name.</p>
   <div class="code-stack">
     <div class="code-block"><div class="code-head"><span>Install</span><button class="copy" data-copy="install">copy</button></div>
 <pre id="install">python3 -m venv .venv
@@ -261,7 +263,15 @@
   --bank examples/banks/synthetic-release-mock.bank.json</pre></div>
     <div class="code-block"><div class="code-head"><span>Verify the vendored worked example (offline)</span><button class="copy" data-copy="prov">copy</button></div>
 <pre id="prov">python scripts/verify_example_provenance.py</pre></div>
+    <div class="code-block"><div class="code-head"><span>Run it on a real checkpoint (CPU; small dense models)</span><button class="copy" data-copy="real">copy</button></div>
+<pre id="real">.venv/bin/python -m pip install -e '.[real]'
+.venv/bin/ablagent run --pack derisk --executor real \
+  --model https://huggingface.co/HuggingFaceTB/SmolLM2-135M --alpha 1.0</pre></div>
   </div>
+  <p class="section-lede" style="margin-top:1rem">The real executor pins the commit, captures refusal-contrast directions
+    (correlational, never causal), compiles the same digest-bound rank-one edit, and exports an HF-loadable copy with
+    exactly one tensor changed. Quant, serve, behavior/capability verify, red-lines, and delivery are recorded as
+    <strong>skipped — untested</strong>; the run ends <code>not_eligible</code>. An experimental artifact, never a release.</p>
 </section>
 </main>
 
@@ -272,8 +282,8 @@
       vendored example material under its own <a href="https://github.com/Blackfrost-AI/Ablagent/blob/main/examples/inkling-2-mini-derisked/NOTICE.md">per-file scope</a>.
     </div>
     <div class="footer-scope">Evidence-bound experiments are not safety certification or release authorization.
-      The v0 runtime is a synthetic reference; real-model claims require separately qualified adapters, behavioral
-      evaluation, and human-authorized release.</div>
+      The real executor edits small dense checkpoints but leaves verification gates untested and every run
+      not_eligible; release requires behavioral evaluation and human authorization.</div>
   </div>
 </footer>
 <script src="assets/site.js"></script>

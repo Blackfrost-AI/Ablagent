@@ -21,7 +21,7 @@
   <a href="CONTRIBUTING.md">Contribute</a>
 </p>
 
-> **Research preview · synthetic alpha** — The CPU reference runtime runs today. Real-checkpoint adapters, neural activation capture, and serving are **not implemented**. Architecture coverage below is research guidance, not executable model support.
+> **Research preview · alpha** — The offline synthetic runtime and a **real CPU executor for small dense HuggingFace checkpoints** run today (see [Run it on a real checkpoint](#run-it-on-a-real-checkpoint)). Serving, quantization, and behavior/capability verification are **not implemented** — real runs record them as skipped and end `not_eligible`. Architecture coverage below is research guidance; executable support is the dense safetensors envelope.
 
 ## Why Ablagent?
 
@@ -33,7 +33,7 @@ Ablagent began with **false-refusal removal**: the search for reliable, targeted
 
 **Domain Weight Modification (DWM) is how that research extends beyond refusals.** The same intervention discipline can investigate other learned behaviors and internal directions, but only when the direction, coordinate space, writer, architecture, and evaluation are made explicit. DWM is the broader research framework; refusal removal remains its originating application and a central research focus.
 
-Ablagent brings those questions into one inspectable workflow. Its **DWM Interchange Protocol (DWMIP v0)** connects graph and writer identities, banks, directions, experiment plans, interventions, trials, and evidence. The synthetic runtime makes that contract executable before real-model adapters are introduced.
+Ablagent brings those questions into one inspectable workflow. Its **DWM Interchange Protocol (DWMIP v0)** connects graph and writer identities, banks, directions, experiment plans, interventions, trials, and evidence. The synthetic runtime makes that contract executable offline; the real executor applies the same contract to small dense checkpoints you name by URL.
 
 **[Read the research lineage: from refusal removal to DWM →](docs/refusal-research.md)**
 
@@ -45,12 +45,13 @@ Ablagent brings those questions into one inspectable workflow. Its **DWM Interch
 - **Negative results stay in the record.** Retain rejected trials, lineage, and missing-evidence states instead of presenting only successful candidates.
 - **Research without inherited model baggage.** The runtime ships original synthetic banks and general architecture guidance — no private prompts, credentials, or operational endpoints. One published research artifact is included as a clearly scoped [worked example](examples/inkling-2-mini-derisked/README.md), vendored byte-identical from its public Hugging Face release with a hash-bound provenance manifest.
 
-**Built for** researchers formalizing experiments, engineers qualifying architecture adapters, and agent developers who need a narrow, verifiable integration boundary. It is not yet a turnkey model editor or an autonomous LLM agent.
+**Built for** researchers formalizing experiments, engineers qualifying architecture adapters, and agent developers who need a narrow, verifiable integration boundary. The real executor edits small dense checkpoints end to end; it is not a turnkey editor for every architecture, and it never authorizes a release.
 
 ## What runs today
 
 | Layer | Available now | Boundary |
 |---|---|---|
+| **Real checkpoint pipeline** | Drop an HF link: intake → baseline → capture → rank-one bake → HF-loadable export (CPU) | Small dense safetensors models; verification gates recorded as skipped, release stays `not_eligible` |
 | Reference math | Dense rank-one CPU update | One site, one direction, one writer |
 | Experiment planning | Deterministic bounded proposals | No autonomous executor or provider integration |
 | Artifact verification | Replayed transformation, observations, and trial lineage | Structural consistency, not behavioral proof |
@@ -106,6 +107,42 @@ Now check the gate:
 
 Use a fresh run directory for each demo: existing artifacts are preserved rather than silently overwritten. Continue with the [full quickstart](docs/quickstart.md) to separate planning from compilation and inspect the artifact flow.
 
+## Run it on a real checkpoint
+
+The same discipline runs against a real HuggingFace model. Install the optional
+real extra, then drop a link:
+
+```bash
+.venv/bin/python -m pip install -e '.[real]'
+
+.venv/bin/ablagent run --pack derisk --executor real \
+  --model https://huggingface.co/HuggingFaceTB/SmolLM2-135M \
+  --alpha 1.0
+```
+
+What actually happens, on CPU:
+
+1. **S0 intake** pins the exact commit, hashes every file, and declares every 2-D float weight as a typed writer (tied weights handled, bf16/f16 widened and restored on export).
+2. **S1 baseline** generates greedy responses on the pack's synthetic corpus — evidence, not a gate.
+3. **S2 capture** hooks writer outputs and contrasts refusal-side vs helpful-side assistant prefills; directions are labeled **correlational**, never causal.
+4. **S3 bake** compiles `W′ = W − αd(dᵀW)` through the same DWMIP contract as the synthetic path, re-verifies the manifest independently, and exports an **HF-loadable copy** with exactly one tensor changed — every other file byte-identical, original dtype restored.
+
+What it honestly refuses to claim: quantization, serving, behavior verification,
+capability floors, and the operator red-line holdout are **recorded as skipped —
+untested, not passed**. The run ends `not_eligible`; the export is an
+experimental artifact for further research, not a release. Choose the edit site
+with `--writer <tensor_name>`; the default is the strongest captured contrast.
+
+**Envelope:** CPU-only, `dense_out_in` safetensors checkpoints (llama/qwen/
+mistral/gemma-style), ≤ ~900 MiB float32 editable surface (≈ a 200 M-parameter
+model). Oversize shards are rejected **before download**; Conv1D families
+(gpt2/gpt_neo/gptj) fail closed at intake because shape-only layout inference
+could edit the wrong axis. Other non-dense architectures (MoE, SSM) are not
+qualified in v0 — treat any run on them as unvalidated. float64 checkpoints are
+narrowed to float32 for the edit and restored to float64 on export (precision
+of the edit itself is float32). A local HF-format directory also works as
+`--model` for offline runs and CI.
+
 ## Worked example: a real DWM run, end to end
 
 The synthetic runtime formalizes the discipline; the [Inkling-2-Mini-Derisked worked example](examples/inkling-2-mini-derisked/README.md) shows it applied to a real checkpoint. It is the **same duplication kit published with [Blackfrost-AI/Inkling-2-Mini-Derisked](https://huggingface.co/Blackfrost-AI/Inkling-2-Mini-Derisked)** on Hugging Face, vendored byte-identical at a pinned revision:
@@ -141,7 +178,7 @@ Different computation graphs require different intervention semantics. The resea
 | Study the refusal-removal origins and DWM extension | [Research lineage](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
-| Integrate an agent | [Agent integration](docs/agent-integration.md) |
+| Integrate an agent | [Agent integration](docs/agent-integration.md) · [Agent boot contract](AGENTS.md) |
 | Understand banks and evidence | [Bank policy](docs/banks.md) · [Measurement contracts](docs/measurement.md) |
 | Review trust and reproducibility | [Threat model](docs/threat-model.md) · [Determinism](docs/determinism.md) |
 | Inspect verification results | [Verification record](docs/VERIFICATION.md) |
@@ -155,7 +192,7 @@ The most valuable contributions make a claim **more explicit and more testable**
 - Adapter qualification proposals with clearly stated execution and evidence requirements.
 - Reproducibility, parsing, documentation, and verification improvements.
 
-Real-model adapters, neural capture, and serving qualification are **future extension areas**, not promised capabilities or delivery dates. See [CONTRIBUTING.md](CONTRIBUTING.md) before adding an adapter or dataset. Please do not submit private model runs, operational endpoints, credentials, or restricted prompt banks.
+Serving qualification, real refusal-behavior evaluation, and adapters beyond the dense CPU envelope (MoE, SSM, loop, Conv1D families) are **future extension areas**, not promised capabilities or delivery dates. See [CONTRIBUTING.md](CONTRIBUTING.md) before adding an adapter or dataset. Please do not submit private model runs, operational endpoints, credentials, or restricted prompt banks.
 
 ### Run the checks
 

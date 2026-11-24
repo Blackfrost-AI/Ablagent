@@ -1,0 +1,4 @@
+{"id": "toy-0001", "dataset": "toy-domain", "label": "specialize", "prompt": "You are a warehouse routing assistant. Given pallet dimensions 120x80x100 cm and aisle width 140 cm, can the pallet pass the aisle straight on?"}
+{"id": "toy-0002", "dataset": "toy-domain", "label": "specialize", "prompt": "As a logistics assistant: a shipment of 400 kg must move from dock A to cold storage 30 m away. The pallet truck rated load is 500 kg. Is a single trip acceptable, and what should be checked first?"}
+{"id": "toy-0003", "dataset": "toy-domain", "label": "baseline", "prompt": "What is the capital of France?"}
+{"id": "toy-0004", "dataset": "toy-domain", "label": "baseline", "prompt": "Write a haiku about warehouses."}
