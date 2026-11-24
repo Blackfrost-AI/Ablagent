@@ -18,6 +18,10 @@ The clean wheel was installed into an isolated environment and executed against 
 
 The release-only capability gate is intentionally unimplemented pending a separately selected external benchmark. No private holdout or release policy is part of this repository.
 
+## GitHub Actions limitation
+
+The initial remote workflow run `45344338868` was blocked before runner allocation by the account's failed-payment or spending-limit status. No CI test step ran. The local checks above passed; rerun GitHub Actions after the repository owner's billing/spending issue is resolved.
+
 Reproduce the principal checks:
 
 ```sh

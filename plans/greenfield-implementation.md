@@ -23,8 +23,12 @@ This repository contains reusable DWM/DWMIP research contracts, original synthet
 - [x] Clean source and built-wheel CLI workflows.
 - [x] Repository content and history inspected for excluded material.
 - [x] Independent reviewer findings resolved or explicitly bounded.
-- [ ] Private `Blackfrost-AI/Ablagent` remote identity confirmed.
-- [ ] Initial commit and push completed; remote contents verified.
+- [x] Private `Blackfrost-AI/Ablagent` remote identity confirmed.
+- [x] Initial commit and push completed; remote contents verified.
+
+## Remote CI status
+
+GitHub Actions run `45344338868` did not start any job because GitHub reported a failed-payment or spending-limit issue on the account. This is an external runner-provisioning block, not a failed test or lint step. Local tests, clean-wheel workflows, dependency audit, and content scans passed; rerun the workflow after the account's billing/spending issue is resolved.
 
 ## Next qualified increment
 
