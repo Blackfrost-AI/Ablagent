@@ -1,35 +1,75 @@
-# Refusal removal research on top of Ablagent
+# From refusal removal to Domain Weight Modification
 
-Most people arrive here for one reason: a model refuses requests it should answer. The community vocabulary for that work is **false-refusal removal**, **refusal-direction research**, and **abliteration**. Ablagent is not a competing technique — it is the research discipline that work has been missing: explicit spaces, bound directions, retained trials, and red-line evidence that survives contact with reviewers.
+**Ablagent grows out of false-refusal removal and abliteration research. Domain Weight Modification (DWM) is the broader research framework that emerged from it.** Refusal removal is the originating application, not a side example; the purpose of DWM is to carry the underlying intervention approach into a wider, more rigorous study of learned behavior.
 
-## The mapping is already real
+## The research lineage
 
-The v0 reference operation is the classic rank-one removal, stated neutrally:
+Researchers investigating unwanted refusals discovered an important question: when a model refuses a request that it could answer, can the relevant behavior be represented and modified as a direction in the model's computation? That led to work on **refusal directions**, **directional ablation**, and **abliteration**—modifying weights so that a particular component of the representation no longer drives the selected writer.
+
+That research motivates more general questions:
+
+- If a behavioral direction can be isolated for refusal, what other behaviors can be represented directionally?
+- When does a direction reflect a behavior rather than a correlated feature of its capture data?
+- How does an intervention change when it crosses a projection, normalization boundary, routed expert, recurrent state, or shared weight?
+- Can a direction move between architectures, and what evidence would establish that transfer?
+- How can a targeted change be evaluated without hiding collateral capability or red-line effects?
+
+**DWM is the framework for investigating those questions.** It extends beyond refusal removal, but it does not discard or rebrand its origins. The objective is a general discipline for representing, testing, and retaining knowledge about targeted weight-space interventions.
+
+## Where the mathematics connects
+
+The v0 reference operation states the familiar rank-one directional removal explicitly:
 
 ```text
 W′ = W − αd(dᵀW)
 ```
 
-`d` is the candidate direction (a refusal direction, in this application), `α = 1` removes its component from the writer, and `α = 0` is the control. That is the same mathematics the refusal-removal literature uses, with the writer, baseline, and normalization made explicit and digest-bound instead of implied.
+Here `d` is a unit direction. At `α = 1`, the transformation removes its pre-normalization component from the declared writer; `α = 0` is the control. For refusal research, that direction may be a candidate refusal direction. For broader DWM research, it may represent another explicitly studied feature or behavior.
 
-| Community concept | Ablagent concept |
+The mathematics alone does not establish that a direction is a refusal mechanism, that its intervention generalizes, or that a modification is desirable. Ablagent's contribution is to make the surrounding research claims explicit and inspectable.
+
+| Refusal-research concept | DWM / Ablagent representation |
 |---|---|
-| Refusal direction | `DirectionCandidate`, promoted to a bound `Direction` |
-| Refusal-on / refusal-off prompt pairs | `capture` bank paired observations |
-| Ablation at full strength | `α = 1` reference intervention |
-| Refusal / harmful-instruction benchmark | `evaluation` bank, held out |
-| Safety holdout ("did we break red-lines?") | `release_redline` bank — private, never bundled |
-| "It still answers hard prompts" | `redline` metrics gating eligibility |
+| Candidate refusal direction | `DirectionCandidate`, with activation source and preprocessing declared |
+| Validated direction for a specific baseline | `Direction`, bound to space, baseline, normalization, and writer |
+| Refusal-on / refusal-off observations | A `capture` bank with paired, controlled capture records |
+| Full-strength directional removal | `α = 1` in the v0 reference intervention |
+| Refusal-behavior benchmark | A separate `evaluation` bank with a behavioral measurement contract |
+| Safety or red-line holdout | A separate `release_redline` bank with its own evidence |
+| "What else did the edit change?" | Baseline-versus-candidate comparisons and retained collateral measurements |
 
-The six mock red-line categories — biological, chemical, explosives/incendiary, strategic WMD, cyber, loss of control — mirror the domains that refusal research already evaluates.
+A rank-one direction is a hypothesis to test, not a behavioral conclusion. An activation-space direction does not automatically transfer to another writer, coordinate space, or architecture.
 
-## What Ablagent adds to that workflow
+## Why DWM requires more than abliteration
 
-- **Candidates are not conclusions.** A mean difference between refusal-on and refusal-off activations can carry topic, wording, length, or style confounds. Ablagent keeps the candidate a candidate, with capture/calibration separation and balanced controls.
-- **A direction is bound to a writer.** A refusal direction derived in one coordinate space does not authorize edits to a differently-shaped writer just because dimensions match. Source space, destination space, and normalization are explicit and replayable.
-- **Negative results stay.** Rejected, failed, and superseded trials remain in the lineage. The field's current norm — publish the one working α, discard the rest — is what Ablagent is designed to prevent.
-- **Removal is not release.** Removing a direction says nothing about red-lines or capability. Those are separate evidence categories with separate gates; a passing capability score cannot compensate for a missing red-line measurement.
+A small dense linear layer provides a clean reference case. Real model research immediately raises questions that a filename-based weight-editing script cannot answer:
 
-## What this repo does not claim
+- **Representation:** Was the direction captured in residual, normalized, projected, or another space?
+- **Writer semantics:** Does this parameter write into that space, transform it, or only consume it?
+- **Architecture:** Do routing, recurrence, shared weights, fused parameters, or quantization change the intervention?
+- **Evidence:** Are capture, evaluation, red-lines, and capability separated, or is one benchmark being asked to prove everything?
+- **Reproducibility:** Can another researcher replay the selected intervention and inspect rejected trials?
 
-Today's runtime proves the contract on synthetic fixtures only. It does not remove refusals from a real checkpoint, does not measure real refusal behavior, and does not certify safety. A real-model adapter — graph declaration, activation capture, behavioral evaluation — is the future extension this structure was built to qualify. When it lands, "abliterated" will be a marketing word; the evidence bundle will be the claim.
+DWMIP v0 makes those relationships into explicit artifacts: graph and writer identities, spaces and axes, banks and observations, bound directions, selected interventions, trial lineage, and evidence bundles. This is how the project extends refusal research into architecture-aware DWM rather than treating every parameter as an interchangeable matrix.
+
+## What better refusal research looks like
+
+Ablagent is designed to support a research workflow in which:
+
+1. **A direction remains a candidate until its evidence supports promotion.** A mean difference between refusal-on and refusal-off activations can also encode topic, wording, response length, or style. Capture and calibration need separate, controlled observations.
+2. **The baseline and writer are part of the claim.** A direction is not declared portable merely because another tensor has a compatible dimension.
+3. **Negative results remain available.** Rejected, failed, and superseded trials are part of the research record, rather than disappearing behind the one successful parameter choice.
+4. **Refusal behavior, capability, and red-lines are measured separately.** A capability improvement cannot compensate for a missing red-line measurement, and an intervention metric cannot establish behavioral change.
+5. **Architecture transfer requires new evidence.** A direction or scale from one checkpoint is not a recipe for another architecture.
+
+The repository's six mock red-line categories—biological, chemical, explosives/incendiary, strategic WMD, cyber, and loss of control—exercise the structure of this separate evidence requirement. They are not measurements of real model behavior.
+
+## Current scope and the next research layer
+
+The executable reference runtime is a synthetic, CPU-only implementation of one rank-one intervention on one declared dense writer. It demonstrates the protocol, artifact identities, replay checks, and fail-closed policy behavior.
+
+**It does not currently remove refusals from a real checkpoint, capture neural activations, evaluate real refusal behavior, or establish that an intervention is safe or effective.** Those capabilities require separately qualified real-model adapters, capture pipelines, behavioral evaluation, and serving verification.
+
+The research direction is to carry the lessons of refusal removal into that broader DWM workflow: explicit hypotheses, architecture-specific evidence, reproducible experiments, and honest negative results. The name is broader because the research is broader; the foundation remains refusal removal.
+
+Continue with [methodology](methodology.md), [architecture navigation](architecture-navigation.md), [bank design](banks.md), and [measurement contracts](measurement.md).

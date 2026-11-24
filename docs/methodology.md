@@ -1,5 +1,11 @@
 # Methodology: candidates, interventions, evidence
 
+Domain Weight Modification (DWM) grew out of false-refusal removal and abliteration research. Refusal-direction interventions remain the originating application; DWM extends that intervention approach to other explicitly studied behaviors and directions. The broader name reflects a broader research scope, not a departure from refusal research.
+
+Read [From refusal removal to DWM](refusal-research.md) for the research lineage and terminology.
+
+> **Executable scope:** v0 runs synthetic, CPU-only reference experiments. Real-checkpoint adapters, neural activation capture, and real refusal-behavior evaluation are not implemented; the checkpoint-specific guidance below is a qualification framework for future adapters.
+
 Domain Weight Modification needs more than a vector and a weight tensor. Ablagent separates **discovery**, **compilation**, **behavioral validation**, and **release eligibility**.
 
 ## 1. Observe the actual computation

@@ -7,12 +7,13 @@
 <p align="center"><strong>Make the architecture explicit. Make the experiment inspectable.</strong></p>
 
 <p align="center">
-  A Domain Weight Modification research protocol and synthetic reference runtime for false-refusal removal and related weight-space research.<br>
-  Explicit spaces. Bounded proposals. Reproducible artifacts. Retained evidence.
+  A research protocol and synthetic runtime extending abliteration research into Domain Weight Modification.<br>
+  From refusal-direction removal to architecture-aware, evidence-bound interventions.
 </p>
 
 <p align="center">
   <a href="#quickstart">Quickstart</a> ·
+  <a href="docs/refusal-research.md">Research lineage</a> ·
   <a href="docs/architecture-navigation.md">Architecture research</a> ·
   <a href="spec/dwmip/v0/README.md">DWMIP specification</a> ·
   <a href="docs/support-matrix.md">Support matrix</a> ·
@@ -27,9 +28,13 @@ A tensor name is not an architecture. Matching dimensions do not establish compa
 
 Domain Weight Modification (DWM) research needs more than a transformation formula: it needs an explicit account of **where an intervention acts, what it changes, and how its result is checked**.
 
+Ablagent began with **false-refusal removal**: the search for reliable, targeted ways to reduce unwanted refusals without blindly degrading the rest of the model. Abliteration and refusal-direction research are the foundation of this project, not a peripheral use case.
+
+**Domain Weight Modification (DWM) is how that research extends beyond refusals.** The same intervention discipline can investigate other learned behaviors and internal directions, but only when the direction, coordinate space, writer, architecture, and evaluation are made explicit. DWM is the broader research framework; refusal removal remains its originating application and a central research focus.
+
 Ablagent brings those questions into one inspectable workflow. Its **DWM Interchange Protocol (DWMIP v0)** connects graph and writer identities, banks, directions, experiment plans, interventions, trials, and evidence. The synthetic runtime makes that contract executable before real-model adapters are introduced.
 
-Much of this field — false-refusal removal, refusal-direction transfer, abliteration — already runs on the rank-one math below, but with implied spaces, discarded negative trials, and no red-line discipline. Ablagent is built to give that work its missing evidence layer. See [refusal removal research](docs/refusal-research.md).
+**[Read the research lineage: from refusal removal to DWM →](docs/refusal-research.md)**
 
 ### What makes it different
 
@@ -120,7 +125,7 @@ Different computation graphs require different intervention semantics. The resea
 | You want to… | Start here |
 |---|---|
 | Run and inspect an experiment | [Quickstart](docs/quickstart.md) |
-| Study refusal removal / abliteration | [Refusal research guide](docs/refusal-research.md) |
+| Study the refusal-removal origins and DWM extension | [Research lineage](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
 | Integrate an agent | [Agent integration](docs/agent-integration.md) |
