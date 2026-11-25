@@ -1,23 +1,19 @@
 # Presentation assets
 
-Original Ablagent artwork, licensed under the repository's [Apache-2.0 license](../../LICENSE). No third-party logos, photographs, or model artifacts are included. Font files are not distributed.
+Blackfrost brand artwork commissioned by the operator for this repository, licensed under the repository's [Apache-2.0 license](../../LICENSE). No third-party logos, photographs, or model artifacts are included. Font files are not distributed.
 
-- `ablagent-banner.png`: 1280 × 480 README header.
-- `ablagent-workflow.png`: 1280 × 420 synthetic workflow illustration. Its information is repeated as accessible text in the main README.
-- `ablagent-social.png`: 1280 × 640 social-preview artwork.
+- `ablagent-banner.png`: 1280 × 720 README header — ice-circuit snowflake, ABLAGENT wordmark, "Domain Weight Modification · Evidence-First Runtime".
+- `ablagent-workflow.png`: 1280 × 720 architecture illustration (observations / rank-one updates → DWM core → weight bank / agent runtime / feedback loop / evaluation). Brand artwork, not a literal stage diagram; the exact executable stage sequence is the numbered list beside it in the main README.
+- `ablagent-social.png`: 1280 × 640 GitHub social-preview artwork (Blackfrost AI lockup).
 - `ablagent-site-og.png`: 1200 × 630 Open Graph / Twitter link-preview image for the GitHub Pages site (`docs/index.html`).
+- `ablagent-logo.png`: 512 × 512 square ice-circuit mark (site brand, apple-touch-icon).
+- `favicon.png`: 64 × 64 site favicon.
 
-Editable sources: [`scripts/render_readme_art.py`](../../scripts/render_readme_art.py) (README art) and
-[`scripts/render_site_og.py`](../../scripts/render_site_og.py) (site OG image).
+## Sources and regeneration
 
-Regenerate from the repository root with Python and Pillow installed in a separate tooling environment (Pillow is not a runtime dependency):
+The current renders are prepared from operator-supplied Blackfrost source art (1792 × 1008 JPEGs and a 1408 × 1408 square mark) by [`scripts/prepare_brand_assets.py`](../../scripts/prepare_brand_assets.py). It center-crops to each target aspect ratio and resizes with Lanczos; Pillow is a dev-only tool, not a runtime dependency, and the script makes no network calls. The source JPEGs are operator assets kept outside the repository; the committed PNGs are the canonical distributable renders.
 
-```bash
-python scripts/render_readme_art.py --font /path/to/local-sans-serif.ttf
-python scripts/render_site_og.py
-```
-
-The supplied renders use Helvetica from the local system. A different licensed local sans-serif font may alter wrapping and spacing; visually inspect all three renders after regeneration. The renderer has no network calls.
+The earlier programmatic renders ([`scripts/render_readme_art.py`](../../scripts/render_readme_art.py), [`scripts/render_site_og.py`](../../scripts/render_site_og.py)) are retained as history. **Do not run them to "refresh" assets — they would overwrite the Blackfrost brand renders with the old placeholder art.**
 
 ## GitHub social preview
 

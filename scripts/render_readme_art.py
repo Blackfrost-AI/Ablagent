@@ -1,5 +1,9 @@
 """Render original README artwork. Optional tooling: Python + Pillow (not runtime).
 
+SUPERSEDED: the shipped assets are now Blackfrost brand renders prepared by
+scripts/prepare_brand_assets.py. Running this script overwrites them with the
+old placeholder art. Retained for history only.
+
 Usage: python3 scripts/render_readme_art.py --font /path/to/sans-serif.ttf
 Artwork and this source are licensed under the repository's Apache-2.0 license.
 """

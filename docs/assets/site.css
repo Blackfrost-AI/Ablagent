@@ -40,9 +40,9 @@ pre { font-family: var(--mono); }
   background: rgba(11, 20, 32, 0.92); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-.brand { font-weight: 700; font-size: 1.05rem; color: var(--ink); letter-spacing: 0.02em; }
+.brand { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.05rem; color: var(--ink); letter-spacing: 0.02em; }
 .brand:hover { text-decoration: none; }
-.brand-mark { color: var(--accent); }
+.brand-mark { width: 28px; height: 28px; border-radius: 6px; display: block; }
 .nav-links { display: flex; gap: 1.1rem; align-items: center; flex-wrap: wrap; }
 .nav-links a { color: var(--muted); font-size: 0.9rem; }
 .nav-links a:hover { color: var(--ink); text-decoration: none; }

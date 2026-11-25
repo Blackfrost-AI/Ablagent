@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Render the site social/OG image (1200x630) into docs/assets/.
 
+SUPERSEDED: the shipped OG image is now a Blackfrost brand render prepared by
+scripts/prepare_brand_assets.py. Running this script overwrites it with the
+old placeholder art. Retained for history only.
+
 Original artwork, Apache-2.0, same palette as render_readme_art.py.
 Requires Pillow (dev-only; not a runtime dependency):
     .venv/bin/python scripts/render_site_og.py

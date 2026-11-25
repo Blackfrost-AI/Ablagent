@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/ablagent-banner.png" alt="Ablagent — Architecture-aware research. Evidence-bound experiments." width="100%">
+  <img src="docs/assets/ablagent-banner.png" alt="Ablagent — Domain Weight Modification. Evidence-first runtime. Blackfrost ice-circuit snowflake over a neural circuit field." width="100%">
 </p>
 
 <h1 align="center">Ablagent</h1>
@@ -64,7 +64,7 @@ See the [complete support matrix](docs/support-matrix.md) for precise limitation
 
 ## From a proposal to inspectable evidence
 
-![Synthetic workflow: declare graph and spaces, propose a bounded plan, compile a selected update, replay evidence, then evaluate gates. Missing evidence blocks eligibility.](docs/assets/ablagent-workflow.png)
+![Ablagent architecture illustration: observations and rank-one updates feed the DWM core; the evidence stream binds the weight bank, agent runtime, feedback loop, and evaluation. Brand artwork — the exact executable stage sequence is the numbered list below.](docs/assets/ablagent-workflow.png)
 
 1. **Declare** the graph, spaces, writer, and immutable baseline.
 2. **Propose** bounded interventions using a direction bound to that baseline.
