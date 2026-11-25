@@ -21,7 +21,6 @@
 | Serving readiness | **Not implemented** | No serving engine or readiness claim; S5 skipped |
 | Behavioral efficacy/safety | **Not measured** | S6/S7 skipped; mock gates are row-presence wiring checks; benchmark corpora are tools, not results |
 | Public release/publishing | **Not implemented** | No publication or approval API; every real run `not_eligible` |
-| Public release/publishing | **Not implemented** | No publication or approval API |
 | LLM provider integration | **Not implemented** | Planner is deterministic and offline |
 | Confidentiality/access control | **Not provided** | Bank visibility is a policy label only |
 
