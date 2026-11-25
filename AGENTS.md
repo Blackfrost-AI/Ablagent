@@ -17,6 +17,10 @@ Read it fully before acting.
   `recipes/snapshots.lock.json`). Recipes are immutable snapshots and
   run-record claims — never copy their hyperparameters onto another
   checkpoint, never edit them in place.
+- `docs/serving-stacks.md` explains the capture/serve environment pattern:
+  HF forward hooks inside pinned vLLM/SGLang engine images, one environment
+  for capture/edit/serve, and when a from-source engine build is actually
+  needed. Read it before proposing capture or serving work.
 - No credentials, no private holdouts, no operational endpoints. Keep it that way.
 
 ## Boot sequence (every session)

@@ -177,6 +177,7 @@ Different computation graphs require different intervention semantics. The resea
 | Run and inspect an experiment | [Quickstart](docs/quickstart.md) |
 | Study a complete real-model DWM run | [Inkling-2-Mini worked example](examples/inkling-2-mini-derisked/README.md) |
 | Reproduce a GPU-scale model line | [Recipe library](recipes/README.md) — Qwen 9B-class · Qwen3.6-35B-A3B · GLM-5.3 BF16/Flash |
+| Build capture/serve environments (vLLM · SGLang) | [Serving stacks & the fast capture path](docs/serving-stacks.md) |
 | Study the refusal-removal origins and DWM extension | [Research lineage](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
