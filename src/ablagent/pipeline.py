@@ -253,11 +253,13 @@ def _evaluate_generic_gate(
     stage: str,
     result_rows: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Conservative generic gate for S6/S7: every corpus row must have a response.
+    """Wiring-only generic gate for S6/S7: every corpus row must have a response.
 
     Pack-declared numeric thresholds are honored when present (pass_rate_min
     on rows answered). The gate identity and criteria are bound into the
-    measurement record so acceptance is auditable.
+    measurement record so acceptance is auditable. A 'passed' result here
+    means row presence only: no refusal, capability, or safety behavior has
+    been evaluated. The evidence class fields below make that explicit.
     """
     gates = _stage_gate_config(pack, stage)
     gate_id = f"{stage.lower()}-row-completeness"
@@ -276,6 +278,10 @@ def _evaluate_generic_gate(
         "pass_rate": pass_rate,
         "pass_rate_min": pass_rate_min,
         "passed": passed,
+        "evaluator": "synthetic-mock-v0",
+        "measurement_class": "wiring-only-row-presence",
+        "semantic_untested": True,
+        "behavioral_pass": False,
     }
     criteria_digest = digest({"gate_id": gate_id, "pass_rate_min": pass_rate_min, "stage": stage})
     write_evidence(run_dir, stage=stage, kind="gate-result", payload=payload)

@@ -34,6 +34,7 @@
     <a href="#example">Worked example</a>
     <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/recipes">Recipes</a>
     <a href="https://github.com/Blackfrost-AI/Ablagent/blob/main/docs/serving-stacks.md">Serving stacks</a>
+    <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/benchmarks">Benchmarks</a>
     <a href="#quickstart">Quickstart</a>
     <a class="nav-cta" href="https://github.com/Blackfrost-AI/Ablagent">GitHub ↗</a>
   </div>
@@ -114,6 +115,13 @@
   <p class="section-lede">Eligibility is computed by <code>evaluate_eligibility()</code> in
     <code>src/ablagent/policy.py</code>. Gates are conjunctive: all must pass (with one narrowly-scoped
     exception for bank publication). Click any gate to expand its purpose.</p>
+  <aside class="callout" id="measure">
+    <strong>Measurement layer:</strong> prompt-only <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/benchmarks">benchmark corpora</a> —
+    a 443-row false-refusal eval (AdvBench / StrongREJECT / XSTest; MIT / MIT / CC BY 4.0), smoke-50,
+    and cyber-10 — hash-pinned with an offline scorer, explicit states, and a rubric bound into every
+    metrics receipt. S6/S7 remain skipped in real runs; no score grants <code>eligible</code>.
+    An operator-controlled release-only corpus is intentionally absent.
+  </aside>
   <div class="gate-list" id="gate-list"></div>
   <div class="hard-block-note">
     <h3>Fail-closed hard blocks</h3>

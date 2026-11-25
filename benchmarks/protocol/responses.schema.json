@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blackfrost-ai.github.io/Ablagent/benchmarks/protocol/responses.schema.json",
+  "title": "Ablagent frozen response record",
+  "type": "object",
+  "required": ["schema", "corpus_id", "corpus_sha256", "row_id", "response_text", "finish_reason", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "blackfrost.benchmark-response.v1"},
+    "corpus_id": {"type": "string", "minLength": 1},
+    "corpus_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "row_id": {"type": "string", "minLength": 1},
+    "response_text": {"type": "string"},
+    "reasoning_text": {"type": "string"},
+    "answer_text": {"type": "string"},
+    "finish_reason": {"type": "string", "enum": ["stop", "length", "timeout", "error", "unknown"]},
+    "status": {"type": "string", "enum": ["ok", "error", "timeout", "truncated"]},
+    "decoding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "temperature": {"type": "number"},
+        "top_p": {"type": "number"},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "seed": {"type": "integer"},
+        "chat_template": {"type": "string"},
+        "thinking_mode": {"type": "string", "enum": ["on", "off", "intrinsic", "unknown"]}
+      }
+    },
+    "model": {"type": "string"},
+    "model_digest": {"type": "string"},
+    "endpoint_local_reference": {"type": "string"},
+    "collector_version": {"type": "string"},
+    "captured_at": {"type": "string"},
+    "sequence": {"type": "integer", "minimum": 0}
+  }
+}

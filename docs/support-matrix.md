@@ -9,17 +9,20 @@
 | Proposal-only rule planner | Implemented | Maximum four alpha values and eight plan steps |
 | Independent evidence replay | Implemented | Local graph, tensor, observation, and trial verification |
 | Fail-closed eligibility rules | Implemented | Policy conformance only; not authorization |
-| Original synthetic banks | Implemented | Numeric capture and inert mock red-line fixtures |
-| Real model checkpoint support | **Not supported** | No neural network or architecture execution adapter |
-| Neural activation capture | **Not supported** | Synthetic matrix observations only |
+| Original synthetic banks | Implemented | Numeric capture and inert synthetic development fixtures |
+| Public benchmark corpora | Implemented (prompts + protocol) | 443 eval / smoke-50 / cyber-10 in `benchmarks/`; prompt-only, hash-pinned, offline scorer |
+| Real checkpoint support | Implemented (qualified envelope) | CPU-only `dense_out_in` safetensors intake/capture/bake/export via `--executor real`; ≤ ~900 MiB f32 surface |
+| Neural activation capture | Implemented (dense CPU only) | HF forward-pass contrast directions, labeled **correlational** |
 | Cross-space/model transfer | **Not supported** | Requires explicit map and fresh qualification |
 | Multi-direction composition | **Not supported** | Ordering/orthogonality not implicit |
-| Recurrent/MoE/looped execution | **Not supported** | Descriptive fixtures reject execution |
-| Quantized/fused codecs | **Not supported** | No codec inference from extensions |
-| Serving readiness | **Not supported** | No serving engine or readiness claim |
-| Behavioral efficacy/safety | **Not measured** | Synthetic diagnostics are not language behavior |
+| Recurrent/MoE/looped/SSM execution | **Unqualified** | Fails closed or not implemented in v0; recipes are references, not executors |
+| Conv1D (gpt2/gpt_neo/gptj) | **Fails closed** | No transpose heuristic; rejected at intake |
+| Quantized/fused codecs | **Not supported** | No codec inference from extensions; S4 skipped |
+| Serving readiness | **Not implemented** | No serving engine or readiness claim; S5 skipped |
+| Behavioral efficacy/safety | **Not measured** | S6/S7 skipped; mock gates are row-presence wiring checks; benchmark corpora are tools, not results |
+| Public release/publishing | **Not implemented** | No publication or approval API; every real run `not_eligible` |
 | Public release/publishing | **Not implemented** | No publication or approval API |
 | LLM provider integration | **Not implemented** | Planner is deterministic and offline |
 | Confidentiality/access control | **Not provided** | Bank visibility is a policy label only |
 
-An adapter may be added without weakening these defaults. Its support must be stated independently, with passing conformance and real checkpoint/serving/behavior evidence appropriate to its claim. Structural validation alone never justifies a real-model support claim.
+An adapter may be added without weakening these defaults. Its support must be stated independently, with passing conformance and real checkpoint/serving/behavior evidence appropriate to its claim. Structural validation alone never justifies a real-model support claim. See [AGENTS.md](../AGENTS.md) for the current executor envelope and [benchmarks/README.md](../benchmarks/README.md) for the measurement layer.

@@ -86,6 +86,18 @@ def test_mock_pipeline_completes_canonical_pack_driven_dag(tmp_path: Path):
     scan_files = list((run_dir / "evidence").glob("*secret-scan*.json"))
     assert len(gate_files) >= 3  # S6, S7, SR gate results recorded
     assert len(scan_files) >= 1  # S8 secret scan receipt exists
+    # Mock S6/S7 acceptance is row-presence wiring only, never a behavioral pass.
+    import json
+
+    wiring_receipts = 0
+    for p in gate_files:
+        payload = json.loads(p.read_text())
+        body = payload.get("payload", payload)
+        if body.get("measurement_class") == "wiring-only-row-presence":
+            wiring_receipts += 1
+            assert body["semantic_untested"] is True
+            assert body["behavioral_pass"] is False
+    assert wiring_receipts >= 2
     control = ControlStore(run_dir / "control").load()
     assert all(state["execution"] == "completed" for state in control["stages"].values())
     # Security-phase invariants: gate stages accepted, release ready.

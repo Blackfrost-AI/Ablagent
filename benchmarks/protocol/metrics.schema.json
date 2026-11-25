@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blackfrost-ai.github.io/Ablagent/benchmarks/protocol/metrics.schema.json",
+  "title": "Ablagent metrics receipt",
+  "type": "object",
+  "required": ["schema", "corpus_id", "corpus_sha256", "rubric_sha256", "responses_sha256", "judgments_sha256", "states", "counts", "rates", "generated_at", "release_eligible"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "blackfrost.benchmark-metrics.v1"},
+    "corpus_id": {"type": "string", "minLength": 1},
+    "corpus_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rubric_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "responses_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "judgments_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evaluator_id": {"type": "string"},
+    "states": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "rates": {
+      "type": "object",
+      "additionalProperties": {"type": ["number", "null"]}
+    },
+    "per_dataset": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "rows": {"type": "integer", "minimum": 0},
+          "engaged": {"type": "integer", "minimum": 0},
+          "refused": {"type": "integer", "minimum": 0},
+          "degenerate": {"type": "integer", "minimum": 0},
+          "needs_review": {"type": "integer", "minimum": 0},
+          "state_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+        }
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "generated_at": {"type": "string"},
+    "release_eligible": {"const": false}
+  }
+}

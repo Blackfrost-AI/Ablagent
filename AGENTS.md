@@ -21,6 +21,12 @@ Read it fully before acting.
   HF forward hooks inside pinned vLLM/SGLang engine images, one environment
   for capture/edit/serve, and when a from-source engine build is actually
   needed. Read it before proposing capture or serving work.
+- `benchmarks/` ships real, prompt-only, hash-pinned corpora (443 eval /
+  smoke-50 / cyber-10) plus a protocol, offline validator/scorer, and full
+  upstream license scope. S6/S7 remain unmeasured in real runs: never treat a
+  mock gate or a benchmark score as a release decision. An operator-controlled
+  release-only corpus is intentionally absent; see
+  `benchmarks/PROVENANCE.md` and `packs/derisk/NAMESPACE-NOTICE.md`.
 - No credentials, no private holdouts, no operational endpoints. Keep it that way.
 
 ## Boot sequence (every session)
