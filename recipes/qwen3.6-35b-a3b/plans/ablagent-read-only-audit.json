@@ -1,0 +1,174 @@
+{
+  "name": "qwen36-35b-a3b-dwm-a1p0x3-audit",
+  "stages": [
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "AGENTS.md"
+      ],
+      "id": "contract",
+      "maxToolCalls": 5,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read AGENTS.md completely. Report the immutable method, agent and harness boundary, stock-arm identity, and qualification boundary. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "1\\.0",
+        "three|3",
+        "stock",
+        "read-only|read only",
+        "release"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "recipe.lock.json"
+      ],
+      "id": "lock",
+      "maxToolCalls": 10,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read recipe.lock.json completely. Report the pinned source, exact assets, alpha, pass count, fresh-recapture rule, layer range, targets, norm restoration, MTP rule, recorded candidate identity, and qualification flags. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "995ad96eacd98c81ed38be0c5b274b04031597b0",
+        "902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+        "1\\.0",
+        "38",
+        "19"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "evidence/capture-receipt.json"
+      ],
+      "id": "capture",
+      "maxToolCalls": 6,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read evidence/capture-receipt.json completely. Report the bank, capture condition, activation shape, initial direction digest, selected layer, separation, stability, SNR, and verification state. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "40",
+        "2048",
+        "fc2e01feace4215a2c27bc84bc7a7c6d576013ab358671870db7357ccc07d9b2",
+        "39"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "scripts/run_locked.py"
+      ],
+      "id": "executor",
+      "maxToolCalls": 30,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read scripts/run_locked.py completely. Confirm that alpha, passes, skip, source identity, bank, pinned S2 direction, fresh capture on each pass, target pattern, norm restoration, source-copy transplant, non-target check, and MTP check are executable locks. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "ALPHA",
+        "PASSES",
+        "SKIP_EARLY",
+        "capture",
+        "38",
+        "MTP|mtp",
+        "transplant"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "evidence/verification-summary.json"
+      ],
+      "id": "verification",
+      "maxToolCalls": 7,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read evidence/verification-summary.json completely. Separate structural, geometry, small held-out distribution, serving smoke, HITL, and still-missing qualification evidence. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "97\\.068",
+        "0\\.005208",
+        "0\\.955696",
+        "HITL|hitl",
+        "S6",
+        "SR"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "RUNBOOK.md"
+      ],
+      "id": "runbook",
+      "maxToolCalls": 18,
+      "minSuccessfulToolCalls": 1,
+      "prompt": "Read RUNBOOK.md completely. Report the ordered integrity, source, build, independent verification, measurement, serving, and later qualification procedure. Open no other file.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "verify",
+        "build",
+        "measure",
+        "serve",
+        "qualification"
+      ]
+    },
+    {
+      "allowedTools": [
+        "read_file"
+      ],
+      "enforceContinuation": true,
+      "exactPaths": [
+        "MODEL-NOTICE.md",
+        "THIRD_PARTY_NOTICES.md"
+      ],
+      "id": "licenses",
+      "maxToolCalls": 8,
+      "minSuccessfulToolCalls": 2,
+      "prompt": "Read MODEL-NOTICE.md and THIRD_PARTY_NOTICES.md completely. Explain which Blackfrost material is Apache-2.0 and which model or third-party materials retain separate terms. Open no other files.",
+      "requireCompleteRead": true,
+      "requiredPatterns": [
+        "Apache",
+        "Qwen",
+        "weights",
+        "license"
+      ]
+    },
+    {
+      "allowedTools": [],
+      "id": "synthesis",
+      "maxToolCalls": 0,
+      "prompt": "Make no tool calls. Synthesize the audit using exactly these headings in order: LOCK STATUS; STOCK SOURCE; DIRECTIONS; THREE-PASS EDIT; TARGET AND MTP INTEGRITY; RECORDED EVIDENCE; HARNESS BOUNDARY; QUALIFICATION BOUNDARY; NEXT VALID ACTION.",
+      "requiredPatterns": [
+        "LOCK STATUS",
+        "STOCK SOURCE",
+        "DIRECTIONS",
+        "THREE-PASS EDIT",
+        "TARGET AND MTP INTEGRITY",
+        "RECORDED EVIDENCE",
+        "HARNESS BOUNDARY",
+        "QUALIFICATION BOUNDARY",
+        "NEXT VALID ACTION"
+      ]
+    }
+  ],
+  "variables": {
+    "TASK": "Audit the public Qwen3.6-35B-A3B stock BF16 DWM alpha-1.0 x3 package without modifying files or claiming release qualification."
+  }
+}

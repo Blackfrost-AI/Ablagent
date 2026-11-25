@@ -3,15 +3,21 @@
 Ed25519 is intentionally optional: requesting signed authority without an
 installed provider fails closed; it never silently downgrades to direct mode.
 """
+
 from __future__ import annotations
 
 from typing import Any
+
 from .codec import digest
 from .errors import AuthorityError
 
 
 def normalize_actions(actions: list[str]) -> list[str]:
-    if not isinstance(actions, list) or not actions or any(not isinstance(a, str) or not a for a in actions):
+    if (
+        not isinstance(actions, list)
+        or not actions
+        or any(not isinstance(a, str) or not a for a in actions)
+    ):
         raise AuthorityError("actions must be a non-empty list of strings")
     return sorted(set(actions))
 
@@ -22,8 +28,9 @@ def receipt_digest(receipt: dict[str, Any]) -> str:
     return digest(body)
 
 
-def verify_direct(*, principal: str, session_binding: str, stage: str,
-                  actions: list[str], expected_revision: int) -> dict[str, Any]:
+def verify_direct(
+    *, principal: str, session_binding: str, stage: str, actions: list[str], expected_revision: int
+) -> dict[str, Any]:
     if not principal or not session_binding or not stage:
         raise AuthorityError("principal, session, and stage are required")
     if type(expected_revision) is not int or expected_revision < 0:

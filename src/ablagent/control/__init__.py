@@ -4,8 +4,8 @@ from .errors import (
     AuthorityError,
     ConcurrentRevisionError,
     ControlError,
-    IntegrityError,
     InputError,
+    IntegrityError,
     StateError,
 )
 from .store import ControlStore, VerificationReport

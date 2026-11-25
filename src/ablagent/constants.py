@@ -92,43 +92,85 @@ RELEASE_GATE_STAGES: tuple[str, ...] = (
 )
 
 # Stages that emit typed measurement results into the run state.
-TYPED_STAGES: frozenset[str] = frozenset({
-    "S3_DERISK", "S4_QUANT", "S5_SERVE", "S6_DOMAIN_VERIFY",
-    "S7_CAPABILITY_VERIFY", "SR_RELEASE_REDLINE", "S8_PRODUCTIZE",
-    "S9_CARD_DRAFT",
-})
+TYPED_STAGES: frozenset[str] = frozenset(
+    {
+        "S3_DERISK",
+        "S4_QUANT",
+        "S5_SERVE",
+        "S6_DOMAIN_VERIFY",
+        "S7_CAPABILITY_VERIFY",
+        "SR_RELEASE_REDLINE",
+        "S8_PRODUCTIZE",
+        "S9_CARD_DRAFT",
+    }
+)
 
 # ---------------------------------------------------------------------------
 # Run-state vocabularies (fail-closed: unknown values are rejected)
 # ---------------------------------------------------------------------------
 
 AUTHORIZATION_STATES: tuple[str, ...] = (
-    "ungranted", "active", "consumed", "expired", "revoked",
+    "ungranted",
+    "active",
+    "consumed",
+    "expired",
+    "revoked",
 )
 EXECUTION_STATES: tuple[str, ...] = (
-    "planned", "awaiting_greenlight", "running", "frozen", "paused",
-    "verify_pending", "completed", "failed", "cancelled", "terminated",
+    "planned",
+    "awaiting_greenlight",
+    "running",
+    "frozen",
+    "paused",
+    "verify_pending",
+    "completed",
+    "failed",
+    "cancelled",
+    "terminated",
     "skipped",
 )
 MEASUREMENT_STATES: tuple[str, ...] = (
-    "not_started", "measurement_incomplete", "automatic_failed",
-    "hitl_pending", "accepted", "rejected",
+    "not_started",
+    "measurement_incomplete",
+    "automatic_failed",
+    "hitl_pending",
+    "accepted",
+    "rejected",
     # Skipped-for-this-run stages (exploratory mode): explicitly untested,
     # never silently passed. See store.skip_stage().
     "not_applicable",
 )
 RELEASE_STATES: tuple[str, ...] = (
-    "not_eligible", "evidence_pending", "release_ready", "delivered",
+    "not_eligible",
+    "evidence_pending",
+    "release_ready",
+    "delivered",
     "accepted",
 )
-TERMINAL_EXECUTION_STATES: frozenset[str] = frozenset({
-    "completed", "failed", "cancelled", "terminated",
-})
-LIFECYCLE_ACTIONS: frozenset[str] = frozenset({
-    "start", "complete", "fail", "freeze", "pause", "cancel", "terminate",
-    "release-check", "accept-release", "adopt-policy", "classify-experimental",
-    "private-archive",
-})
+TERMINAL_EXECUTION_STATES: frozenset[str] = frozenset(
+    {
+        "completed",
+        "failed",
+        "cancelled",
+        "terminated",
+    }
+)
+LIFECYCLE_ACTIONS: frozenset[str] = frozenset(
+    {
+        "start",
+        "complete",
+        "fail",
+        "freeze",
+        "pause",
+        "cancel",
+        "terminate",
+        "release-check",
+        "accept-release",
+        "adopt-policy",
+        "classify-experimental",
+        "private-archive",
+    }
+)
 
 # V1 state dimensions kept for porting parity (V1: S6 was refusal-specific;
 # V2 renames the dimension to domain-verify while retaining the vocabulary).
@@ -149,10 +191,15 @@ HF_ADAPTER_ID = "hf-dense-linear-v0"
 # with a recorded reason — via store.skip_stage(allowed_stages=...). They are
 # NOT added to SKIP_OPTIONAL_STAGES: the default operator authority surface is
 # unchanged, and release stays not_eligible while any gate stage is skipped.
-REAL_UNMET_STAGES: frozenset[str] = frozenset({
-    "S4_QUANT", "S5_SERVE", "S6_DOMAIN_VERIFY", "S7_CAPABILITY_VERIFY",
-    "S10_DELIVER",
-})
+REAL_UNMET_STAGES: frozenset[str] = frozenset(
+    {
+        "S4_QUANT",
+        "S5_SERVE",
+        "S6_DOMAIN_VERIFY",
+        "S7_CAPABILITY_VERIFY",
+        "S10_DELIVER",
+    }
+)
 
 # ---------------------------------------------------------------------------
 # Supported domains (first-class packs shipped with the platform)

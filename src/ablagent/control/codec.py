@@ -1,4 +1,5 @@
 """Strict bounded canonical JSON used by every control-plane receipt."""
+
 from __future__ import annotations
 
 import hashlib

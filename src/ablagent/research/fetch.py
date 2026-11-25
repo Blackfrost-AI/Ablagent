@@ -4,22 +4,22 @@ Network access is explicit at the caller. The requested URL is never silently
 rewritten. Redirect destinations are revalidated against the same HTTPS policy
 on every hop; redirect chains and response bytes are recorded locally.
 """
+
 from __future__ import annotations
 
 import hashlib
-import json
-import time
 import ipaddress
 import socket
-from dataclasses import asdict, dataclass
+import time
+from dataclasses import dataclass
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, build_opener, HTTPRedirectHandler
 from urllib.parse import urlparse
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ..control.codec import canonical_bytes, digest
-from ..control.files import atomic_write, ensure_private_dir
 from ..control.errors import InputError, IntegrityError
+from ..control.files import atomic_write, ensure_private_dir
 from .sources import Source
 
 FETCH_SCHEMA = "ablagent.research.fetch.v1"
@@ -44,6 +44,7 @@ class _CheckedRedirects(HTTPRedirectHandler):
     def __init__(self, chain: list[str]):
         super().__init__()
         self.chain = chain
+
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         _validate_url(newurl)
         self.chain.append(newurl)
@@ -65,8 +66,15 @@ class FetchReceipt:
     receipt_digest: str = ""
 
 
-def fetch_source(source: Source, output_dir: Path, *, timeout: float = 15.0, user_agent: str = "ablagent-research/1") -> FetchReceipt:
-    source.validate(); _validate_url(source.url)
+def fetch_source(
+    source: Source,
+    output_dir: Path,
+    *,
+    timeout: float = 15.0,
+    user_agent: str = "ablagent-research/1",
+) -> FetchReceipt:
+    source.validate()
+    _validate_url(source.url)
     output_dir = ensure_private_dir(Path(output_dir), create=not Path(output_dir).exists())
     request = Request(source.url, headers={"User-Agent": user_agent, "Accept": "*/*"})
     redirects: list[str] = []
@@ -85,11 +93,20 @@ def fetch_source(source: Source, output_dir: Path, *, timeout: float = 15.0, use
     blob = output_dir / f"{source.source_id}-{content_sha}.bin"
     atomic_write(blob, data)
     body = {
-        "schema": FETCH_SCHEMA, "source_id": source.source_id,
-        "requested_url": source.url, "final_url": final,
-        "redirects": redirects, "retrieved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "status": status, "content_sha256": content_sha, "bytes": len(data), "license": source.license,
+        "schema": FETCH_SCHEMA,
+        "source_id": source.source_id,
+        "requested_url": source.url,
+        "final_url": final,
+        "redirects": redirects,
+        "retrieved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "status": status,
+        "content_sha256": content_sha,
+        "bytes": len(data),
+        "license": source.license,
     }
-    receipt = dict(body); receipt["receipt_digest"] = digest(body)
-    atomic_write(output_dir / f"{source.source_id}-{content_sha}.receipt.json", canonical_bytes(receipt))
+    receipt = dict(body)
+    receipt["receipt_digest"] = digest(body)
+    atomic_write(
+        output_dir / f"{source.source_id}-{content_sha}.receipt.json", canonical_bytes(receipt)
+    )
     return FetchReceipt(**receipt)

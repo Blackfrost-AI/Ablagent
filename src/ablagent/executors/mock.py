@@ -4,7 +4,9 @@ For SR (red-line holdout) rows the mock emits an explicit refusal, so the
 red-line gate exercises real classifier behavior end-to-end. For every other
 stage it echoes the prompt (a plausible "answered" row).
 """
+
 from __future__ import annotations
+
 import hashlib
 from typing import Any
 
@@ -31,10 +33,12 @@ class MockExecutor:
                 response = MOCK_REFUSAL.format(category=category)
             else:
                 response = f"mock[{stage}]: {prompt}"
-            outputs.append({
-                "id": row["id"],
-                "prompt": prompt,
-                "response": response,
-                "response_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
-            })
+            outputs.append(
+                {
+                    "id": row["id"],
+                    "prompt": prompt,
+                    "response": response,
+                    "response_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                }
+            )
         return {"stage": stage, "rows": outputs, "row_count": len(outputs), "executor": self.name}

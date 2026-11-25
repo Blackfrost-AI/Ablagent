@@ -1,11 +1,12 @@
 """Private, atomic filesystem primitives."""
+
 from __future__ import annotations
 
 import os
 import stat
 import tempfile
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from .errors import IntegrityError
 
@@ -64,7 +65,9 @@ def read_stable(path: Path, *, max_bytes: int = 8 * 1024 * 1024) -> bytes:
     data = path.read_bytes()
     after = path.stat()
     if len(data) > max_bytes or (before.st_ino, before.st_size, before.st_mtime_ns) != (
-        after.st_ino, after.st_size, after.st_mtime_ns
+        after.st_ino,
+        after.st_size,
+        after.st_mtime_ns,
     ):
         raise IntegrityError(f"file changed during read or exceeds limit: {path}")
     return data

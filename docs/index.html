@@ -32,6 +32,7 @@
     <a href="#simulator">Simulator</a>
     <a href="#evidence">Evidence</a>
     <a href="#example">Worked example</a>
+    <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/recipes">Recipes</a>
     <a href="#quickstart">Quickstart</a>
     <a class="nav-cta" href="https://github.com/Blackfrost-AI/Ablagent">GitHub ↗</a>
   </div>
@@ -243,6 +244,11 @@
   <p class="example-scope">The kit is the validated GPU/torch pipeline that produced the artifact — vendored research
     material, <strong>not executed by the synthetic v0 runtime</strong>. Reproduction needs the upstream checkpoint and a
     CUDA host; see the <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/examples/inkling-2-mini-derisked">example README</a>.</p>
+  <p class="example-scope">Four more finalized GPU-scale playbooks — Qwen 9B-class, Qwen3.6-35B-A3B, GLM-5.3 BF16 α2.2,
+    GLM-5.3 Flash α2.8 — are vendored hash-locked in the
+    <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/recipes">recipe library</a>, each with its own runbook,
+    pinned inputs, evidence receipts, and package verifier. The library grows as runs are finalized; snapshots are
+    immutable and corrections ship as new versions.</p>
 </section>
 
 <!-- ============ QUICKSTART ============ -->

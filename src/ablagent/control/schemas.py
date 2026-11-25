@@ -1,8 +1,18 @@
 """Control-state schema and stage normalization."""
+
 from __future__ import annotations
 
 from typing import Any
-from ..constants import AUTHORIZATION_STATES, DEPENDENCIES, EXECUTION_STATES, MEASUREMENT_STATES, RELEASE_STATES, STAGE_ALIASES, STAGES
+
+from ..constants import (
+    AUTHORIZATION_STATES,
+    DEPENDENCIES,
+    EXECUTION_STATES,
+    MEASUREMENT_STATES,
+    RELEASE_STATES,
+    STAGE_ALIASES,
+    STAGES,
+)
 from .errors import InputError, StateError
 
 
@@ -27,7 +37,18 @@ def empty_stage_state(stage: str) -> dict[str, Any]:
 
 
 def validate_control(control: dict[str, Any]) -> None:
-    required = {"schema", "version", "control_instance_id", "run_directory", "revision", "event_head", "state_digest", "session_binding", "stages", "used_authority_receipts"}
+    required = {
+        "schema",
+        "version",
+        "control_instance_id",
+        "run_directory",
+        "revision",
+        "event_head",
+        "state_digest",
+        "session_binding",
+        "stages",
+        "used_authority_receipts",
+    }
     missing = required - set(control)
     if missing:
         raise StateError(f"control missing fields: {sorted(missing)}")
@@ -55,5 +76,7 @@ def validate_control(control: dict[str, Any]) -> None:
 
 def dependencies_satisfied(control: dict[str, Any], stage: str) -> bool:
     stage = normalize_stage(stage)
-    return all(control["stages"][dep]["execution"] in ("completed", "skipped")
-               for dep in DEPENDENCIES[stage])
+    return all(
+        control["stages"][dep]["execution"] in ("completed", "skipped")
+        for dep in DEPENDENCIES[stage]
+    )

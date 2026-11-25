@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import textwrap
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -137,7 +136,9 @@ def test_tampered_toy_corpus_is_rejected(tmp_path: Path):
 def test_explicit_empty_packs_dir_fails_cli(tmp_path: Path):
     result = subprocess.run(
         [".venv/bin/ablagent", "doctor", "--packs-dir", str(tmp_path)],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     assert result.returncode == 1
     assert "no packs found" in result.stdout

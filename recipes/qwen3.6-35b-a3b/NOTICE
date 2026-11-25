@@ -1,0 +1,11 @@
+Qwen3.6-35B-A3B-DWM-recepie
+Copyright 2026 Blackfrost AI
+
+This product includes Blackfrost-authored source code, documentation,
+configuration, prompt material, manifests, and audit plans licensed under the
+Apache License, Version 2.0.
+
+Qwen model weights are not included. Qwen model materials and derived model
+artifacts remain subject to their applicable upstream terms. See
+MODEL-NOTICE.md and THIRD_PARTY_NOTICES.md.
+

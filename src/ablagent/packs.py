@@ -37,14 +37,23 @@ from .constants import PACK_MANIFEST_SCHEMA, STAGES
 
 # Manifest fields required in every pack.
 REQUIRED_FIELDS: tuple[str, ...] = (
-    "schema", "pack_id", "domain", "version", "title", "summary",
-    "vendor", "license", "stages",
+    "schema",
+    "pack_id",
+    "domain",
+    "version",
+    "title",
+    "summary",
+    "vendor",
+    "license",
+    "stages",
 )
 
 # Fields that must be strings when present.
-STRING_FIELDS: tuple[str, ...] = tuple(
-    f for f in REQUIRED_FIELDS if f != "stages"
-) + ("contact", "purpose")
+STRING_FIELDS: tuple[str, ...] = (
+    *(f for f in REQUIRED_FIELDS if f != "stages"),
+    "contact",
+    "purpose",
+)
 
 # Accepted top-level keys. Unknown keys are rejected so a typo cannot silently
 # disable a security-relevant block (e.g. corpora_sha256 / red_lines).
@@ -54,11 +63,16 @@ ALLOWED_FIELDS: frozenset[str] = frozenset(
 
 # Vocabularies validated during load.
 VALID_PURPOSES: tuple[str, ...] = (
-    "specialize",      # domain specialization (cyber, health, finance, ...)
-    "derisk",          # false-refusal removal (the V1 flagship)
+    "specialize",  # domain specialization (cyber, health, finance, ...)
+    "derisk",  # false-refusal removal (the V1 flagship)
 )
 VALID_STAGE_KEYS: tuple[str, ...] = (
-    "purpose", "summary", "corpora", "probes", "gates", "scripts",
+    "purpose",
+    "summary",
+    "corpora",
+    "probes",
+    "gates",
+    "scripts",
 )
 
 MAX_MANIFEST_BYTES = 4 * 1024 * 1024  # 4 MiB
@@ -68,6 +82,7 @@ _PACK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 # Red-line enforcement is intentionally deferred until the experimental
 # pipeline and quality gates are proven. Manifests may carry inert metadata,
 # but the loader must not validate, merge, or apply red-lines in V2 experiments.
+
 
 class PackError(ValueError):
     """A pack failed validation. Always a data error (CLI exit 1)."""
@@ -211,9 +226,7 @@ def _resolve_inside(pack_dir: Path, rel: str, source: str, label: str) -> Path:
     try:
         target.relative_to(root)
     except ValueError as exc:
-        raise PackError(
-            f"{source}: {label} resolves outside the pack directory: {rel!r}"
-        ) from exc
+        raise PackError(f"{source}: {label} resolves outside the pack directory: {rel!r}") from exc
     return target
 
 
@@ -223,8 +236,7 @@ def _typed_list(cfg: dict[str, Any], key: str, source: str, stage: str) -> list[
         return []
     if not isinstance(value, list):
         raise PackError(
-            f"{source}: stage '{stage}' field '{key}' must be a list, "
-            f"got {type(value).__name__}"
+            f"{source}: stage '{stage}' field '{key}' must be a list, got {type(value).__name__}"
         )
     return value
 
@@ -260,8 +272,7 @@ def validate_manifest(
         )
     if not _PACK_ID_RE.match(data["pack_id"]):
         raise PackError(
-            f"{source}: pack_id must be lowercase alphanumeric with . _ - "
-            f"(got {data['pack_id']!r})"
+            f"{source}: pack_id must be lowercase alphanumeric with . _ - (got {data['pack_id']!r})"
         )
 
     purpose = data.get("purpose", "specialize")
@@ -283,8 +294,7 @@ def validate_manifest(
             raise PackError(f"{source}: corpus pin keys must be non-empty strings")
         if not isinstance(digest, str) or not _HEX64_RE.match(digest):
             raise PackError(
-                f"{source}: corpus '{cid}' pin must be 64 lowercase hex chars "
-                f"(got {digest!r})"
+                f"{source}: corpus '{cid}' pin must be 64 lowercase hex chars (got {digest!r})"
             )
 
     # --- stages ----------------------------------------------------------
@@ -301,13 +311,13 @@ def validate_manifest(
             raise PackError(f"{source}: stage '{stage}' config must be a mapping")
         unknown_keys = set(cfg.keys()) - set(VALID_STAGE_KEYS)
         if unknown_keys:
-            raise PackError(
-                f"{source}: stage '{stage}' has unknown key(s): {sorted(unknown_keys)}"
-            )
+            raise PackError(f"{source}: stage '{stage}' has unknown key(s): {sorted(unknown_keys)}")
         if "summary" in cfg:
             _require_str(cfg, "summary", f"{source}: stage '{stage}'")
         if "purpose" in cfg and cfg["purpose"] not in VALID_PURPOSES:
-            raise PackError(f"{source}: stage '{stage}' purpose must be one of {list(VALID_PURPOSES)}")
+            raise PackError(
+                f"{source}: stage '{stage}' purpose must be one of {list(VALID_PURPOSES)}"
+            )
 
         for corpus in _typed_list(cfg, "corpora", source, stage):
             if not isinstance(corpus, dict):
@@ -351,7 +361,9 @@ def validate_manifest(
             if "sha256" in script:
                 digest = script["sha256"]
                 if not isinstance(digest, str) or not _HEX64_RE.match(digest):
-                    raise PackError(f"{source}: script '{rel}' sha256 must be 64 lowercase hex chars")
+                    raise PackError(
+                        f"{source}: script '{rel}' sha256 must be 64 lowercase hex chars"
+                    )
             if "args" in script:
                 args = script["args"]
                 if not isinstance(args, list) or any(not isinstance(a, str) for a in args):
@@ -388,10 +400,14 @@ def verify_corpus_pins(pack: DomainPack) -> tuple[dict[str, str], ...]:
                 f"pack {pack.pack_id}: corpus '{cid}' SHA-256 mismatch "
                 f"(expected {expected}, got {actual}) - refusing to load"
             )
-        receipts.append({
-            "corpus_id": cid, "path": rel, "sha256": actual,
-            "bytes": str(target.stat().st_size),
-        })
+        receipts.append(
+            {
+                "corpus_id": cid,
+                "path": rel,
+                "sha256": actual,
+                "bytes": str(target.stat().st_size),
+            }
+        )
     return tuple(receipts)
 
 

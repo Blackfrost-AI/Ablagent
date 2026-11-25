@@ -26,7 +26,7 @@ Unknown semantics must fail closed. Never infer model support from a filename, m
 
 Do not bundle third-party prompt/annotation corpora without a documented redistribution decision. Code licensing does not license datasets. New original synthetic fixtures need an explicit content license and provenance. Private release banks stay outside the repository.
 
-Vendored research material (see `examples/inkling-2-mini-derisked/`) must be byte-identical to a pinned public source revision, carry a per-file `PROVENANCE.json` manifest and license scope (`NOTICE.md`), and stay excluded from lint/format so provenance is preserved. Large assets are fetch-only through explicit, digest-verified helpers — never implicit downloads.
+Vendored research material (see `examples/inkling-2-mini-derisked/` and `recipes/`) must be byte-identical to a pinned public source revision, carry a hash-bound provenance manifest (`PROVENANCE.json` or `snapshots.lock.json`) and license scope (`NOTICE`/`NOTICE.md`), and stay excluded from lint/format so provenance is preserved. Never edit an imported snapshot in place — publish corrections as new versioned recipe directories (see `recipes/README.md`). Large assets are fetch-only through explicit, digest-verified helpers — never implicit downloads.
 
 ## Security
 

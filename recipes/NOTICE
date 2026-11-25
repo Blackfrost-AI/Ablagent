@@ -1,0 +1,17 @@
+Ablagent
+Copyright 2026 Blackfrost AI
+
+This product includes Blackfrost-authored source code, documentation, prompt
+material, manifests, and plans licensed under the Apache License, Version 2.0.
+
+Research lineage acknowledgment:
+
+  Andy Arditi, Oscar Obeso, Aaquib Syed, Daniel Paleka, Nina Panickssery,
+  Wes Gurnee, and Neel Nanda. "Refusal in Language Models Is Mediated by a
+  Single Direction." Advances in Neural Information Processing Systems 37,
+  2024. DOI: 10.52202/079017-4322.
+
+The paper, upstream model weights, model-derived artifacts, and third-party
+software are separate works governed by their applicable terms. No affiliation
+with or endorsement by the cited researchers is implied.
+

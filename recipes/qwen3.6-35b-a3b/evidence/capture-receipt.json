@@ -1,0 +1,50 @@
+{
+  "bank_sha256": "902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+  "captured_verified": true,
+  "chat_template_sha256": "e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259",
+  "direction": {
+    "bytes": 167128,
+    "rank90": 22,
+    "selected_layer": 39,
+    "separation": 7.386375904083252,
+    "sha256": "fc2e01feace4215a2c27bc84bc7a7c6d576013ab358671870db7357ccc07d9b2",
+    "shape": [
+      40,
+      2048
+    ],
+    "snr": 5.622357368469238,
+    "split_half_cosine": 0.9535326957702637
+  },
+  "prompt_condition": "bare system, thinking on",
+  "raw_activations": {
+    "bytes": 10486000,
+    "classes": [
+      "harmful",
+      "safe"
+    ],
+    "sha256": "2ef775b19e30a90b73116baba69942549ef176a232d7b38062b6acde3fa95d00",
+    "shape": [
+      32,
+      40,
+      2048
+    ]
+  },
+  "run_id": "20261010-qwen36-35b-stock-frosty",
+  "schema": "blackfrost.public-capture-receipt.v1",
+  "source": {
+    "checkpoint_digest": "sha256:88760187ccb2560500b1d51f0e75610658c956be010b4477bc11bb8265c7413b",
+    "config_sha256": "93a4693fa9d8392fbfccd4b3c9873f4bfdcb14fdede978b123d07d19675efe99",
+    "digest_algorithm": "sha256-canonical-file-inventory-v1",
+    "index_sha256": "41b9356101ebf8e7519e150dc811f80c4226e727301fbb032b890f006ed0be83",
+    "indexed_tensors": 1045,
+    "payload_bytes": 71926865825,
+    "payload_files": 40,
+    "precision": "bfloat16",
+    "quantized": false,
+    "repo": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "995ad96eacd98c81ed38be0c5b274b04031597b0",
+    "source_lock": "assets/source-lock.json",
+    "source_lock_sha256": "07cc4141def9c9ad77251badd690efa5542db478ba78ce89417ea3e233d437e7",
+    "weight_shards": 26
+  }
+}

@@ -1,15 +1,15 @@
 """Local source registry with explicit URL and license provenance."""
+
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from urllib.parse import urlparse
 
-from ..control.codec import canonical_bytes, digest, load_json
-from ..control.files import atomic_write, ensure_private_dir, read_stable
+from ..control.codec import canonical_bytes, load_json
 from ..control.errors import InputError, IntegrityError
+from ..control.files import atomic_write, ensure_private_dir, read_stable
 
 SOURCE_SCHEMA = "ablagent.research.source.v1"
 _ALLOWED_SCHEMES = {"https"}
@@ -47,14 +47,26 @@ class SourceRegistry:
         sources = self.list()
         if any(item.source_id == source.source_id for item in sources):
             raise IntegrityError(f"duplicate source_id: {source.source_id}")
-        atomic_write(self.path, canonical_bytes({"schema": SOURCE_SCHEMA, "sources": [asdict(item) for item in sources] + [asdict(source)]}))
+        atomic_write(
+            self.path,
+            canonical_bytes(
+                {
+                    "schema": SOURCE_SCHEMA,
+                    "sources": [asdict(item) for item in sources] + [asdict(source)],
+                }
+            ),
+        )
         return source
 
     def list(self) -> tuple[Source, ...]:
         if not self.path.exists():
             return ()
         value = load_json(read_stable(self.path), source=str(self.path))
-        if not isinstance(value, dict) or value.get("schema") != SOURCE_SCHEMA or not isinstance(value.get("sources"), list):
+        if (
+            not isinstance(value, dict)
+            or value.get("schema") != SOURCE_SCHEMA
+            or not isinstance(value.get("sources"), list)
+        ):
             raise IntegrityError("invalid source registry")
         result = []
         for item in value["sources"]:

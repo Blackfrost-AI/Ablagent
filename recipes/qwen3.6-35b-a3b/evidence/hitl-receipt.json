@@ -1,0 +1,11 @@
+{
+  "artifact_digest": "sha256:48aa1828bcbd3432739535cd8144de691c0865f4db6b37f67db8e73d7016c4d6",
+  "artifact_id": "qwen36-35b-stock-dwm-a10x3-bf16-inventory",
+  "does_not_grant_release_qualification": true,
+  "method": "BF16 alpha 1.0 x 3 with a fresh thinking-on hard32 recapture before each pass",
+  "operator_statement": "okay this one is perfecct i approve HITL",
+  "recorded_at": "2026-10-10T11:23:59-07:00",
+  "run_id": "20261010-qwen36-35b-stock-frosty",
+  "schema": "blackfrost.operator-hitl-receipt.v1",
+  "status": "hitl_active"
+}

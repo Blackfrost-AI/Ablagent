@@ -5,13 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from ablagent.control import ControlStore, ConcurrentRevisionError, IntegrityError
+from ablagent.control import ConcurrentRevisionError, ControlStore, IntegrityError
 from ablagent.control.codec import load_json
 from ablagent.packs import load_pack
 from ablagent.pipeline import run_mock
-from ablagent.research.sources import Source, SourceRegistry
-from ablagent.research.notes import Note, write_note
 from ablagent.research.corpus import derive_jsonl
+from ablagent.research.notes import Note, write_note
+from ablagent.research.sources import Source, SourceRegistry
 
 
 def test_control_init_authorize_transition_chain(tmp_path: Path):
@@ -46,6 +46,7 @@ def test_control_precommit_transaction_is_discarded(tmp_path: Path):
     store = ControlStore.initialize(tmp_path / "run")
     current = store.load()
     from ablagent.control.codec import canonical_bytes, digest
+
     prepared = dict(current)
     prepared["revision"] = 1
     marker = {
@@ -88,8 +89,13 @@ def test_mock_pipeline_completes_canonical_pack_driven_dag(tmp_path: Path):
     control = ControlStore(run_dir / "control").load()
     assert all(state["execution"] == "completed" for state in control["stages"].values())
     # Security-phase invariants: gate stages accepted, release ready.
-    for stage in ("S6_DOMAIN_VERIFY", "S7_CAPABILITY_VERIFY", "SR_RELEASE_REDLINE",
-                  "S8_PRODUCTIZE", "S9_CARD_DRAFT"):
+    for stage in (
+        "S6_DOMAIN_VERIFY",
+        "S7_CAPABILITY_VERIFY",
+        "SR_RELEASE_REDLINE",
+        "S8_PRODUCTIZE",
+        "S9_CARD_DRAFT",
+    ):
         assert control["stages"][stage]["measurement"] == "accepted", stage
         assert control["stages"][stage]["release"] == "release_ready", stage
 
@@ -99,9 +105,18 @@ def test_research_registry_note_and_corpus_are_provenance_bound(tmp_path: Path):
     source = Source("nist-csf", "https://www.nist.gov/cyberframework", "CSF", "public", "research")
     registry.register(source)
     assert registry.get("nist-csf") == source
-    note = Note("note-1", "A defensible research claim", ({"claim": "x"},), (source.source_id,), ("sha256:" + "a" * 64,))
+    note = Note(
+        "note-1",
+        "A defensible research claim",
+        ({"claim": "x"},),
+        (source.source_id,),
+        ("sha256:" + "a" * 64,),
+    )
     note_path = write_note(tmp_path / "notes", note)
     import json
+
     note_value = json.loads(note_path.read_text())
-    receipt = derive_jsonl([note_value], tmp_path / "derived.jsonl", dataset="research", label="reference")
+    receipt = derive_jsonl(
+        [note_value], tmp_path / "derived.jsonl", dataset="research", label="reference"
+    )
     assert receipt["rows"] == 1

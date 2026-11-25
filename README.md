@@ -14,6 +14,7 @@
 <p align="center">
   <a href="#quickstart">Quickstart</a> ·
   <a href="examples/inkling-2-mini-derisked/README.md">Worked example</a> ·
+  <a href="recipes/README.md">Recipe library</a> ·
   <a href="docs/refusal-research.md">Research lineage</a> ·
   <a href="docs/architecture-navigation.md">Architecture research</a> ·
   <a href="spec/dwmip/v0/README.md">DWMIP specification</a> ·
@@ -43,7 +44,7 @@ Ablagent brings those questions into one inspectable workflow. Its **DWM Interch
 - **Proposals are not permissions.** The deterministic planner proposes bounded experiments; compilation requires an explicitly selected intervention.
 - **Artifacts you can replay.** Canonical JSON, safe tensor storage, and digest-bound manifests let verification recompute the reference transformation and observations.
 - **Negative results stay in the record.** Retain rejected trials, lineage, and missing-evidence states instead of presenting only successful candidates.
-- **Research without inherited model baggage.** The runtime ships original synthetic banks and general architecture guidance — no private prompts, credentials, or operational endpoints. One published research artifact is included as a clearly scoped [worked example](examples/inkling-2-mini-derisked/README.md), vendored byte-identical from its public Hugging Face release with a hash-bound provenance manifest.
+- **Research without inherited model baggage.** The runtime ships original synthetic banks and general architecture guidance — no private prompts, credentials, or operational endpoints. One published research artifact is included as a clearly scoped [worked example](examples/inkling-2-mini-derisked/README.md), vendored byte-identical from its public Hugging Face release with a hash-bound provenance manifest, plus a hash-locked [recipe library](recipes/README.md) of finalized GPU-scale playbooks imported byte-identical from their public origins.
 
 **Built for** researchers formalizing experiments, engineers qualifying architecture adapters, and agent developers who need a narrow, verifiable integration boundary. The real executor edits small dense checkpoints end to end; it is not a turnkey editor for every architecture, and it never authorizes a release.
 
@@ -175,6 +176,7 @@ Different computation graphs require different intervention semantics. The resea
 |---|---|
 | Run and inspect an experiment | [Quickstart](docs/quickstart.md) |
 | Study a complete real-model DWM run | [Inkling-2-Mini worked example](examples/inkling-2-mini-derisked/README.md) |
+| Reproduce a GPU-scale model line | [Recipe library](recipes/README.md) — Qwen 9B-class · Qwen3.6-35B-A3B · GLM-5.3 BF16/Flash |
 | Study the refusal-removal origins and DWM extension | [Research lineage](docs/refusal-research.md) |
 | Understand the research method | [Methodology](docs/methodology.md) · [Architecture navigation](docs/architecture-navigation.md) |
 | Build against the protocol | [DWMIP v0](spec/dwmip/v0/README.md) · [Support matrix](docs/support-matrix.md) |
@@ -207,4 +209,4 @@ Tests cover reference algebra, identity and axis mismatches, tampered artifacts,
 
 ## Licensing
 
-Code is [Apache-2.0](LICENSE). The original presentation artwork is also [Apache-2.0](docs/assets/README.md). Project-authored synthetic bank content is [CC BY 4.0](banks/LICENSE-CC-BY-4.0), with provenance in each manifest. These licenses do not grant rights to third-party model weights, datasets, annotations, or serving stacks. The vendored [worked example](examples/inkling-2-mini-derisked/NOTICE.md) has its own per-file license scope: activation-derived research artifacts carry no additional license grant from this repository.
+Code is [Apache-2.0](LICENSE). The original presentation artwork is also [Apache-2.0](docs/assets/README.md). Project-authored synthetic bank content is [CC BY 4.0](banks/LICENSE-CC-BY-4.0), with provenance in each manifest. These licenses do not grant rights to third-party model weights, datasets, annotations, or serving stacks. The vendored [worked example](examples/inkling-2-mini-derisked/NOTICE.md) has its own per-file license scope: activation-derived research artifacts carry no additional license grant from this repository. The [recipe library](recipes/README.md) is Apache-2.0 with its own [NOTICE](recipes/NOTICE) and [third-party notices](recipes/THIRD_PARTY_NOTICES.md); upstream model weights are not included and remain under their own terms.

@@ -1,19 +1,27 @@
 """Effective-policy compilation and digest verification."""
+
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
-from ..constants import EFFECTIVE_POLICY_SCHEMA, DEPENDENCIES, STAGES
+from ..constants import DEPENDENCIES, EFFECTIVE_POLICY_SCHEMA, STAGES
 from .codec import canonical_bytes, digest
-from .errors import IntegrityError, InputError
+from .errors import InputError, IntegrityError
 from .files import atomic_write
 
 
-def compile_policy(*, run: dict[str, Any], principal: dict[str, Any],
-                   input_digests: dict[str, str], options: dict[str, Any] | None = None) -> dict[str, Any]:
+def compile_policy(
+    *,
+    run: dict[str, Any],
+    principal: dict[str, Any],
+    input_digests: dict[str, str],
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Compile only resolved, content-addressed policy inputs."""
-    if not isinstance(input_digests, dict) or any(not isinstance(v, str) or not v.startswith("sha256:") for v in input_digests.values()):
+    if not isinstance(input_digests, dict) or any(
+        not isinstance(v, str) or not v.startswith("sha256:") for v in input_digests.values()
+    ):
         raise InputError("every policy input must be a sha256 digest")
     policy = {
         "schema": EFFECTIVE_POLICY_SCHEMA,
@@ -42,13 +50,15 @@ def write_policy(path: Path, policy: dict[str, Any]) -> str:
 
 
 def verify_policy(path: Path) -> dict[str, Any]:
-    from .files import read_stable
     from .codec import load_json
+    from .files import read_stable
+
     value = load_json(read_stable(Path(path)), source=str(path))
     if not isinstance(value, dict) or value.get("schema") != EFFECTIVE_POLICY_SCHEMA:
         raise IntegrityError("invalid effective policy")
     claimed = value.get("digest")
-    body = dict(value); body.pop("digest", None)
+    body = dict(value)
+    body.pop("digest", None)
     if claimed != digest(body):
         raise IntegrityError("effective policy digest mismatch")
     return value

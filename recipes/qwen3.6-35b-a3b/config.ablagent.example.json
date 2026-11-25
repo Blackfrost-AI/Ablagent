@@ -1,0 +1,33 @@
+{
+  "apiKeyEnv": "ABLAGENT_API_KEY",
+  "chatTemplateEnableThinking": false,
+  "denyPatterns": [
+    ".git/**",
+    "**/.git/**",
+    ".env",
+    ".env.*",
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key",
+    "credentials.json",
+    "**/credentials.json",
+    ".ssh/**",
+    "**/.ssh/**",
+    ".aws/**",
+    "**/.aws/**"
+  ],
+  "endpoint": "http://127.0.0.1:8908/v1",
+  "maxFileBytes": 16777216,
+  "maxIterations": 60,
+  "maxOutputTokens": 32768,
+  "maxToolResultChars": 32768,
+  "maxWallSeconds": 1800,
+  "model": "Alblagent-9B",
+  "recordReasoning": false,
+  "repeatToolCallLimit": 5,
+  "requestTimeoutSeconds": 300,
+  "stateDir": "~/.local/state/ablagent",
+  "temperature": 0,
+  "writeTranscript": true
+}

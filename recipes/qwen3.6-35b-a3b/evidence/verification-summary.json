@@ -1,0 +1,77 @@
+{
+  "automatic_gate": {
+    "max_jensen_shannon": 0.02,
+    "max_nll_relative_delta": 0.1,
+    "min_top1_agreement": 0.85,
+    "passed": true
+  },
+  "candidate": {
+    "artifact_digest": "sha256:48aa1828bcbd3432739535cd8144de691c0865f4db6b37f67db8e73d7016c4d6",
+    "artifact_id": "qwen36-35b-stock-dwm-a10x3-bf16-inventory",
+    "automatic_distribution_gate_passed": true,
+    "bytes": 71926865825,
+    "checkpoint_inventory_digest": "sha256:4eed9dfab0fa131c7307fd2ad02611e047643be32637fbadc08252a44b817a81",
+    "file_count": 40,
+    "operator_hitl_approved": true,
+    "served_smoke_passed": true,
+    "structural_gate_passed": true
+  },
+  "distribution": {
+    "jensen_shannon": 0.0052088025335511,
+    "nll_relative_delta": -0.024448080549149723,
+    "prompts": 8,
+    "scored_tokens": 158,
+    "top1_agreement": 0.9556962025316456
+  },
+  "geometry": {
+    "baseline_separation": 7.384798526763916,
+    "edited_separation": 0.21645259857177734,
+    "pinned_l39_separation_removed_pct": 97.06894375266553
+  },
+  "iteration_trace": [
+    7.386375904083252,
+    3.53710675239563,
+    2.1556081771850586
+  ],
+  "method": {
+    "alpha": 1.0,
+    "fresh_recapture_each_pass": true,
+    "layers": "2-39",
+    "norm_restoration": "global Frobenius per matrix per pass",
+    "passes": 3,
+    "targets": 38
+  },
+  "qualification_boundary": {
+    "missing_pipeline_stages": [
+      "S1",
+      "S6",
+      "S7",
+      "SR"
+    ],
+    "operator_hitl_approved": true,
+    "release_qualified": false
+  },
+  "round_one_l39_cosine_to_pinned_s2": 0.9999986886978149,
+  "run_id": "20261010-qwen36-35b-stock-frosty",
+  "schema": "blackfrost.public-dwm-verification.v1",
+  "serving": {
+    "bf16": true,
+    "chat_http_200": true,
+    "context": 262144,
+    "final_answer": "READY",
+    "finish_reason": "stop",
+    "max_num_seqs": 512,
+    "models_http_200": true,
+    "reasoning_answer_separated": true,
+    "reasoning_parser": "qwen3",
+    "runtime": "vLLM 0.31.0"
+  },
+  "structure": {
+    "changed_nontargets": 0,
+    "changed_targets": 38,
+    "missed_targets": 0,
+    "mtp_exact": 19,
+    "mtp_total": 19,
+    "nonfinite_targets": 0
+  }
+}

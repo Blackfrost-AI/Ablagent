@@ -1,6 +1,7 @@
 """Executor implementations."""
-from .mock import MockExecutor
+
 from .local import LocalExecutor
+from .mock import MockExecutor
 from .ssh import SSHExecutor
 
-__all__ = ["MockExecutor", "LocalExecutor", "SSHExecutor"]
+__all__ = ["LocalExecutor", "MockExecutor", "SSHExecutor"]

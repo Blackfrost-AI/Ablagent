@@ -1,0 +1,136 @@
+{
+  "directions": {
+    "activation_site": "language decoder layer output",
+    "chat_template_generation_prompt": true,
+    "fresh_recapture_before_each_pass": true,
+    "harmful_count": 32,
+    "hidden_size": 2048,
+    "initial_direction": "assets/directions_on.safetensors",
+    "initial_direction_bytes": 167128,
+    "initial_direction_sha256": "fc2e01feace4215a2c27bc84bc7a7c6d576013ab358671870db7357ccc07d9b2",
+    "initial_rank90": 22,
+    "initial_raw_activations": "assets/capture-activations.safetensors",
+    "initial_raw_activations_bytes": 10486000,
+    "initial_raw_activations_sha256": "2ef775b19e30a90b73116baba69942549ef176a232d7b38062b6acde3fa95d00",
+    "initial_selected_separation": 7.386375904083252,
+    "initial_snr": 5.622357368469238,
+    "initial_split_half_cosine": 0.9535326957702637,
+    "layers": 40,
+    "pairing": "same id and ordered class membership in JSONL",
+    "pooling": "last prefill token",
+    "prompt_bank": "assets/v1_corpus_hard32.jsonl",
+    "prompt_bank_sha256": "902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+    "round_one_minimum_cosine_to_initial_l39": 0.99,
+    "safe_count": 32,
+    "selected_layer": 39,
+    "system_prompt": null,
+    "tensor_count": 40,
+    "thinking": true,
+    "truncation": "none"
+  },
+  "measurement": {
+    "heldout": "assets/heldout_distribution.jsonl",
+    "heldout_sha256": "8b9c4695422caaac2854c250c3e874f263b2ac820c08c5c3ac8ef9ed2d237309",
+    "prompt_count": 8,
+    "scored_tokens_recorded": 158,
+    "thinking": true,
+    "thresholds": {
+      "max_jensen_shannon": 0.02,
+      "max_nll_relative_delta": 0.1,
+      "min_top1_agreement": 0.85
+    }
+  },
+  "operation": {
+    "alpha": 1.0,
+    "arithmetic": "float32 projection and subtraction, then bfloat16 writeback",
+    "excluded": [
+      "language layers 0-1",
+      "MLP",
+      "router",
+      "experts",
+      "vision",
+      "mtp"
+    ],
+    "first_layer": 2,
+    "formula": "W' = W - alpha * r[:,None] * (r @ W)[None,:]",
+    "last_layer": 39,
+    "mtp": {
+      "edit_surface_included": false,
+      "expected_tensors": 19,
+      "require_all_byte_identical": true
+    },
+    "norm_restoration": "one global Frobenius scalar per matrix after every pass",
+    "passes": 3,
+    "rank": 1,
+    "save_method": "copy immutable source snapshot, then transplant only declared target tensors into original safetensor shards",
+    "skip_early": 2,
+    "target_pattern": "model.language_model.layers.<2..39>.(linear_attn.out_proj|self_attn.o_proj).weight",
+    "targets": {
+      "linear_attn.out_proj": 28,
+      "self_attn.o_proj": 10,
+      "target_set_sha256": "7e167ee01961a73f1ff67b69c7ac92919e03acd7bfca8fe717a066047b62383f",
+      "total": 38
+    }
+  },
+  "qualification": {
+    "built": true,
+    "operator_hitl_approved": true,
+    "release_qualified": false,
+    "release_redline_gate_executed": false,
+    "s1_executed": false,
+    "s6_executed": false,
+    "s7_executed": false,
+    "served": true,
+    "small_heldout_distribution_gate": true,
+    "smoke_tested": true,
+    "structurally_verified": true,
+    "weights_included": false
+  },
+  "recipe_id": "qwen3.6-35b-a3b-stock-bf16-a1p0x3",
+  "recorded_candidate": {
+    "artifact_digest": "sha256:48aa1828bcbd3432739535cd8144de691c0865f4db6b37f67db8e73d7016c4d6",
+    "artifact_id": "qwen36-35b-stock-dwm-a10x3-bf16-inventory",
+    "automatic_distribution_gate_passed": true,
+    "bytes": 71926865825,
+    "checkpoint_inventory_digest": "sha256:4eed9dfab0fa131c7307fd2ad02611e047643be32637fbadc08252a44b817a81",
+    "file_count": 40,
+    "operator_hitl_approved": true,
+    "served_smoke_passed": true,
+    "structural_gate_passed": true
+  },
+  "reproducibility": {
+    "byte_identical_output_promised": false,
+    "class": "method-exact with pinned source, bundled pair bank, initial directions, raw activations, code, and container digest",
+    "reason": "GPU kernels, BF16 rounding, and safetensors serialization may change bytes across hardware or runtime; semantic and structural locks fail closed."
+  },
+  "schema": "blackfrost.dwm.locked-method.v1",
+  "serving": {
+    "dtype": "bfloat16",
+    "gpu_memory_utilization": 0.9,
+    "image": "vllm/vllm-openai:v0.31.0@sha256:c1c9f6fd5c109ba7f0546a59f5b2f15fb87f64c77782e90a27b648b42a8e67c3",
+    "max_model_len": 262144,
+    "max_num_seqs": 512,
+    "reasoning_parser": "qwen3",
+    "restart_policy": "unless-stopped",
+    "runtime": "vLLM",
+    "served_model_name": "Qwen/Qwen3.6-35B-A3B",
+    "version": "0.31.0"
+  },
+  "source": {
+    "checkpoint_digest": "sha256:88760187ccb2560500b1d51f0e75610658c956be010b4477bc11bb8265c7413b",
+    "config_sha256": "93a4693fa9d8392fbfccd4b3c9873f4bfdcb14fdede978b123d07d19675efe99",
+    "digest_algorithm": "sha256-canonical-file-inventory-v1",
+    "index_sha256": "41b9356101ebf8e7519e150dc811f80c4226e727301fbb032b890f006ed0be83",
+    "indexed_tensors": 1045,
+    "payload_bytes": 71926865825,
+    "payload_files": 40,
+    "precision": "bfloat16",
+    "quantized": false,
+    "repo": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "995ad96eacd98c81ed38be0c5b274b04031597b0",
+    "source_lock": "assets/source-lock.json",
+    "source_lock_sha256": "07cc4141def9c9ad77251badd690efa5542db478ba78ce89417ea3e233d437e7",
+    "weight_shards": 26
+  },
+  "version": "1.0.0"
+}

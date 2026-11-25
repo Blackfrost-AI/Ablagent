@@ -1,21 +1,22 @@
 """Security-phase tests: red-line gate, release gating, tamper detection."""
+
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
-from ablagent.security.redline import (
-    DEFAULT_MIN_ROWS, GateResult, RedlineGateError,
-    classify_refusal, evaluate_holdout,
-)
 from ablagent.control.store import ControlStore
-
+from ablagent.security.redline import (
+    RedlineGateError,
+    classify_refusal,
+    evaluate_holdout,
+)
 
 # --------------------------------------------------------------------------
 # classify_refusal — the conservative classifier
 # --------------------------------------------------------------------------
+
 
 def test_classify_refusal_markers():
     assert classify_refusal("Sorry, but I can't comply with that request — it risks harm.")
@@ -37,11 +38,16 @@ def test_classify_refusal_non_refusals():
 # evaluate_holdout — fail-closed behavior
 # --------------------------------------------------------------------------
 
+
 def _holdout(n: int = 4) -> list[dict]:
     cats = ["minors", "self_harm", "bio", "targeted"]
     return [
-        {"id": f"sr-{i}", "expected_behavior": "refuse", "category": cats[i % 4],
-         "prompt": f"prompt {i}"}
+        {
+            "id": f"sr-{i}",
+            "expected_behavior": "refuse",
+            "category": cats[i % 4],
+            "prompt": f"prompt {i}",
+        }
         for i in range(n)
     ]
 
@@ -138,16 +144,25 @@ def test_gate_result_as_dict_roundtrip():
 # store measurement + release transitions
 # --------------------------------------------------------------------------
 
+
 def _completed_store(tmp_path: Path) -> ControlStore:
     """A store with SR completed (S6/S7 run first per the DAG)."""
-    store = ControlStore.initialize(tmp_path / "control",
-                                    run={"run_id": "test", "pack_id": "toy"},
-                                    principal={"kind": "test"})
-    for stage in ("S0_INTAKE", "S2_DIRECTIONS", "S3_DERISK", "S5_SERVE",
-                  "S6_DOMAIN_VERIFY", "S7_CAPABILITY_VERIFY", "SR_RELEASE_REDLINE"):
+    store = ControlStore.initialize(
+        tmp_path / "control", run={"run_id": "test", "pack_id": "toy"}, principal={"kind": "test"}
+    )
+    for stage in (
+        "S0_INTAKE",
+        "S2_DIRECTIONS",
+        "S3_DERISK",
+        "S5_SERVE",
+        "S6_DOMAIN_VERIFY",
+        "S7_CAPABILITY_VERIFY",
+        "SR_RELEASE_REDLINE",
+    ):
         control = store.load()
-        store.authorize_direct(stage, ["start"],
-                               expected_revision=control["revision"], principal="test")
+        store.authorize_direct(
+            stage, ["start"], expected_revision=control["revision"], principal="test"
+        )
         store.transition(stage, "start", expected_revision=control["revision"] + 1)
         control = store.load()
         store.transition(stage, "complete", expected_revision=control["revision"])
@@ -157,10 +172,13 @@ def _completed_store(tmp_path: Path) -> ControlStore:
 def test_record_measurement_accepted(tmp_path):
     store = _completed_store(tmp_path)
     control = store.load()
-    store.record_measurement("SR_RELEASE_REDLINE", {"passed": True, "rows": 4},
-                             expected_revision=control["revision"],
-                             gate_id="redline-holdout",
-                             criteria_digest="sha256:" + "a" * 64)
+    store.record_measurement(
+        "SR_RELEASE_REDLINE",
+        {"passed": True, "rows": 4},
+        expected_revision=control["revision"],
+        gate_id="redline-holdout",
+        criteria_digest="sha256:" + "a" * 64,
+    )
     control = store.load()
     assert control["stages"]["SR_RELEASE_REDLINE"]["measurement"] == "accepted"
     ev = control["stages"]["SR_RELEASE_REDLINE"]["evidence"]
@@ -170,10 +188,13 @@ def test_record_measurement_accepted(tmp_path):
 def test_record_measurement_rejected_on_fail(tmp_path):
     store = _completed_store(tmp_path)
     control = store.load()
-    store.record_measurement("SR_RELEASE_REDLINE", {"passed": False, "rows": 4},
-                             expected_revision=control["revision"],
-                             gate_id="redline-holdout",
-                             criteria_digest="sha256:" + "a" * 64)
+    store.record_measurement(
+        "SR_RELEASE_REDLINE",
+        {"passed": False, "rows": 4},
+        expected_revision=control["revision"],
+        gate_id="redline-holdout",
+        criteria_digest="sha256:" + "a" * 64,
+    )
     control = store.load()
     assert control["stages"]["SR_RELEASE_REDLINE"]["measurement"] == "automatic_failed"
 
@@ -182,10 +203,13 @@ def test_record_measurement_malformed_fails(tmp_path):
     store = _completed_store(tmp_path)
     control = store.load()
     with pytest.raises(Exception, match="boolean 'passed'"):
-        store.record_measurement("SR_RELEASE_REDLINE", {"rows": 4},  # no passed
-                                 expected_revision=control["revision"],
-                                 gate_id="redline-holdout",
-                                 criteria_digest="sha256:" + "a" * 64)
+        store.record_measurement(
+            "SR_RELEASE_REDLINE",
+            {"rows": 4},  # no passed
+            expected_revision=control["revision"],
+            gate_id="redline-holdout",
+            criteria_digest="sha256:" + "a" * 64,
+        )
 
 
 def test_release_check_requires_accepted_measurements(tmp_path):

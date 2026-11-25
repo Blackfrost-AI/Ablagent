@@ -12,6 +12,11 @@ Read it fully before acting.
   executor** for small dense HuggingFace checkpoints.
 - One published worked example is vendored byte-identical:
   `examples/inkling-2-mini-derisked/` (see its `PROVENANCE.json`).
+- A **recipe library** of finalized GPU-scale playbooks is vendored
+  byte-identical under `recipes/` (see `recipes/README.md` and
+  `recipes/snapshots.lock.json`). Recipes are immutable snapshots and
+  run-record claims — never copy their hyperparameters onto another
+  checkpoint, never edit them in place.
 - No credentials, no private holdouts, no operational endpoints. Keep it that way.
 
 ## Boot sequence (every session)

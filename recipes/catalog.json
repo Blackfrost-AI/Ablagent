@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-10-11T05:48:15.488960Z",
+  "inclusion_policy": "Only exact snapshots of Blackfrost DWM recipe repositories that were public at import time.",
+  "license": "Apache-2.0",
+  "recipes": [
+    {
+      "id": "qwen-9b-class",
+      "method_summary": "Alpha 1.0, three fresh-capture rounds, norm-preserving residual-write edits for Qwen 9B-class checkpoints.",
+      "name": "Qwen 9B class DWM runbook",
+      "origin": {
+        "commit": "1352ce4ad4d7fc39d5c8ef901d7fd1e16732d61a",
+        "github_detected_license": null,
+        "repository": "Blackfrost-AI/blackfrost-dwm-qwen9b-runbook",
+        "url": "https://github.com/Blackfrost-AI/blackfrost-dwm-qwen9b-runbook",
+        "visibility_at_import": "public"
+      },
+      "path": "recipes/qwen-9b-class",
+      "runtime_self_test": [
+        "python3",
+        "run_dwm.py",
+        "--self-test"
+      ],
+      "runtime_self_test_requires": [
+        "torch"
+      ],
+      "snapshot_files": 10,
+      "snapshot_identity": "sha256:a6acd1b5587d2a3fccc60c69cee54fcb1afc9f2568d27bf07124b14b02cc5019",
+      "start": "recipes/qwen-9b-class/START-HERE.md",
+      "verify": [
+        "python3",
+        "-m",
+        "py_compile",
+        "run_dwm.py",
+        "lib/dwm_core.py"
+      ],
+      "version": "unversioned-public-snapshot"
+    },
+    {
+      "id": "qwen3.6-35b-a3b",
+      "method_summary": "Stock BF16 alpha 1.0 x3 with fresh per-pass capture, 38 attention-output targets, and exact non-target preservation.",
+      "name": "Qwen3.6-35B-A3B stock BF16 DWM",
+      "origin": {
+        "commit": "f23bbc8cb31232c6d6aa8cee5aad5b6534c1c047",
+        "github_detected_license": "Apache-2.0",
+        "repository": "Blackfrost-AI/Qwen3.6-35B-A3B-DWM-recepie",
+        "url": "https://github.com/Blackfrost-AI/Qwen3.6-35B-A3B-DWM-recepie",
+        "visibility_at_import": "public"
+      },
+      "path": "recipes/qwen3.6-35b-a3b",
+      "snapshot_files": 32,
+      "snapshot_identity": "sha256:4c34da216bad2e8dbca3afc6ba2d9f3ea3e93d55919275b8788cff11d120fd78",
+      "start": "recipes/qwen3.6-35b-a3b/AGENTS.md",
+      "verify": [
+        "python3",
+        "scripts/verify_package.py"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "glm-5.3-bf16-a2.2",
+      "method_summary": "Non-Flash GLM-5.3 BF16 DWM32 alpha 2.2 exact method with pinned direction derivation and NVFP4 serialization.",
+      "name": "GLM-5.3 BF16 DWM32 alpha 2.2",
+      "origin": {
+        "commit": "476bbc5612cec6a7bf4b02989af6c4651945f022",
+        "github_detected_license": "Apache-2.0",
+        "repository": "Blackfrost-AI/GLM-5.3-DWM32-A2.2-Recipe",
+        "url": "https://github.com/Blackfrost-AI/GLM-5.3-DWM32-A2.2-Recipe",
+        "visibility_at_import": "public"
+      },
+      "path": "recipes/glm-5.3-bf16-a2.2",
+      "snapshot_files": 33,
+      "snapshot_identity": "sha256:620f95b1c0b3c929395a8d5d6830be73030f11760375b760db1b33888cecbb7b",
+      "start": "recipes/glm-5.3-bf16-a2.2/AGENTS.md",
+      "verify": [
+        "python3",
+        "scripts/verify_package.py"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "glm-5.3-flash-a2.8",
+      "method_summary": "GLM-5.3-Flash BF16 alpha 2.8 one-pass method with a fail-closed missing-direction boundary.",
+      "name": "GLM-5.3-Flash BF16 DWM alpha 2.8",
+      "origin": {
+        "commit": "77443f94a7d895ef80456bf1af08467552f2a374",
+        "github_detected_license": "Apache-2.0",
+        "repository": "Blackfrost-AI/GLM-5.3-Flash-DWM-recepie",
+        "url": "https://github.com/Blackfrost-AI/GLM-5.3-Flash-DWM-recepie",
+        "visibility_at_import": "public"
+      },
+      "path": "recipes/glm-5.3-flash-a2.8",
+      "snapshot_files": 25,
+      "snapshot_identity": "sha256:4754a552cd43a5a2a061cc95c2b49bdfafef263f89ff2f3c6b21fae14796856d",
+      "start": "recipes/glm-5.3-flash-a2.8/AGENTS.md",
+      "verify": [
+        "python3",
+        "scripts/verify_package.py"
+      ],
+      "version": "1.0.0"
+    }
+  ],
+  "repository_status": "private_staging",
+  "schema": "blackfrost.ablagent.recipe-catalog.v1",
+  "version": "0.1.0"
+}
