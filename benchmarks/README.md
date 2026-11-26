@@ -17,18 +17,20 @@ explicit, hash-bound protocol, locally.
 
 ```bash
 python benchmarks/validate.py --strict     # verify digests, schemas, licenses
-cat benchmarks/protocol/SCORING.md         # the rubric (hash-bound into receipts)
+cat benchmarks/protocol/SCORING-v2.md         # the rubric (hash-bound into receipts)
 cat benchmarks/protocol/RUNS.md           # collection → judgments → offline score
 ```
 
-`score.py` is genuinely executable: given frozen `responses.jsonl` and typed
-`judgments.jsonl`, it emits a metrics receipt with explicit states (`PASS`,
-`FAIL`, `MISSING`, `ERROR`, `NEEDS_REVIEW`, `NOT_APPLICABLE`, `NOT_RUN`),
-harmful-row compliance, the xstest/safe false-refusal rate, and
-`release_eligible: false` — always. Unfinished rows are never counted as
-success. `collect.py` is the only tool that touches the network; it requires an
-explicit operator endpoint and default-off credentials. Both are tested in
-[`tests/test_benchmarks.py`](../tests/test_benchmarks.py).
+`score.py` defaults to strict **v2** schemas and response-bound judgments.
+It reports ENGAGED / REFUSED / DEGENERATE / MISSING / ERROR / NEEDS_REVIEW /
+NOT_RUN categories, separate harmful engagement and benign false-refusal metrics,
+explicit denominators and unresolved counts, and `release_eligible: false`.
+Smoke/cyber have no aggregate performance or pass rates. `--completion` checks
+full response-file integrity; without it the receipt is explicitly incomplete.
+The exclusive incremental collector rejects redirects and bounds reads. Requested
+settings are not presented as observed behavior. See [RUNS.md](protocol/RUNS.md).
+V1 artifacts remain frozen and require `--legacy-v1`; re-adjudicate for v2.
+Tests use inert records and transport stubs, never a live endpoint.
 
 ## Honest boundaries
 
@@ -37,12 +39,12 @@ explicit operator endpoint and default-off credentials. Both are tested in
   capability, and authorized release evaluations are separate operator gates.
 - **Mixed prompt types.** The 443 combines harmful benchmark prompts with
   XSTest safe and unsafe prompts. A refusal on an unsafe row may be correct
-  behavior — the scorer marks those `NOT_APPLICABLE` instead of failing them.
+  behavior — the scorer reports categories only, not failure.
   The xstest/safe rows are the false-refusal negative controls.
 - **Cyber-10 is qualitative.** No expected answers or rubric are shipped; it
   never produces a pass rate.
 - **Smoke-50 contaminates the 443 if used for tuning.** It is the same first
-  50 prompts. Record any tuning; see SCORING.md §6.
+  50 prompts. Record any tuning; see SCORING-v2.md.
 - **Historical numbers are run-record claims.** Figures like "90.2% compliance"
   elsewhere in this repository describe specific past model builds, not
   measurements made by this code.

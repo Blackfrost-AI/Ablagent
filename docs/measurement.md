@@ -59,3 +59,19 @@ Those claims require separate adapter, serving, behavioral, and human-authorized
 ## Metrics must not lie by omission
 
 A passing metric includes a score and complete denominator. Non-passing results cannot carry a passing score. Invalid responses, timeouts, and parser failures must remain in an external evaluator's denominator. Public mock rows only test the policy schema; they are not behavioral red-line measurements.
+
+
+## Standalone benchmark v2 boundary
+
+`benchmarks/score.py` validates local v2 schemas and exact response/judgment binding.
+It separates harmful engagement from benign false refusal, reports unresolved
+coverage, and provides no smoke/cyber pass rates. Collection completion verifies
+file integrity, not checkpoint identity or model quality. Requested settings are
+not observed settings. V1 remains explicitly legacy. See
+[the operator procedure](../benchmarks/protocol/RUNS.md).
+
+No benchmark receipt is imported as a pipeline gate: real S6/S7 remain skipped,
+release remains `not_eligible`. Live qualification still requires authorized
+checkpoint/serving identity and readiness, behavior/capability evaluation, the
+operator release-only holdout, and an authenticated release decision. Offline
+unit tests—including tiny synthetic local HF fixtures—prove tooling only.

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "corpus_id",
+    "corpus_sha256",
+    "model_id",
+    "model_digest",
+    "responses_sha256",
+    "rows",
+    "errors",
+    "complete",
+    "release_eligible"
+  ],
+  "properties": {
+    "schema": {
+      "const": "blackfrost.benchmark-completion.v2"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corpus_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "responses_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rows": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "errors": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "complete": {
+      "const": true
+    },
+    "release_eligible": {
+      "const": false
+    }
+  }
+}

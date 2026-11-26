@@ -1,92 +1,74 @@
-# Running a benchmark (operator procedure)
+# Running a benchmark (v2 operator procedure)
 
-The repository ships corpora and offline tooling. **It does not ship responses,
-judgments, scores, or a served model.** Collection is an explicitly
-operator-initiated action against the operator's own endpoint.
+Install the project dependencies (`pip install -e '.[dev]'`). All tooling except
+explicit collection is offline. No model is served or qualified by these commands.
+Keep artifacts under a local gitignored directory; never commit actual responses.
 
-## Layout
-
-```
-benchmarks/
-  REGISTRY.yaml               # corpora, digests, splits
-  PROVENANCE.md / NOTICE.md  # license scope
-  corpora/*.jsonl             # prompt-only, hash-pinned
-  protocol/*.schema.json     # responses / judgments / metrics
-  protocol/SCORING.md         # rubric (hash-bound)
-  validate.py                 # offline corpus verifier
-  collect.py                  # optional, explicit, network collector
-  score.py                    # offline, hash-bound scorer
-  fixtures/                   # synthetic response/judgment examples
-```
-
-Run artifacts (responses, judgments, metrics) belong in a **local, gitignored**
-directory such as `.scratch/benchmark-runs/<run-id>/`. Never commit model
-outputs or scores.
-
-## 1. Verify the corpora before any run
+1. Run `python benchmarks/validate.py --strict` and read
+   [SCORING-v2.md](SCORING-v2.md). Do not repair frozen prompts to pass validation.
+2. Only with separate operator authorization, collect against the explicit endpoint:
 
 ```bash
-python benchmarks/validate.py --strict
-```
-
-This checks all three digests, exact row schemas, the smoke-50 prompt
-relation, license-file presence, and the namespace allowlist. A failure means
-the corpus changed — stop, do not "fix" prompts to make a run pass.
-
-## 2. Collect responses (optional, explicit network step)
-
-```bash
-python benchmarks/collect.py \
-  --corpus R1-FALSE-REFUSAL-443-v1 \
-  --endpoint "$OPERATOR_ENDPOINT" \
-  --model "$MODEL_ID" \
-  --out .scratch/benchmark-runs/2026-example/responses.jsonl \
+python benchmarks/collect.py --corpus R1-FALSE-REFUSAL-443-v1 \
+  --endpoint "$OPERATOR_ENDPOINT" --model "$MODEL_ID" \
+  --model-digest "$CHECKPOINT_SHA256" --run-id "$RUN_ID" \
+  --out .scratch/benchmark-runs/example/responses.jsonl \
   --temperature 1.0 --top-p 0.95 --max-tokens 16384 --seed 42
 ```
 
-`collect.py` requires an explicit endpoint (no defaults), talks only to that
-OpenAI-compatible chat-completions URL, never writes outside the given output
-path, and refuses to overwrite an existing file. It records raw completion,
-finish reason, decoding, model identity, timestamps, and a per-file digest.
-For thinking-enabled models grade the extracted answer region per
-[SCORING.md](SCORING.md) §2/§4. If your endpoint is not OpenAI-compatible,
-write an adapter that emits the same `responses.jsonl` schema — never edit the
-corpus to fit a harness.
+The checkpoint digest is an operator assertion, not a server attestation.
+Set credentials via `ABLAGENT_BENCHMARK_TOKEN`; avoid command-line secrets.
+URLs with credentials, query strings or fragments are rejected. Redirects and
+environment proxies are disabled. Responses are bounded to 8 MiB per request.
+Use TLS for credentials: HTTP is accepted for operator-controlled local serving
+but is unencrypted. No automatic retries, resume or overwrite. Records are written
+and fsynced incrementally. Completion creates `responses.jsonl.complete.json`
+with the **full** SHA-256, coverage and error count. An interrupted file is incomplete;
+start a new run/path. Completion with errors is not successful measurement.
 
-## 3. Produce typed judgments
+Template/thinking flags record intent only: the generic adapter cannot enforce
+or observe them. Decoding parameters are transmitted, not proven applied.
+`observed_settings` records only server-returned model ID (null when absent),
+unknown thinking and null template. Mismatched returned model ID is an error.
+This does not establish checkpoint identity, comparability or serving readiness.
 
-Write `judgments.jsonl` per `judgments.schema.json`. A human or an LLM judge
-adjudicates each row using SCORING.md; the deterministic classifier in
-`score.py` is only a prefilter. Record evaluator identity and rubric hash
-(`sha256sum benchmarks/protocol/SCORING.md`). Never auto-fill `engaged` for
-rows you did not read.
+3. Re-adjudicate each full extracted answer using `judgments.v2.schema.json`.
+   Include evaluator ID/version and, for LLM judges, judging-prompt SHA-256.
+   Repeat run/model/corpus/row identity and bind the exact response record:
 
-## 4. Score offline
-
-```bash
-python benchmarks/score.py \
-  --corpus R1-FALSE-REFUSAL-443-v1 \
-  --responses .scratch/benchmark-runs/2026-example/responses.jsonl \
-  --judgments .scratch/benchmark-runs/2026-example/judgments.jsonl \
-  --out .scratch/benchmark-runs/2026-example/metrics.json
+```python
+from benchmarks.contracts import digest, jsonl, sha256
+responses = jsonl(".scratch/benchmark-runs/example/responses.jsonl", "responses")
+response_sha256 = digest(responses[0])  # entire canonical response object
+rubric_sha256 = sha256("benchmarks/protocol/SCORING-v2.md")
 ```
 
-The scorer validates corpus identity, duplicate ids, unknown ids, rubric hash,
-and unfinished-row handling; emits a metrics receipt; and always sets
-`release_eligible: false`. To record an intentionally unrun corpus:
+Never auto-fill a judgment for an unread answer. Deterministic prefilters are not
+adjudicators. See `tests/test_benchmarks_v2.py` for schema-valid inert examples.
+
+4. Score offline, supplying the completion receipt to verify collection integrity:
 
 ```bash
-python benchmarks/score.py --corpus R1-FALSE-REFUSAL-443-v1 --not-run
+python benchmarks/score.py --corpus R1-FALSE-REFUSAL-443-v1 \
+  --responses .scratch/benchmark-runs/example/responses.jsonl \
+  --judgments .scratch/benchmark-runs/example/judgments.jsonl \
+  --completion .scratch/benchmark-runs/example/responses.jsonl.complete.json \
+  --out .scratch/benchmark-runs/example/metrics.json
 ```
 
-## 5. Report honestly
+Omitting `--completion` produces explicitly incomplete partial analysis, never a
+verified complete collection. To record no execution use `--not-run` without inputs.
+Do not mix runs or models. Stale/swapped judgments, invalid schemas and unknown rows
+fail closed. Corrections require new versioned evidence and re-adjudication.
 
-- Separate harmful-row engagement, xstest/safe false-refusal rate, xstest/unsafe
-  behavior, and cyber-10 qualitative notes. Never collapse them into one
-  number.
-- Report the unfinished rate and all warnings alongside any rate.
-- State the model digest, decoding, template, thinking mode, collector version,
-  and evaluator identity.
-- Label any smoke-tuned result as development-influenced.
-- A score is not a release decision. The real executor in this repository
-  still records S6/S7 as skipped and ends `not_eligible`.
+5. Report all categories, denominators, unresolved counts and warnings. Harmful
+engagement is not benign false refusal. Smoke/cyber have no aggregate pass rates.
+Label smoke-tuned results development-influenced. A score does not complete S6/S7,
+capability, serving or release. Every receipt remains `release_eligible: false`.
+
+## Legacy v1
+
+The unversioned schemas and `SCORING.md` remain frozen for audit. V1 inputs require
+`score.py --legacy-v1`; their unbound judgments and historical mixed-population
+semantics are explicitly legacy, not v2 evidence. Do not simply relabel them.
+The placeholder files under `fixtures/` are legacy illustrations only.

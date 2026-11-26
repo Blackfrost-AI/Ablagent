@@ -12,10 +12,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import re
 import sys
 from pathlib import Path
+
+try:
+    from . import registry
+    from .contracts import jsonl
+except ImportError:
+    import registry
+    from contracts import jsonl
 
 ROOT = Path(__file__).resolve().parent
 REGISTRY = ROOT / "REGISTRY.yaml"
@@ -71,41 +77,19 @@ def sha256(path: Path) -> str:
 
 
 def parse_registry() -> dict:
-    """Read only the simple registry fields we need (no PyYAML dependency)."""
-    text = REGISTRY.read_text()
-    corpora: dict[str, dict] = {}
-    current: dict | None = None
-    for line in text.splitlines():
-        m = re.match(r"^  - id: (\S+)", line)
-        if m:
-            current = {"id": m.group(1)}
-            corpora[current["id"]] = current
-            continue
-        if current and line.startswith("    "):
-            m = re.match(r"^    (file|sha256|rows): (\S+)", line)
-            if m:
-                key, val = m.group(1), m.group(2).strip("'\"")
-                current[key] = int(val) if key == "rows" else val
-        elif current and line and not line.startswith(" "):
-            current = None
-    return {"corpora": corpora}
+    return {"corpora": registry.load(ROOT)}
 
 
 def load_jsonl(path: Path) -> list[dict]:
-    rows = []
-    for n, line in enumerate(path.read_text().splitlines(), 1):
-        if not line.strip():
-            raise ValueError(f"{path.name}:{n}: blank line")
-        obj = json.loads(line)
-        if not isinstance(obj, dict):
-            raise ValueError(f"{path.name}:{n}: row is not an object")
-        rows.append(obj)
-    return rows
+    return jsonl(path)
 
 
 def check() -> list[str]:
     errors: list[str] = []
-    reg = parse_registry()["corpora"]
+    try:
+        reg = parse_registry()["corpora"]
+    except (ValueError, OSError) as exc:
+        return [str(exc)]
     if set(reg) != ALLOWED_IDS:
         errors.append(f"registry corpus ids drift: {sorted(reg)}")
 
@@ -114,7 +98,7 @@ def check() -> list[str]:
         errors.append(f"corpora file allowlist violated: {sorted(actual_files)}")
 
     for cid, entry in reg.items():
-        path = ROOT / entry["file"]
+        path = registry.confined(ROOT, entry["file"])
         if not path.exists():
             errors.append(f"{cid}: missing {entry['file']}")
             continue
@@ -123,7 +107,8 @@ def check() -> list[str]:
             errors.append(f"{cid}: sha256 {digest} != registry {entry['sha256']}")
         try:
             rows = load_jsonl(path)
-        except ValueError as exc:
+            registry.validate_rows(cid, rows, entry)
+        except (ValueError, OSError, UnicodeError) as exc:
             errors.append(str(exc))
             continue
         if len(rows) != EXPECTED_ROWS[cid] or len(rows) != entry["rows"]:
@@ -162,7 +147,7 @@ def check() -> list[str]:
             # id fields must NOT be present in smoke rows (it is a prompt sequence)
             if any("id" in r for r in rows50):
                 errors.append("smoke-50 rows unexpectedly carry id fields")
-        except ValueError as exc:
+        except (ValueError, OSError, UnicodeError) as exc:
             errors.append(str(exc))
 
     for name in ("AdvBench-MIT.txt", "StrongREJECT-MIT.txt", "CC-BY-4.0-legalcode.txt"):

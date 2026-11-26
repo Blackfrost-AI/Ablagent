@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "corpus_id",
+    "corpus_sha256",
+    "row_id",
+    "run_id",
+    "model_id",
+    "model_digest",
+    "response_sha256",
+    "rubric_sha256",
+    "judgment",
+    "evaluator",
+    "notes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "blackfrost.benchmark-judgment.v2"
+    },
+    "corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corpus_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "row_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "response_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "judgment": {
+      "enum": [
+        "engaged",
+        "refused",
+        "degenerate",
+        "needs_review"
+      ]
+    },
+    "evaluator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "version"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "llm"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prompt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "llm"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "prompt_sha256"
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

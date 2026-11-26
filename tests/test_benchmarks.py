@@ -7,8 +7,9 @@ outputs are involved.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
+import importlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -21,10 +22,7 @@ CORPORA = BENCH / "corpora"
 
 
 def _load(name: str):
-    spec = importlib.util.spec_from_file_location(f"benchmark_{name}", BENCH / f"{name}.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+    return importlib.import_module(f"benchmarks.{name}")
 
 
 def _digest(corpus: str) -> str:
@@ -98,33 +96,30 @@ def test_validate_strict_passes():
     assert "PASS" in out.stdout
 
 
-def test_validate_detects_tampered_digest(tmp_path):
+def test_validate_detects_tampered_digest(tmp_path, monkeypatch):
     v = _load("validate")
-    path = CORPORA / "R1-FALSE-REFUSAL-443-v1.jsonl"
-    original = path.read_bytes()
-    try:
-        path.write_bytes(original + b"\n")
-        assert any("sha256" in e for e in v.check())
-        proc = subprocess.run(
-            [sys.executable, str(BENCH / "validate.py"), "--strict"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        assert proc.returncode == 1
-    finally:
-        path.write_bytes(original)
-    assert v.check() == []
+    root = tmp_path / "benchmarks"
+    shutil.copytree(BENCH, root)
+    monkeypatch.setattr(v, "ROOT", root)
+    path = root / "corpora/R1-FALSE-REFUSAL-443-v1.jsonl"
+    path.write_bytes(path.read_bytes() + b"\n")
+    assert any("sha256" in e for e in v.check())
+    proc = subprocess.run(
+        [sys.executable, str(root / "validate.py"), "--strict"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 1
 
 
-def test_validate_rejects_extra_corpus(tmp_path):
+def test_validate_rejects_extra_corpus(tmp_path, monkeypatch):
     v = _load("validate")
-    extra = CORPORA / "UNDECLARED.jsonl"
-    try:
-        extra.write_text("{}\n")
-        assert any("allowlist" in e for e in v.check())
-    finally:
-        extra.unlink(missing_ok=True)
+    root = tmp_path / "benchmarks"
+    shutil.copytree(BENCH, root)
+    monkeypatch.setattr(v, "ROOT", root)
+    (root / "corpora/UNDECLARED.jsonl").write_text("{}\n")
+    assert any("allowlist" in e for e in v.check())
 
 
 def test_score_states_full_machine(tmp_path):
@@ -147,7 +142,7 @@ def test_score_states_full_machine(tmp_path):
         ids[4]: "engaged",  # ignored: collector error dominates
     }
     rp, jp = _make(tmp_path, corpus, rows, judgments)
-    out = s.score(corpus, rp, jp)
+    out = s.score_legacy(corpus, rp, jp)
     assert out["release_eligible"] is False
     st = out["states"]
     assert st["PASS"] == 1
@@ -168,7 +163,7 @@ def test_score_missing_judgment_is_needs_review_not_pass(tmp_path):
     s = _load("score")
     corpus = "R1-FALSE-REFUSAL-443-v1"
     rp, jp = _make(tmp_path, corpus, [{"row_id": "r1fr443-0001"}], {})
-    out = s.score(corpus, rp, jp)
+    out = s.score_legacy(corpus, rp, jp)
     assert out["states"] == {"NEEDS_REVIEW": 1, "MISSING": 442}
     assert out["counts"]["judged"] == 0
 
@@ -182,7 +177,7 @@ def test_score_rejects_rubric_hash_mismatch(tmp_path):
     obj["rubric_sha256"] = "0" * 64
     jp.write_text(json.dumps(obj) + "\n")
     with pytest.raises(ValueError, match="rubric hash mismatch"):
-        s.score(corpus, rp, jp)
+        s.score_legacy(corpus, rp, jp)
 
 
 def test_score_rejects_duplicate_and_unknown_ids(tmp_path):
@@ -192,13 +187,13 @@ def test_score_rejects_duplicate_and_unknown_ids(tmp_path):
     line = rp.read_text().splitlines()[0]
     rp.write_text(line + "\n" + line + "\n")
     with pytest.raises(ValueError, match="duplicate"):
-        s.score(corpus, rp, jp)
+        s.score_legacy(corpus, rp, jp)
     rp.write_text(line + "\n")
     bad = json.loads(line)
     bad["row_id"] = "not-in-corpus"
     rp.write_text(json.dumps(bad) + "\n")
     with pytest.raises(ValueError, match="unknown row_id"):
-        s.score(corpus, rp, jp)
+        s.score_legacy(corpus, rp, jp)
 
 
 def test_curly_apostrophe_prefilter():
@@ -211,12 +206,12 @@ def test_curly_apostrophe_prefilter():
 
 def test_score_not_run_and_cyber_qualitative(tmp_path):
     s = _load("score")
-    out = s.score("R1-FALSE-REFUSAL-443-v1", None, None, not_run=True)
+    out = s.score_legacy("R1-FALSE-REFUSAL-443-v1", None, None, not_run=True)
     assert out["states"] == {"NOT_RUN": 443}
     assert any("NOT_RUN" in w for w in out["warnings"])
     cyber = "CYBER-REASONING-10-v1"
     rp, jp = _make(tmp_path, cyber, [{"row_id": "cyb-01"}], {"cyb-01": "engaged"})
-    out = s.score(cyber, rp, jp)
+    out = s.score_legacy(cyber, rp, jp)
     assert out["states"] == {"PASS": 1, "MISSING": 9}
     assert any("qualitative" in w for w in out["warnings"])
 
@@ -225,6 +220,6 @@ def test_score_smoke50_uses_smoke_ids(tmp_path):
     s = _load("score")
     corpus = "R1-SMOKE-50-v1"
     rp, jp = _make(tmp_path, corpus, [{"row_id": "smoke-1"}], {"smoke-1": "engaged"})
-    out = s.score(corpus, rp, jp)
+    out = s.score_legacy(corpus, rp, jp)
     assert out["states"] == {"PASS": 1, "MISSING": 49}
     assert out["rates"]["unfinished_rate"] == 49 / 50

@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "blackfrost.benchmark.responses.v2",
+  "title": "Strict response record v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "corpus_id",
+    "corpus_sha256",
+    "row_id",
+    "run_id",
+    "model_id",
+    "model_digest",
+    "response_text",
+    "answer_text",
+    "reasoning_text",
+    "finish_reason",
+    "status",
+    "requested_settings",
+    "observed_settings",
+    "collector_version",
+    "sequence"
+  ],
+  "properties": {
+    "schema": {
+      "const": "blackfrost.benchmark-response.v2"
+    },
+    "corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corpus_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "row_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "response_text": {
+      "type": "string"
+    },
+    "answer_text": {
+      "type": "string"
+    },
+    "reasoning_text": {
+      "type": "string"
+    },
+    "finish_reason": {
+      "enum": [
+        "stop",
+        "length",
+        "timeout",
+        "error",
+        "unknown"
+      ]
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "error",
+        "timeout",
+        "truncated"
+      ]
+    },
+    "requested_settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temperature",
+        "top_p",
+        "max_tokens",
+        "chat_template",
+        "thinking_mode"
+      ],
+      "properties": {
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "top_p": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "chat_template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thinking_mode": {
+          "enum": [
+            "on",
+            "off",
+            "intrinsic",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "observed_settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "chat_template",
+        "thinking_mode"
+      ],
+      "properties": {
+        "model_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "chat_template": {
+          "type": "null"
+        },
+        "thinking_mode": {
+          "const": "unknown"
+        }
+      }
+    },
+    "collector_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

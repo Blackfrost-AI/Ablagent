@@ -25,3 +25,19 @@
 | Confidentiality/access control | **Not provided** | Bank visibility is a policy label only |
 
 An adapter may be added without weakening these defaults. Its support must be stated independently, with passing conformance and real checkpoint/serving/behavior evidence appropriate to its claim. Structural validation alone never justifies a real-model support claim. See [AGENTS.md](../AGENTS.md) for the current executor envelope and [benchmarks/README.md](../benchmarks/README.md) for the measurement layer.
+
+
+## Standalone benchmark v2 boundary
+
+`benchmarks/score.py` validates local v2 schemas and exact response/judgment binding.
+It separates harmful engagement from benign false refusal, reports unresolved
+coverage, and provides no smoke/cyber pass rates. Collection completion verifies
+file integrity, not checkpoint identity or model quality. Requested settings are
+not observed settings. V1 remains explicitly legacy. See
+[the operator procedure](../benchmarks/protocol/RUNS.md).
+
+No benchmark receipt is imported as a pipeline gate: real S6/S7 remain skipped,
+release remains `not_eligible`. Live qualification still requires authorized
+checkpoint/serving identity and readiness, behavior/capability evaluation, the
+operator release-only holdout, and an authenticated release decision. Offline
+unit tests—including tiny synthetic local HF fixtures—prove tooling only.

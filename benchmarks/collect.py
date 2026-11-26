@@ -1,106 +1,140 @@
 #!/usr/bin/env python3
-"""Explicit, network-isolated collector for frozen benchmark responses.
-
-This is the ONLY tool in benchmarks/ that may touch the network. It requires
-an operator-supplied OpenAI-compatible chat-completions endpoint, refuses to
-overwrite an existing output, and never modifies the prompt corpora. All other
-benchmark tooling is strictly offline.
-
-No endpoint default, no telemetry, no background behavior. The endpoint is
-used only for the exact rows of the selected corpus. Set credentials through
-your own environment; this tool reads no API keys from files.
-"""
+"""Explicit OpenAI-compatible collector. No redirect, resume, overwrite or telemetry."""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
+import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
-from datetime import UTC, datetime
 from pathlib import Path
 
+try:
+    from . import contracts as c
+    from . import registry
+    from .scoring_v2 import row_map, usable
+except ImportError:
+    import contracts as c
+    import registry
+    from scoring_v2 import row_map, usable
+
 ROOT = Path(__file__).resolve().parent
-CORPORA = ROOT / "corpora"
-CORPUS_IDS = ("R1-FALSE-REFUSAL-443-v1", "R1-SMOKE-50-v1", "CYBER-REASONING-10-v1")
-COLLECTOR_VERSION = "blackfrost.benchmark-collector.v1"
+COLLECTOR_VERSION = "blackfrost.benchmark-collector.v2"
+MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 
 
-def corpus_sha(corpus_id: str) -> str:
-    lines = (ROOT / "REGISTRY.yaml").read_text().splitlines()
-    for i, line in enumerate(lines):
-        if line.strip() == f"- id: {corpus_id}":
-            for nxt in lines[i + 1 : i + 8]:
-                if nxt.strip().startswith("sha256:"):
-                    return nxt.strip().split("sha256:", 1)[1].strip()
-    raise ValueError(f"no sha256 for {corpus_id!r}")
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ValueError("redirect refused")
 
 
-def row_id(corpus_id: str, row: dict, position: int) -> str:
-    return row.get("id") or f"smoke-{position}" if corpus_id == "R1-SMOKE-50-v1" else row["id"]
+def endpoint_check(endpoint):
+    try:
+        url = urllib.parse.urlsplit(endpoint)
+        if (
+            url.scheme not in {"http", "https"}
+            or not url.hostname
+            or url.username is not None
+            or url.password is not None
+            or url.query
+            or url.fragment
+            or any(ord(ch) <= 32 or ord(ch) == 127 for ch in endpoint)
+        ):
+            raise ValueError("invalid endpoint")
+        _ = url.port
+    except (ValueError, AttributeError) as exc:
+        raise ValueError("invalid endpoint") from exc
 
 
-def chat_completion(endpoint: str, payload: dict, headers: dict[str, str]) -> dict:
+def parse_headers(values):
+    headers = {}
+    for value in values:
+        if ":" not in value:
+            raise ValueError("invalid header")
+        key, val = value.split(":", 1)
+        key, val = key.strip().lower(), val.strip()
+        if (
+            not re.fullmatch(r"[a-z0-9!#$%&\'*+.^_`|~-]+", key)
+            or key in headers
+            or key in {"host", "content-length", "content-type", "transfer-encoding"}
+            or any(ord(ch) < 32 or ord(ch) == 127 or ord(ch) > 255 for ch in val)
+        ):
+            raise ValueError("invalid or duplicate header")
+        headers[key] = val
+    token = os.environ.get("ABLAGENT_BENCHMARK_TOKEN")
+    if token and "authorization" not in headers:
+        if any(ord(ch) < 32 or ord(ch) > 126 for ch in token):
+            raise ValueError("invalid token encoding")
+        headers["authorization"] = f"Bearer {token}"
+    return headers
+
+
+def chat_completion(endpoint, payload, headers):
+    endpoint_check(endpoint)
     req = urllib.request.Request(
         endpoint,
-        data=json.dumps(payload).encode(),
+        data=c.canonical(payload),
         headers={"Content-Type": "application/json", **headers},
         method="POST",
     )
-    # The endpoint is operator-supplied and required explicitly; no defaults.
-    with urllib.request.urlopen(req, timeout=600) as resp:
-        return json.loads(resp.read())
+    # Disable environment proxies: credentials go only to the explicit endpoint.
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    with opener.open(req, timeout=600) as resp:
+        if not 200 <= resp.status < 300:
+            raise ValueError("non-success HTTP status")
+        data = resp.read(MAX_RESPONSE_BYTES + 1)
+        if len(data) > MAX_RESPONSE_BYTES:
+            raise ValueError("response exceeds byte limit")
+        return c.loads(data.decode("utf-8"))
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    ap.add_argument("--corpus", required=True, choices=CORPUS_IDS)
-    ap.add_argument(
-        "--endpoint", required=True, help="operator's OpenAI-compatible chat/completions URL"
-    )
-    ap.add_argument("--model", required=True, help="model id served at the endpoint")
-    ap.add_argument("--out", required=True, type=Path)
-    ap.add_argument("--temperature", type=float, default=1.0)
-    ap.add_argument("--top-p", type=float, default=0.95)
-    ap.add_argument("--max-tokens", type=int, default=16384)
-    ap.add_argument("--seed", type=int)
-    ap.add_argument("--chat-template", default="model-default")
-    ap.add_argument(
-        "--thinking-mode", choices=["on", "off", "intrinsic", "unknown"], default="unknown"
-    )
-    ap.add_argument(
-        "--model-digest", default="", help="operator-recorded checkpoint digest, when known"
-    )
-    ap.add_argument(
-        "--header", action="append", default=[], help="extra request header 'Name: value'"
-    )
-    args = ap.parse_args()
+def extract(raw, model):
+    if (
+        not isinstance(raw, dict)
+        or not isinstance(raw.get("choices"), list)
+        or len(raw["choices"]) != 1
+    ):
+        raise ValueError("invalid response shape")
+    observed = raw.get("model")
+    if observed is not None and (not isinstance(observed, str) or observed != model):
+        raise ValueError("returned model mismatch")
+    choice = raw["choices"][0]
+    if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
+        raise ValueError("invalid response choice")
+    msg = choice["message"]
+    answer = msg.get("content")
+    reasoning = msg.get("reasoning_content", msg.get("reasoning", ""))
+    if not isinstance(answer, str) or not isinstance(reasoning, str):
+        raise ValueError("non-text response")
+    finish = choice.get("finish_reason")
+    if finish not in ("stop", "length"):
+        raise ValueError("unsupported finish reason")
+    return answer, reasoning, finish, observed
 
-    corpus_path = CORPORA / f"{args.corpus}.jsonl"
-    if hashlib.sha256(corpus_path.read_bytes()).hexdigest() != corpus_sha(args.corpus):
-        print("COLLECT: FAIL — corpus digest drift; run validate.py first", file=sys.stderr)
-        return 1
-    if args.out.exists():
-        print(f"COLLECT: FAIL — refusing to overwrite {args.out}", file=sys.stderr)
-        return 1
-    args.out.parent.mkdir(parents=True, exist_ok=True)
 
-    headers: dict[str, str] = {}
-    for h in args.header:
-        if ":" not in h:
-            ap.error(f"--header needs 'Name: value', got {h!r}")
-        k, v = h.split(":", 1)
-        headers[k.strip()] = v.strip()
-    token = os.environ.get("ABLAGENT_BENCHMARK_TOKEN")
-    if token and "Authorization" not in headers:
-        headers["Authorization"] = f"Bearer {token}"
-
-    decoding = {
+def collect(args):
+    endpoint_check(args.endpoint)
+    headers = parse_headers(args.header)
+    if (
+        not c.finite(args.temperature)
+        or not 0 <= args.temperature <= 2
+        or not c.finite(args.top_p)
+        or not 0 < args.top_p <= 1
+        or type(args.max_tokens) is not int
+        or args.max_tokens < 1
+        or not re.fullmatch("[0-9a-f]{64}", args.model_digest)
+        or not args.run_id.strip()
+        or not args.model.strip()
+        or not args.chat_template.strip()
+    ):
+        raise ValueError("invalid collection settings/identity")
+    rows = row_map(registry.rows(ROOT, args.corpus))
+    corpus_sha = registry.load(ROOT)[args.corpus]["sha256"]
+    settings = {
         "temperature": args.temperature,
         "top_p": args.top_p,
         "max_tokens": args.max_tokens,
@@ -108,78 +142,117 @@ def main() -> int:
         "chat_template": args.chat_template,
         "thinking_mode": args.thinking_mode,
     }
-    rows = [json.loads(line) for line in corpus_path.read_text().splitlines() if line.strip()]
-    out_lines: list[str] = []
-    for position, row in enumerate(rows, 1):
-        rid = row_id(args.corpus, row, position)
-        payload = {
-            "model": args.model,
-            "messages": [{"role": "user", "content": row["prompt"]}],
-            "temperature": args.temperature,
-            "top_p": args.top_p,
-            "max_tokens": args.max_tokens,
-        }
-        if args.seed is not None:
-            payload["seed"] = args.seed
-        try:
-            raw = chat_completion(args.endpoint, payload, headers)
-            choice = (raw.get("choices") or [{}])[0]
-            msg = choice.get("message") or {}
-            text = msg.get("content") or ""
-            reasoning = msg.get("reasoning_content") or msg.get("reasoning") or ""
-            finish = choice.get("finish_reason") or "unknown"
-            rec = {
-                "schema": "blackfrost.benchmark-response.v1",
-                "corpus_id": args.corpus,
-                "corpus_sha256": corpus_sha(args.corpus),
-                "row_id": rid,
-                "response_text": json.dumps(raw, ensure_ascii=False),
-                "reasoning_text": reasoning,
-                "answer_text": text,
-                "finish_reason": finish
-                if finish in {"stop", "length", "error", "unknown", "timeout"}
-                else "unknown",
-                "status": "ok"
-                if finish == "stop"
-                else ("truncated" if finish == "length" else "error"),
-                "decoding": {k: v for k, v in decoding.items() if v is not None},
+    identity = {
+        "run_id": args.run_id,
+        "model_id": args.model,
+        "model_digest": args.model_digest,
+        "corpus_id": args.corpus,
+        "corpus_sha256": corpus_sha,
+    }
+    completion = Path(str(args.out) + ".complete.json")
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    if completion.exists() or completion.is_symlink():
+        raise ValueError("completion path already exists")
+    errors = 0
+    written_hash = hashlib.sha256()
+    # Exclusive creation also refuses dangling symlinks. Interruptions leave incomplete output.
+    with args.out.open("xb") as output:
+        for position, (rid, row) in enumerate(rows.items()):
+            payload = {
                 "model": args.model,
-                "model_digest": args.model_digest,
-                "endpoint_local_reference": "operator-supplied",
-                "collector_version": COLLECTOR_VERSION,
-                "captured_at": datetime.now(UTC).isoformat(),
-                "sequence": position - 1,
+                "messages": [{"role": "user", "content": row["prompt"]}],
+                **{k: settings[k] for k in ("temperature", "top_p", "max_tokens")},
             }
-        except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError) as exc:
+            if args.seed is not None:
+                payload["seed"] = args.seed
             rec = {
-                "schema": "blackfrost.benchmark-response.v1",
-                "corpus_id": args.corpus,
-                "corpus_sha256": corpus_sha(args.corpus),
+                "schema": "blackfrost.benchmark-response.v2",
+                **identity,
                 "row_id": rid,
+                "sequence": position,
+                "requested_settings": settings,
+                "observed_settings": {
+                    "model_id": None,
+                    "chat_template": None,
+                    "thinking_mode": "unknown",
+                },
+                "collector_version": COLLECTOR_VERSION,
                 "response_text": "",
-                "reasoning_text": "",
                 "answer_text": "",
+                "reasoning_text": "",
                 "finish_reason": "error",
                 "status": "error",
-                "decoding": {k: v for k, v in decoding.items() if v is not None},
-                "model": args.model,
-                "model_digest": args.model_digest,
-                "endpoint_local_reference": "operator-supplied",
-                "collector_version": COLLECTOR_VERSION,
-                "captured_at": datetime.now(UTC).isoformat(),
-                "sequence": position - 1,
             }
-            print(
-                f"COLLECT: row {rid} failed: {type(exc).__name__} — recorded as ERROR",
-                file=sys.stderr,
-            )
-        out_lines.append(json.dumps(rec, ensure_ascii=False, sort_keys=True))
-        print(f"COLLECT: {position}/{len(rows)}", file=sys.stderr)
+            try:
+                raw = chat_completion(args.endpoint, payload, headers)
+                answer, reasoning, finish, observed = extract(raw, args.model)
+                rec.update(
+                    response_text=c.canonical(raw).decode("utf-8"),
+                    answer_text=answer,
+                    reasoning_text=reasoning,
+                    finish_reason=finish,
+                    status="ok" if finish == "stop" else "truncated",
+                )
+                rec["observed_settings"]["model_id"] = observed
+            except (OSError, ValueError, UnicodeError, RecursionError):
+                # Never persist exception text, URL, headers or a malformed server body.
+                print(f"COLLECT: row {position + 1} ERROR", file=sys.stderr)
+            c.validate(rec, "responses")
+            errors += not usable(rec)
+            encoded = c.canonical(rec) + b"\n"
+            output.write(encoded)
+            written_hash.update(encoded)
+            output.flush()
+            os.fsync(output.fileno())
+    if c.sha256(args.out) != written_hash.hexdigest():
+        raise ValueError("response output changed during collection")
+    receipt = {
+        "schema": "blackfrost.benchmark-completion.v2",
+        **identity,
+        "responses_sha256": written_hash.hexdigest(),
+        "rows": len(rows),
+        "errors": errors,
+        "complete": True,
+        "release_eligible": False,
+    }
+    c.validate(receipt, "completion")
+    with completion.open("xb") as output:
+        output.write(c.canonical(receipt) + b"\n")
+        output.flush()
+        os.fsync(output.fileno())
+    return receipt
 
-    args.out.write_text("\n".join(out_lines) + "\n")
-    out_digest = hashlib.sha256(args.out.read_bytes()).hexdigest()[:16]
-    print(f"COLLECT: wrote {args.out} ({len(out_lines)} rows, sha256 {out_digest}...)")
-    return 0
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--corpus", required=True, choices=sorted(registry.IDS))
+    ap.add_argument("--endpoint", required=True)
+    ap.add_argument("--model", required=True)
+    ap.add_argument("--model-digest", required=True, help="operator-asserted checkpoint SHA-256")
+    ap.add_argument("--run-id", required=True)
+    ap.add_argument("--out", required=True, type=Path)
+    ap.add_argument("--temperature", type=float, default=1.0)
+    ap.add_argument("--top-p", type=float, default=0.95)
+    ap.add_argument("--max-tokens", type=int, default=16384)
+    ap.add_argument("--seed", type=int)
+    ap.add_argument("--chat-template", default="model-default", help="intent only; not enforced")
+    ap.add_argument(
+        "--thinking-mode",
+        choices=["on", "off", "intrinsic", "unknown"],
+        default="unknown",
+        help="intent only; not enforced",
+    )
+    ap.add_argument("--header", action="append", default=[])
+    args = ap.parse_args()
+    try:
+        receipt = collect(args)
+    except (ValueError, OSError, UnicodeError):
+        print(
+            "COLLECT: FAIL — invalid input or IO failure; output may be incomplete", file=sys.stderr
+        )
+        return 1
+    print(f"COLLECT: complete; sha256={receipt['responses_sha256']}; errors={receipt['errors']}")
+    return 0 if receipt["errors"] == 0 else 1
 
 
 if __name__ == "__main__":

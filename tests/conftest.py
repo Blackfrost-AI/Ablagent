@@ -1,4 +1,6 @@
 import json
+import os
+import socket
 from pathlib import Path
 
 import pytest
@@ -52,3 +54,22 @@ def compiled_case(prepared, alpha=1.0, artifact_id="candidate", *, record=True):
 
 def dump_json(path: Path, raw: dict) -> None:
     path.write_text(json.dumps(raw, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+
+
+@pytest.fixture(autouse=True)
+def offline_test_transport(monkeypatch):
+    """Tests must use transport stubs, never actual sockets."""
+
+    def denied(*args, **kwargs):
+        raise AssertionError("network is forbidden in offline tests")
+
+    monkeypatch.setattr(socket.socket, "connect", denied)
+    monkeypatch.setattr(socket.socket, "connect_ex", denied)
+    monkeypatch.setattr(socket, "create_connection", denied)
+
+
+def pytest_sessionfinish(session, exitstatus):
+    if os.environ.get("ABLAGENT_REQUIRE_REAL_TESTS") == "1":
+        reporter = session.config.pluginmanager.get_plugin("terminalreporter")
+        if reporter and reporter.stats.get("skipped"):
+            session.exitstatus = 1
