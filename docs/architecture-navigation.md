@@ -51,6 +51,8 @@ Do not infer codec capabilities from a file extension. Inspect quantization sche
 
 Safe unquantized `safetensors` is the only v0 reference codec. Unsupported formats fail closed; no compressed-tensor patching is provided.
 
+For the distinction between current executable support and prior BF16, FP8/MXFP8, NVFP4, GGUF and IQ2_XXS research—including unproven EXL3—see **[DWM across precision and quantization formats](formats.md)**.
+
 ## Negative results to retain
 
 - A zero/null intervention is a result, not a reason to transfer an arbitrary sibling recipe.

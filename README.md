@@ -4,6 +4,11 @@
 
 <h1 align="center">Ablagent</h1>
 
+<p align="center">
+  <strong>Format-aware DWM research: BF16 · FP8/MXFP8 · NVFP4 · GGUF · IQ2_XXS</strong><br>
+  <sub>Full-precision editing · requantization research · selective Q8 promotion · NVFP4 deployment paths</sub>
+</p>
+
 <p align="center"><strong>Make the architecture explicit. Make the experiment inspectable.</strong></p>
 
 <p align="center">
@@ -12,6 +17,7 @@
 </p>
 
 <p align="center">
+  <a href="docs/formats.md">BF16 → 2-bit IQ research</a> ·
   <a href="#quickstart">Quickstart</a> ·
   <a href="examples/inkling-2-mini-derisked/README.md">Worked example</a> ·
   <a href="recipes/README.md">Recipe library</a> ·
@@ -47,6 +53,22 @@ Ablagent brings those questions into one inspectable workflow. Its **DWM Interch
 - **Research without inherited model baggage.** The runtime ships original synthetic banks, general architecture guidance, and [publishable prompt-only benchmark corpora](benchmarks/README.md) (443 eval / smoke-50 / cyber-10) with full upstream license scope — no private prompts, credentials, or operational endpoints. One published research artifact is included as a clearly scoped [worked example](examples/inkling-2-mini-derisked/README.md), vendored byte-identical from its public Hugging Face release with a hash-bound provenance manifest, plus a hash-locked [recipe library](recipes/README.md) of finalized GPU-scale playbooks imported byte-identical from their public origins. An operator-controlled, release-only red-line corpus is intentionally absent.
 
 **Built for** researchers formalizing experiments, engineers qualifying architecture adapters, and agent developers who need a narrow, verifiable integration boundary. The real executor edits small dense checkpoints end to end; it is not a turnkey editor for every architecture, and it never authorizes a release.
+
+## DWM beyond full precision
+
+**Your checkpoint's quantization is part of the DWM problem—not a footnote after the edit.** Blackfrost's research spans **BF16, FP8/MXFP8, NVFP4, GGUF/Q8_0 and 2-bit IQ2_XXS**, including dense edits, scale/codec qualification, selective Q8 promotion, requantization and NVFP4 deployment paths.
+
+| Path | Demonstrated in research | Critical boundary |
+|---|---|---|
+| **BF16** | Capture and dense float edits; public recipe and qualified CPU path | Does not automatically transfer to quantized derivatives |
+| **FP8 / MXFP8** | Scale reconstruction and requantization round-trips | Round-trip ≠ validated FP8 intervention |
+| **NVFP4** | BF16→NVFP4 PTQ deployment; codec research; serialization recipe | Not native NVFP4 editing or proven retained behavior |
+| **GGUF / IQ2_XXS** | IQ-surface editing, selective Q8 promotion, packing checks and serving | Directional retention and behavior remain checkpoint-specific |
+| **EXL3** | **Not yet proven for DWM editing** | Requires its own capture/write/readback/serve/behavior qualification |
+
+**The research goal is format-aware DWM; the current CLI is not a universal quantized-file editor.** It executes the small dense float `safetensors` envelope described below. FP8, NVFP4, GGUF and IQ codecs are not directly implemented; unsupported inputs fail closed. Prior results identify how to approach these paths, not a guarantee of efficacy, capability preservation or compatibility with every quant variant.
+
+**[Read the format research matrix and workflow →](docs/formats.md)**
 
 ## What runs today
 

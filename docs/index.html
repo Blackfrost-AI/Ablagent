@@ -32,6 +32,7 @@
     <a href="#simulator">Simulator</a>
     <a href="#evidence">Evidence</a>
     <a href="#example">Worked example</a>
+    <a href="#formats">Formats</a>
     <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/recipes">Recipes</a>
     <a href="https://github.com/Blackfrost-AI/Ablagent/blob/main/docs/serving-stacks.md">Serving stacks</a>
     <a href="https://github.com/Blackfrost-AI/Ablagent/tree/main/benchmarks">Benchmarks</a>
@@ -52,7 +53,7 @@
       <a class="btn btn-primary" href="#process">Explore the process</a>
       <a class="btn" href="#simulator">Try the gate simulator</a>
     </div>
-    <div class="hero-scope">CPU-only research runtime · real HF-checkpoint executor for small dense models · one worked example vendored with hash-bound provenance · evidence-bound ≠ safety certification</div>
+    <div class="hero-scope">Format-aware research from BF16 to 2-bit IQ · <a href="#formats">BF16 / FP8 / NVFP4 / GGUF / IQ evidence</a> · current CLI: small dense float safetensors on CPU · evidence-bound ≠ safety certification</div>
   </div>
   <svg class="hero-graph" viewBox="0 0 400 400" aria-hidden="true">
     <g stroke="#24394c" stroke-width="1.5">
@@ -261,8 +262,31 @@
 </section>
 
 <!-- ============ QUICKSTART ============ -->
+<section id="formats" class="section">
+  <h2><span class="sec-num">07</span> From BF16 to 2-bit IQ</h2>
+  <p class="section-lede">Quantization is part of the intervention surface. Blackfrost research has investigated
+    <strong>BF16, FP8/MXFP8, NVFP4, GGUF/Q8_0 and IQ2_XXS</strong> — with the operation and evidence class kept explicit.</p>
+  <div class="table-wrap">
+    <table>
+      <caption>Format-aware research is broader than the current CLI's dense CPU executor</caption>
+      <thead><tr><th>Path</th><th>Research operation</th><th>Boundary</th></tr></thead>
+      <tbody>
+        <tr><td>BF16</td><td>Capture and dense float edits</td><td>Does not transfer automatically to a quant</td></tr>
+        <tr><td>FP8 / MXFP8</td><td>Scale reconstruction and requantization round-trips</td><td>Not a validated FP8 intervention</td></tr>
+        <tr><td>NVFP4</td><td>BF16→NVFP4 PTQ deployment; codec research; serialization</td><td>Not native NVFP4 editing or retained behavior</td></tr>
+        <tr><td>GGUF / IQ2_XXS</td><td>IQ-surface editing, selective Q8 promotion, packing checks and serving</td><td>Retention and behavior are checkpoint-specific</td></tr>
+        <tr><td>EXL3</td><td><strong>Not yet proven for DWM editing</strong></td><td>Needs dedicated end-to-end qualification</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="example-scope">These are format-specific historical research results, not universal support claims. The current
+    CLI edits only its qualified small dense float <code>safetensors</code> envelope; FP8, NVFP4, GGUF and IQ direct codecs
+    are not implemented. Codec correctness, directional retention, serving and behavioral efficacy are separate questions.
+    <a href="https://github.com/Blackfrost-AI/Ablagent/blob/main/docs/formats.md">Read the full format research matrix →</a></p>
+</section>
+
 <section id="quickstart" class="section">
-  <h2><span class="sec-num">07</span> Run it yourself</h2>
+  <h2><span class="sec-num">08</span> Run it yourself</h2>
   <p class="section-lede">Python 3.11+. No GPU, no credentials. The synthetic slice is fully offline; the real
     executor downloads only the checkpoint you name.</p>
   <div class="code-stack">

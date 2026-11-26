@@ -17,7 +17,8 @@
 | Multi-direction composition | **Not supported** | Ordering/orthogonality not implicit |
 | Recurrent/MoE/looped/SSM execution | **Unqualified** | Fails closed or not implemented in v0; recipes are references, not executors |
 | Conv1D (gpt2/gpt_neo/gptj) | **Fails closed** | No transpose heuristic; rejected at intake |
-| Quantized/fused codecs | **Not supported** | No codec inference from extensions; S4 skipped |
+| Quantized/fused codecs | **Not implemented in the CLI** | No codec inference from extensions; S4 skipped. Prior research includes FP8/MXFP8 scale/codec tests, BF16→NVFP4 PTQ deployment, and GGUF IQ2_XXS editing with selective Q8 promotion; these are not generic codec support or efficacy claims. See [format research](formats.md). |
+| EXL3 DWM editing | **Unproven** | No completed DWM edit qualification; no CLI support; see [format research](formats.md) |
 | Serving readiness | **Not implemented** | No serving engine or readiness claim; S5 skipped |
 | Behavioral efficacy/safety | **Not measured** | S6/S7 skipped; mock gates are row-presence wiring checks; benchmark corpora are tools, not results |
 | Public release/publishing | **Not implemented** | No publication or approval API; every real run `not_eligible` |
@@ -25,8 +26,6 @@
 | Confidentiality/access control | **Not provided** | Bank visibility is a policy label only |
 
 An adapter may be added without weakening these defaults. Its support must be stated independently, with passing conformance and real checkpoint/serving/behavior evidence appropriate to its claim. Structural validation alone never justifies a real-model support claim. See [AGENTS.md](../AGENTS.md) for the current executor envelope and [benchmarks/README.md](../benchmarks/README.md) for the measurement layer.
-
-
 ## Standalone benchmark v2 boundary
 
 `benchmarks/score.py` validates local v2 schemas and exact response/judgment binding.
