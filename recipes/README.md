@@ -15,7 +15,8 @@ finalized — each new recipe is added as a self-contained, hash-locked pack.
 - Recipes are **run-record claims with attached evidence**, not measurements
   made by this repository. The vendored receipts describe the original runs.
 - These recipes target **GPU-scale checkpoints** (Qwen 9B-class, Qwen3.6-35B-A3B
-  MoE, GLM-5.3 BF16/Flash) and carry their own locked scripts and runbooks.
+  MoE, GLM-5.3 BF16/Flash, Inkling-2-Small MoE) and carry their own locked
+  scripts and runbooks.
   They are **not executed by the shipped `--executor real` runtime**, whose
   envelope is small dense CPU checkpoints. Study them as method references;
   reproduce them on suitable hardware via their own runbooks.
@@ -31,6 +32,7 @@ finalized — each new recipe is added as a self-contained, hash-locked pack.
 | [`qwen3.6-35b-a3b/`](qwen3.6-35b-a3b/AGENTS.md) | Stock BF16 α 1.0 ×3, fresh per-pass capture, 38 attention-output targets | `Blackfrost-AI/Qwen3.6-35B-A3B-DWM-recepie` @ `f23bbc8` |
 | [`glm-5.3-bf16-a2.2/`](glm-5.3-bf16-a2.2/README.md) | DWM32 α 2.2, pinned direction derivation, NVFP4 serialization | `Blackfrost-AI/GLM-5.3-DWM32-A2.2-Recipe` @ `476bbc5` |
 | [`glm-5.3-flash-a2.8/`](glm-5.3-flash-a2.8/README.md) | Flash-variant DWM α 2.8 with pinned directions | `Blackfrost-AI/GLM-5.3-Flash-DWM-recepie` @ `77443f9` |
+| [`inkling-2-small-a3.8/`](inkling-2-small-a3.8/README.md) | hard32 capture, L20–37 `wo_ud` OUT-space α 3.8 ×1, MTP byte-exact, 4× B300 serve | `Blackfrost-Research/Inkling-2-Small-Derisked` (HF) @ `c75bc4f1` |
 
 ## Known limits at import
 
@@ -46,8 +48,16 @@ finalized — each new recipe is added as a self-contained, hash-locked pack.
 - **Qwen3.6-35B-A3B** ships its direction/capture tensors in-tree.
 - **Qwen 9B-class** re-measures directions on the target checkpoint itself by
   design — never reuse directions from another model.
-- All four package verifiers pass at import (qwen-9b-class via
+- **Inkling-2-Small α3.8** ships its direction battery in-tree; the 89 MB raw
+  capture tensor is **fetch-only** (`assets/raw-capture.asset.json`, exact
+  SHA-256 pinned) and needed for capture-stage audit, not for the bake. Seven
+  kit files were endpoint-redacted relative to the HF release; every redaction
+  is documented with original + vendored digests in its `PROVENANCE.json` and
+  resolved by its verifier. Only α3.8 results are release results (α3.0/3.3
+  lineage is process provenance). 443 class shares are sample-based estimates.
+- All five package verifiers pass (qwen-9b-class via
   `run_dwm.py --self-test`; the two GLM verifiers exit 0 with the asset status
+  reported honestly; inkling-2-small exits 0 with the fetch-only status
   reported honestly).
 
 ## Provenance and integrity
@@ -55,13 +65,15 @@ finalized — each new recipe is added as a self-contained, hash-locked pack.
 Imported **byte-for-byte** from
 [`Blackfrost-AI/Ablagent-base-legacy`](https://github.com/Blackfrost-AI/Ablagent-base-legacy)
 @ `288d8d6` ("Align recipe library with Blackfrost Pro Series"), which itself
-snapshots four recipe repositories that were public at import time.
+snapshots four recipe repositories that were public at import time. The
+fifth recipe (`inkling-2-small-a3.8`) was vendored 2026-11-27 directly from the
+public Hugging Face release `Blackfrost-Research/Inkling-2-Small-Derisked`
+@ `c75bc4f1` with documented endpoint redactions (see its `PROVENANCE.json`).
 
 - [`catalog.json`](catalog.json) — origins, commits, snapshot identities, and
   per-recipe verify commands (copied unchanged from the source monorepo).
 - [`snapshots.lock.json`](snapshots.lock.json) — every imported file bound by
-  byte count and SHA-256. All 100 recipe files re-verified against this lock
-  after import.
+  byte count and SHA-256. All 185 recipe files re-verified against this lock.
 - Each recipe also carries its own `recipe.lock.json` / `SHA256SUMS` and a
   `scripts/verify_package.py` (or `run_dwm.py --self-test` for qwen-9b-class).
 

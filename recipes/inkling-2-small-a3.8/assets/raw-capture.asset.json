@@ -1,0 +1,18 @@
+{
+ "asset_name": "raw-capture.npz",
+ "original_path": "DWM_RECIPE/evidence/s2-capture/raw-capture.npz",
+ "bytes": 89421956,
+ "sha256": "63a559079f9f39da84da731561c63d879c9c69de36f5ff8121a253bb0468cd88",
+ "archive_status": "fetch-only",
+ "vendored_in_git": false,
+ "required_for_execution": false,
+ "required_for_audit": true,
+ "reason": "89 MB capture tensor exceeds git vendoring convention; published byte-identical on Hugging Face",
+ "fetch": {
+  "repo": "Blackfrost-Research/Inkling-2-Small-Derisked",
+  "revision": "c75bc4f131c2db9aba463e0c9ba6aead92ea4428",
+  "path": "DWM_RECIPE/evidence/s2-capture/raw-capture.npz",
+  "command": "hf download Blackfrost-Research/Inkling-2-Small-Derisked DWM_RECIPE/evidence/s2-capture/raw-capture.npz --revision c75bc4f131c2db9aba463e0c9ba6aead92ea4428 --local-dir ."
+ },
+ "note": "S3 bake consumes directions.npz (vendored), not the raw capture; raw capture is for capture-stage audit/recapture comparison only."
+}

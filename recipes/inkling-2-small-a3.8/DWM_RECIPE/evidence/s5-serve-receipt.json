@@ -1,0 +1,43 @@
+{
+  "stage": "S5_SERVE",
+  "status": "PASS",
+  "image": "vllm/vllm-openai@sha256:e72944ef5ab9d1b91228d066117595847e94bf95321018a2119e70e8ba643ff6",
+  "image_verified_ref": "vllm/vllm-openai@sha256:e72944ef5ab9d1b91228d066117595847e94bf95321018a2119e70e8ba643ff6",
+  "container_image_id": "sha256:8c1213c72dfccd179fc50977d2d14760c41dd1e621042589529ca893cdf71106",
+  "candidate": "/workspace/i2s-candidates/a3p8-L20-37",
+  "served_model_name": "inkling2-small-dwm-a3p8",
+  "endpoint_public": "REDACTED (transient research-pod endpoint; not part of the release)",
+  "port": 40001,
+  "gpus": "4-7 (TP4)",
+  "container": "i2s-serve-a3p8",
+  "max_model_len": 262144,
+  "speculative": {
+    "method": "dspark",
+    "num_speculative_tokens": 7,
+    "draft_sample_method": "probabilistic"
+  },
+  "parsers": {
+    "tokenizer_mode": "inkling",
+    "tool_call_parser": "inkling",
+    "reasoning_parser": "inkling"
+  },
+  "mtp_merged": true,
+  "mtp_sha256": "3b265640ec84ba66e928a2844c4c022c94be731336b0f63755a20a247bfd2a36",
+  "verify": {
+    "health": 200,
+    "models_identity": [
+      "inkling2-small-dwm-a3p8"
+    ],
+    "auth_no_key": 401,
+    "real_forward": {
+      "answer": "156",
+      "finish_reason": "stop",
+      "completion_tokens": 42,
+      "wall_s": 0.14
+    },
+    "verified_utc": "2026-11-27T15:32:27Z"
+  },
+  "api_key_sha256": "6a26b0bab8e50c556b58020535738f6d41653158836d03c038e3c9df987e571d",
+  "api_key_location": "operator-held (0600 .env); NOT distributed",
+  "note": "Alpha 3.8 final. Supersedes a3p0 receipt of same filename. No WireGuard/overlay configuration is part of this release; endpoint is the plain public IP serve as launched by scripts/run-serve-a3p8.sh."
+}

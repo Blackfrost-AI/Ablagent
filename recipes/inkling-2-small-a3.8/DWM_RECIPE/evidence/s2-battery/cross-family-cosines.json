@@ -1,0 +1,242 @@
+{
+ "0": {
+  "attention_writer|mlp_output": 0.008050086237641267,
+  "attention_writer|moe_experts": 0.008050086237641267,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "1": {
+  "attention_writer|mlp_output": -0.004408271367749071,
+  "attention_writer|moe_experts": -0.004408271367749071,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "2": {
+  "attention_writer|mlp_output": -0.012105697553568768,
+  "attention_writer|moe_experts": -0.012105697553568768,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "3": {
+  "attention_writer|mlp_output": -0.005071206978284018,
+  "attention_writer|moe_experts": -0.005071206978284018,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "4": {
+  "attention_writer|mlp_output": -0.011833836398159428,
+  "attention_writer|moe_experts": -0.011833836398159428,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "5": {
+  "attention_writer|mlp_output": 0.012037686813018084,
+  "attention_writer|moe_experts": 0.012037686813018084,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "6": {
+  "attention_writer|mlp_output": -0.0033972225398063863,
+  "attention_writer|moe_experts": -0.0033972225398063863,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "7": {
+  "attention_writer|mlp_output": 0.04442500086057399,
+  "attention_writer|moe_experts": 0.04442500086057399,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "8": {
+  "attention_writer|mlp_output": 0.04364989996932501,
+  "attention_writer|moe_experts": 0.04364989996932501,
+  "mlp_output|moe_experts": 1.0000000000000007
+ },
+ "9": {
+  "attention_writer|mlp_output": 0.058000526410057006,
+  "attention_writer|moe_experts": 0.058000526410057006,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "10": {
+  "attention_writer|mlp_output": 0.04848413642053709,
+  "attention_writer|moe_experts": 0.04848413642053709,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "11": {
+  "attention_writer|mlp_output": 0.04948804296338657,
+  "attention_writer|moe_experts": 0.04948804296338657,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "12": {
+  "attention_writer|mlp_output": 0.05165146485560625,
+  "attention_writer|moe_experts": 0.05165146485560625,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "13": {
+  "attention_writer|mlp_output": -0.03127422985317941,
+  "attention_writer|moe_experts": -0.03127422985317941,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "14": {
+  "attention_writer|mlp_output": 0.0030616423066214685,
+  "attention_writer|moe_experts": 0.0030616423066214685,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "15": {
+  "attention_writer|mlp_output": -0.02234185272022659,
+  "attention_writer|moe_experts": -0.02234185272022659,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "16": {
+  "attention_writer|mlp_output": 0.04772001251969728,
+  "attention_writer|moe_experts": 0.04772001251969728,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "17": {
+  "attention_writer|mlp_output": 0.024023344325298797,
+  "attention_writer|moe_experts": 0.024023344325298797,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "18": {
+  "attention_writer|mlp_output": 0.02377591182629387,
+  "attention_writer|moe_experts": 0.02377591182629387,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "19": {
+  "attention_writer|mlp_output": 0.029409180176117423,
+  "attention_writer|moe_experts": 0.029409180176117423,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "20": {
+  "attention_writer|mlp_output": 0.13067303740334824,
+  "attention_writer|moe_experts": 0.13067303740334824,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "21": {
+  "attention_writer|mlp_output": 0.01543936477432578,
+  "attention_writer|moe_experts": 0.01543936477432578,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "22": {
+  "attention_writer|mlp_output": 0.02055434517838424,
+  "attention_writer|moe_experts": 0.02055434517838424,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "23": {
+  "attention_writer|mlp_output": 0.0013896475011249657,
+  "attention_writer|moe_experts": 0.0013896475011249657,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "24": {
+  "attention_writer|mlp_output": 0.08730963046100497,
+  "attention_writer|moe_experts": 0.08730963046100497,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "25": {
+  "attention_writer|mlp_output": 0.02840050386234608,
+  "attention_writer|moe_experts": 0.02840050386234608,
+  "mlp_output|moe_experts": 1.0000000000000007
+ },
+ "26": {
+  "attention_writer|mlp_output": 0.0038028342770344,
+  "attention_writer|moe_experts": 0.0038028342770344,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "27": {
+  "attention_writer|mlp_output": 0.01114901791040433,
+  "attention_writer|moe_experts": 0.01114901791040433,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "28": {
+  "attention_writer|mlp_output": 0.011812633836819603,
+  "attention_writer|moe_experts": 0.011812633836819603,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "29": {
+  "attention_writer|mlp_output": -0.007841562951978923,
+  "attention_writer|moe_experts": -0.007841562951978923,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "30": {
+  "attention_writer|mlp_output": -0.0021390537985565223,
+  "attention_writer|moe_experts": -0.0021390537985565223,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "31": {
+  "attention_writer|mlp_output": 0.036565405139025176,
+  "attention_writer|moe_experts": 0.036565405139025176,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "32": {
+  "attention_writer|mlp_output": 0.08879752734125469,
+  "attention_writer|moe_experts": 0.08879752734125469,
+  "mlp_output|moe_experts": 1.0000000000000009
+ },
+ "33": {
+  "attention_writer|mlp_output": 0.005162386292887874,
+  "attention_writer|moe_experts": 0.005162386292887874,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "34": {
+  "attention_writer|mlp_output": 0.017885840011596807,
+  "attention_writer|moe_experts": 0.017885840011596807,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "35": {
+  "attention_writer|mlp_output": 0.033882189997290084,
+  "attention_writer|moe_experts": 0.033882189997290084,
+  "mlp_output|moe_experts": 1.0000000000000007
+ },
+ "36": {
+  "attention_writer|mlp_output": 0.06383715429186515,
+  "attention_writer|moe_experts": 0.06383715429186515,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "37": {
+  "attention_writer|mlp_output": 0.058741423544273766,
+  "attention_writer|moe_experts": 0.058741423544273766,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "38": {
+  "attention_writer|mlp_output": 0.03197287584239181,
+  "attention_writer|moe_experts": 0.03197287584239181,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "39": {
+  "attention_writer|mlp_output": 0.03706208310645828,
+  "attention_writer|moe_experts": 0.03706208310645828,
+  "mlp_output|moe_experts": 1.0
+ },
+ "40": {
+  "attention_writer|mlp_output": 0.03556693344012593,
+  "attention_writer|moe_experts": 0.03556693344012593,
+  "mlp_output|moe_experts": 1.0000000000000007
+ },
+ "41": {
+  "attention_writer|mlp_output": 0.00047491706042093827,
+  "attention_writer|moe_experts": 0.00047491706042093827,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "42": {
+  "attention_writer|mlp_output": 0.044725677257494184,
+  "attention_writer|moe_experts": 0.044725677257494184,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "43": {
+  "attention_writer|mlp_output": -0.004935332006158964,
+  "attention_writer|moe_experts": -0.004935332006158964,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "44": {
+  "attention_writer|mlp_output": 0.02008467880373771,
+  "attention_writer|moe_experts": 0.02008467880373771,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "45": {
+  "attention_writer|mlp_output": 0.0289770941017608,
+  "attention_writer|moe_experts": 0.0289770941017608,
+  "mlp_output|moe_experts": 1.0000000000000002
+ },
+ "46": {
+  "attention_writer|mlp_output": 0.014433345575279977,
+  "attention_writer|moe_experts": 0.014433345575279977,
+  "mlp_output|moe_experts": 1.0000000000000004
+ },
+ "47": {
+  "attention_writer|mlp_output": 0.10526526926140484,
+  "attention_writer|moe_experts": 0.10526526926140484,
+  "mlp_output|moe_experts": 1.0000000000000004
+ }
+}

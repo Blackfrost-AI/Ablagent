@@ -1,0 +1,214 @@
+{
+  "schema": "inkling2-small.s3-gate-comparison.v1",
+  "alpha": 3.0,
+  "layers": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ],
+  "base_gate_sha256": "sha256:863d4a5ec7c3d671acbbecce83645a924d1b8696d0ce83ec691d45af65b7daa1",
+  "cand_gate_sha256": "sha256:fe9338d651fc525d71d85d254cf584b1785dafbcb31925649e59c94b3ce2d537",
+  "directions_sha256": "sha256:95a6c68f23774cba65bee0aacea9fd252965a78b06c095020d5560fc6b8e8a47",
+  "base_nll_mean": 6.006922985584875,
+  "cand_nll_mean": 6.0163702517898425,
+  "nll_delta_mean": 0.009447266204966692,
+  "nll_delta_abs_max": 0.12833587108462208,
+  "nll_delta_per_row": [
+    0.020543685200839157,
+    0.019945863581674494,
+    0.029651907921875775,
+    0.02233501671529936,
+    0.013058595741832768,
+    -0.02906644814980286,
+    0.04847607959958733,
+    0.015567140958199666,
+    0.028592383936763888,
+    -0.02215276361077212,
+    -0.010552719219943718,
+    -0.04754880469085432,
+    0.12833587108462208,
+    0.005281180872861668,
+    -0.03873112626024522,
+    0.08068137490494376,
+    0.025387052912265062,
+    -0.03157141871957325,
+    -0.048952542951640865,
+    0.02238931750638784,
+    0.07633129980725517,
+    -0.07949759301093184,
+    0.027895441359102158,
+    -0.0709396405145526,
+    0.054945204703031436,
+    -0.048333686100498596,
+    0.017887814861978768,
+    0.01914734968864451,
+    -0.005978575890124738,
+    0.07562698226092834,
+    -0.07350137014010993,
+    0.07705964419989098
+  ],
+  "writer_abs_reduction_band_mean": -0.6006943644303212,
+  "writer_abs_reduction_band_min": -3.012841992928939,
+  "per_layer": [
+    {
+      "layer": 20,
+      "base_proj_mean": -0.4251684877366558,
+      "cand_proj_mean": 0.8520223586734794,
+      "base_absmean": 0.7411601752995455,
+      "cand_absmean": 1.4834009705318845,
+      "abs_reduction_fraction": -1.001458011329814
+    },
+    {
+      "layer": 21,
+      "base_proj_mean": 0.6562705573335558,
+      "cand_proj_mean": -2.1609469147551064,
+      "base_absmean": 0.6859352449645894,
+      "cand_absmean": 2.202528432825428,
+      "abs_reduction_fraction": -2.21098594800903
+    },
+    {
+      "layer": 22,
+      "base_proj_mean": -0.6340502574418879,
+      "cand_proj_mean": 1.4547820472341622,
+      "base_absmean": 0.953074582564755,
+      "cand_absmean": 1.4831622799165516,
+      "abs_reduction_fraction": -0.5561870047203581
+    },
+    {
+      "layer": 23,
+      "base_proj_mean": -1.1113664230093148,
+      "cand_proj_mean": 1.8656888836661325,
+      "base_absmean": 1.1544642428548568,
+      "cand_absmean": 1.8656888836661325,
+      "abs_reduction_fraction": -0.6160646769383686
+    },
+    {
+      "layer": 24,
+      "base_proj_mean": -1.1670789069168692,
+      "cand_proj_mean": 2.347120571018751,
+      "base_absmean": 1.2625233571513055,
+      "cand_absmean": 2.347120571018751,
+      "abs_reduction_fraction": -0.8590710086462687
+    },
+    {
+      "layer": 25,
+      "base_proj_mean": 0.16375031457076922,
+      "cand_proj_mean": -2.71398676121651,
+      "base_absmean": 0.6763253489668539,
+      "cand_absmean": 2.71398676121651,
+      "abs_reduction_fraction": -3.012841992928939
+    },
+    {
+      "layer": 26,
+      "base_proj_mean": -6.019253578135212,
+      "cand_proj_mean": 6.286474307407618,
+      "base_absmean": 6.019253578135212,
+      "cand_absmean": 6.286474307407618,
+      "abs_reduction_fraction": -0.04439432992872705
+    },
+    {
+      "layer": 27,
+      "base_proj_mean": -2.1320485096958315,
+      "cand_proj_mean": -0.5984896735612016,
+      "base_absmean": 2.2716298682096268,
+      "cand_absmean": 0.7314065165235683,
+      "abs_reduction_fraction": 0.6780256648500478
+    },
+    {
+      "layer": 28,
+      "base_proj_mean": -1.4425648107265574,
+      "cand_proj_mean": -0.1913293750505488,
+      "base_absmean": 1.6851718759899632,
+      "cand_absmean": 0.5156098773866366,
+      "abs_reduction_fraction": 0.6940312826644233
+    },
+    {
+      "layer": 29,
+      "base_proj_mean": -2.501618965136706,
+      "cand_proj_mean": 2.936769215132921,
+      "base_absmean": 2.501618965136706,
+      "cand_absmean": 2.936769215132921,
+      "abs_reduction_fraction": -0.17394745405299394
+    },
+    {
+      "layer": 30,
+      "base_proj_mean": -0.5850368792265912,
+      "cand_proj_mean": -1.1056002283919812,
+      "base_absmean": 0.8285219242738252,
+      "cand_absmean": 1.1056002283919812,
+      "abs_reduction_fraction": -0.3344248305330084
+    },
+    {
+      "layer": 31,
+      "base_proj_mean": -0.7099457432227982,
+      "cand_proj_mean": -0.007827745276058139,
+      "base_absmean": 1.026180686457262,
+      "cand_absmean": 0.5831457225316378,
+      "abs_reduction_fraction": 0.43173192574412733
+    },
+    {
+      "layer": 32,
+      "base_proj_mean": -2.2168760632001026,
+      "cand_proj_mean": 2.9805392426347677,
+      "base_absmean": 2.2546682012363495,
+      "cand_absmean": 2.9805392426347677,
+      "abs_reduction_fraction": -0.3219414018436886
+    },
+    {
+      "layer": 33,
+      "base_proj_mean": -0.5761523847622518,
+      "cand_proj_mean": -1.727152696799727,
+      "base_absmean": 0.8324979984256038,
+      "cand_absmean": 1.727152696799727,
+      "abs_reduction_fraction": -1.0746628821523516
+    },
+    {
+      "layer": 34,
+      "base_proj_mean": -2.145788521276367,
+      "cand_proj_mean": 1.984777489633422,
+      "base_absmean": 2.145788521276367,
+      "cand_absmean": 1.984777489633422,
+      "abs_reduction_fraction": 0.07503583416839776
+    },
+    {
+      "layer": 35,
+      "base_proj_mean": 0.46779528461195774,
+      "cand_proj_mean": -1.7727032157262312,
+      "base_absmean": 0.46918267631616606,
+      "cand_absmean": 1.7727032157262312,
+      "abs_reduction_fraction": -2.7782793466391063
+    },
+    {
+      "layer": 36,
+      "base_proj_mean": -1.969430333208175,
+      "cand_proj_mean": 1.8367559806832598,
+      "base_absmean": 2.159706119512295,
+      "cand_absmean": 2.083683918786208,
+      "abs_reduction_fraction": 0.03520025249697134
+    },
+    {
+      "layer": 37,
+      "base_proj_mean": -2.244538731814044,
+      "cand_proj_mean": 1.6928813460407857,
+      "base_absmean": 2.515172187897934,
+      "cand_absmean": 1.8669233583336289,
+      "abs_reduction_fraction": 0.2577353680529053
+    }
+  ],
+  "interpretation": "abs_reduction_fraction = 1 - cand|proj|/base|proj| on safe rows; high = refusal-direction component removed by the bake (edit efficacy). nll_delta small = capability floor preserved."
+}

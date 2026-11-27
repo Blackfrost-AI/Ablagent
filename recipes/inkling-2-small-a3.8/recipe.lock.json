@@ -1,0 +1,79 @@
+{
+  "schema": "blackfrost.dwm.locked-method.v1",
+  "recipe_id": "inkling-2-small-a3p8",
+  "version": "1.0.0",
+  "source": {
+    "repo": "Blackfrost-Research/Inkling-2-Small-Derisked",
+    "revision": "c75bc4f131c2db9aba463e0c9ba6aead92ea4428",
+    "upstream_repo": "thinkingmachines/Inkling-2-Small",
+    "upstream_revision": "885d78bfca61a7e9a498e33cfa7ad35850533b8c",
+    "upstream_files": 43,
+    "upstream_bytes": 393510050371,
+    "precision": "mixed NVFP4 (experts L0-39) / MXFP8 (experts L40-47) / BF16 (attention + dense)",
+    "quantized": true
+  },
+  "method": {
+    "alpha": 3.8,
+    "passes": 1,
+    "layers": "20-37",
+    "layer_count": 18,
+    "target_surface": "wo_ud",
+    "space": "OUT",
+    "rank": 1,
+    "arithmetic": "W := W - alpha * W @ (q q^T) on transposed wo_ud [out 4608, in 6144], BF16, no whitening, no requantization",
+    "mtp": "copied byte-exact from upstream (not edited)",
+    "thinking_mode": "ON for capture, gate, and all reported evaluations",
+    "alpha_lineage": "3.0 -> 3.3 -> 3.8 (identical directions and band; only alpha changed); only alpha-3.8 results are release results"
+  },
+  "directions": {
+    "artifact": "DWM_RECIPE/evidence/s2-battery/directions.npz",
+    "sha256": "95a6c68f23774cba65bee0aacea9fd252965a78b06c095020d5560fc6b8e8a47",
+    "battery_sha256": "b591b177376c8b83840a2bac14653c4a47fd4c13cd92ca1c0393728d470daaaf",
+    "corpus": "DWM_RECIPE/input/v1_corpus_hard32.jsonl",
+    "corpus_sha256": "902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+    "capture_pairs": 32,
+    "capture_rows": 64,
+    "capture_family": "attention_writer",
+    "capture_loader": "vLLM native loader (host transformers cannot load packed modelopt experts)",
+    "band_selection": "contiguous mid-stack L20-37; permutation p=0.0005 (2000 permutations); split-half cosine 0.912-0.975; L0-6 and L38-47 fail the 0.90 stability gate",
+    "evidence_class": "correlational contrast directions, not causal claims"
+  },
+  "raw_capture": {
+    "artifact": "DWM_RECIPE/evidence/s2-capture/raw-capture.npz",
+    "bytes": 89421956,
+    "sha256": "63a559079f9f39da84da731561c63d879c9c69de36f5ff8121a253bb0468cd88",
+    "vendored": false,
+    "required_for_execution": false,
+    "required_for_audit": true,
+    "descriptor": "assets/raw-capture.asset.json"
+  },
+  "candidate": {
+    "total_bytes": 393506668732,
+    "shards": 24,
+    "edited_tensors": 18,
+    "untouched_tensors_byte_exact": 514,
+    "mtp_sha256": "3b265640ec84ba66e928a2844c4c022c94be731336b0f63755a20a247bfd2a36",
+    "manifest": "manifests/candidate-sha256.json"
+  },
+  "serve": {
+    "image": "vllm/vllm-openai@sha256:e72944ef5ab9d1b91228d066117595847e94bf95321018a2119e70e8ba643ff6",
+    "container_image_id": "sha256:8c1213c72dfccd179fc50977d2d14760c41dd1e621042589529ca893cdf71106",
+    "tensor_parallel": 4,
+    "max_model_len": 262144,
+    "speculative_method": "dspark",
+    "num_speculative_tokens": 7,
+    "draft_sample_method": "probabilistic",
+    "tokenizer_mode": "inkling",
+    "tool_call_parser": "inkling",
+    "reasoning_parser": "inkling",
+    "hardware": "4x NVIDIA B300 (TP4), --ipc=host --shm-size=16g",
+    "instructions": "deployment-kit/AGENT_INSTRUCTIONS.md"
+  },
+  "eval": {
+    "r443_corpus_sha256": "ba6431ca900cf41eb4f621cbf04d7f084187a16ec1ba6d1b8b6663967302d2e6",
+    "cyber10_corpus_sha256": "c8c27c8cee1b8e6de3c9e52cc180879eda8838bb8b7fccb3a22c332d0a69f374",
+    "r443_settings": "temp 1.0, top_p 1.0, 32768-token budget, thinking ON",
+    "cyber10_settings": "temp 0.0, 32768-token budget, thinking ON",
+    "results_are_run_record_claims": true
+  }
+}

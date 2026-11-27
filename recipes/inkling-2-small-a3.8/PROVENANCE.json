@@ -1,0 +1,107 @@
+{
+  "schema": "ablagent.recipe-provenance.v1",
+  "recipe": "inkling-2-small-a3.8",
+  "source": {
+    "repository": "https://huggingface.co/Blackfrost-Research/Inkling-2-Small-Derisked",
+    "revision": "c75bc4f131c2db9aba463e0c9ba6aead92ea4428",
+    "license_tag": "other",
+    "upstream_base": "thinkingmachines/Inkling-2-Small",
+    "upstream_revision": "885d78bfca61a7e9a498e33cfa7ad35850533b8c",
+    "run": "20261127 inkling-2-small S0-S5 on a transient 4x B300 research pod (host alias redacted)",
+    "vendored_at": "2026-11-27",
+    "note": "Kit files vendored from the pinned HF revision. 64 of 75 manifest entries are byte-identical to the HF release; 7 files were endpoint-redacted before upload (documented per-file below with original and vendored SHA-256); README.md is replaced by the recipe-pack README; the manifest's self-entry is exempt (records its own pre-finalization hash); raw-capture.npz is fetch-only. The HF-published manifests are vendored byte-identical and record ORIGINAL hashes for the 7 redacted files - expected divergence, resolved via the 'redactions' table. No other edits were made. Model weights, tokenizer/config sidecars, banner, and the HF model card are not vendored here."
+  },
+  "kit_inventory": {
+    "hf_release_kit_files": 75,
+    "vendored_kit_files": 71,
+    "byte_identical": 64,
+    "endpoint_redacted": 7,
+    "self_referential_manifest": "manifests/kit-sha256.json (records its own pre-finalization hash on HF; vendored byte-identical)",
+    "fetch_only": 1,
+    "wrapper_replaced": [
+      "README.md (HF model card replaced by the recipe-pack README; original card hash still recorded in the vendored manifests)"
+    ]
+  },
+  "fetch_only": [
+    {
+      "path": "DWM_RECIPE/evidence/s2-capture/raw-capture.npz",
+      "bytes": 89421956,
+      "sha256": "63a559079f9f39da84da731561c63d879c9c69de36f5ff8121a253bb0468cd88",
+      "reason": "89 MB raw capture tensor exceeds git vendoring convention; published byte-identical on Hugging Face",
+      "descriptor": "assets/raw-capture.asset.json",
+      "required_for_execution": false,
+      "required_for_audit": true
+    }
+  ],
+  "not_vendored": [
+    {
+      "paths": [
+        "assets/BLACKFROST-AI-BANNER.png",
+        "MANIFEST.sha256 (HF repo-root variant additionally hashes weight shards)"
+      ],
+      "reason": "Banner is release presentation; weights not redistributed. The kit-scoped MANIFEST.sha256 IS vendored byte-identical. The HF README model card is replaced by this pack's README (see kit_inventory.wrapper_replaced)."
+    },
+    {
+      "paths": [
+        "model-*.safetensors",
+        "mtp.safetensors",
+        "config/tokenizer/quant sidecars"
+      ],
+      "reason": "Upstream-derived model weights are not redistributed by the recipe library; fetch from the pinned HF revision under the upstream terms."
+    }
+  ],
+  "redactions": [
+    {
+      "path": "DWM_RECIPE/evidence/cyber10-a3p8/report.json",
+      "original_sha256": "76534cdab5e0f7c7167492d03591c8d31fc3c9c7a7a087c1468f28fc4b47f061",
+      "vendored_sha256": "8c11b7c8ad77fc3a3a07e6fdcfb9eab1e085e33cd5d0f02eac3e80277eb50d54",
+      "change": "operator endpoint/host redacted"
+    },
+    {
+      "path": "DWM_RECIPE/evidence/s5-serve-receipt.json",
+      "original_sha256": "d5b259cab4298ccfcd4fadcc225f831292a5cfc75a83ec245044294366cfd7ba",
+      "vendored_sha256": "91eec4dcc64c6ef69346232f13bc3310b0f99062e9abc46737372c6b7fcebff8",
+      "change": "endpoint_public replaced with REDACTED marker (transient research-pod endpoint)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/cyber10_a3p8.py",
+      "original_sha256": "2a781103b5ea6e03c04c740647849e51421a857a0486e7417bfc171d1331316d",
+      "vendored_sha256": "0d2c2bb10a9d0cac0d9a123d582ac16fe198f205c1687fdcdf2607473a15d0dc",
+      "change": "operator endpoint/host redacted (script targets loopback 127.0.0.1)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/r443_a3p8.py",
+      "original_sha256": "17058e6c2954e052c48b6bec14c046395a4009e77d8e8f4f0e56f72984bf8a35",
+      "vendored_sha256": "7f4f652dc586c73a7aaf66602caadec38de34ccfbe47a3070be3be98ab275587",
+      "change": "operator endpoint/host redacted (script targets loopback 127.0.0.1)"
+    },
+    {
+      "path": "DWM_RECIPE/scripts/stage_receipts_a3p8.py",
+      "original_sha256": "86b86e3b66a21b849f510f3812a84faec6e845e67b5e7c1ef04eed2f8a787c85",
+      "vendored_sha256": "eca0b43b4e355858ed8a26125e2037d3fbe3d7a36603bb2dcf6f238457d64308",
+      "change": "operator endpoint/host redacted"
+    },
+    {
+      "path": "deployment-kit/AGENT_INSTRUCTIONS.md",
+      "original_sha256": "bd19b08e78b7e95db93e21ae9a9aa5b2d83403d0b5264c6b2c776de1f58821a4",
+      "vendored_sha256": "d89dde1979fe1f085e132a486ec0a786073057a9e3d23ddbdfa5bf9fdba322b9",
+      "change": "operator endpoint/host redacted; pinned image digest and launch settings unchanged"
+    },
+    {
+      "path": "deployment-kit/serve-receipt.json",
+      "original_sha256": "d5b259cab4298ccfcd4fadcc225f831292a5cfc75a83ec245044294366cfd7ba",
+      "vendored_sha256": "91eec4dcc64c6ef69346232f13bc3310b0f99062e9abc46737372c6b7fcebff8",
+      "change": "duplicate of DWM_RECIPE/evidence/s5-serve-receipt.json; same redaction"
+    }
+  ],
+  "known_quirks": [
+    {
+      "item": "manifests/kit-sha256.json self-hash",
+      "detail": "The HF-published kit manifest records a hash for itself computed before finalization, so it cannot match its own bytes. Vendored byte-identical; the verifier exempts this one self-referential entry and checks all other manifest entries."
+    },
+    {
+      "item": "redacted-file hashes in HF manifests",
+      "detail": "manifests/kit-sha256.json and MANIFEST.sha256 are vendored byte-identical to HF and record ORIGINAL hashes for the 7 endpoint-redacted files. The verifier resolves those entries through the PROVENANCE.json redactions table (original -> vendored digest), keeping both the immutable manifests and the sanitized files verifiable."
+    }
+  ]
+}

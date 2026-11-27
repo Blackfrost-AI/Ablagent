@@ -1,0 +1,16 @@
+{
+  "status": "S2_BATTERY_MEASURED",
+  "measurement_complete": true,
+  "reason": "S2 capture/battery complete; band selection follows from measured rows; operator greenlit S0-S3 alpha 3.0",
+  "capture_rows": 64,
+  "physical_layers": 48,
+  "families": [
+    "layer_output",
+    "attention_writer",
+    "mlp_output",
+    "moe_experts"
+  ],
+  "corpus_sha256": "sha256:902ac2472d572ff5724e0b70012efe687c87d19c655f09cd528d8a9bca60f7a8",
+  "directions_sha256": "sha256:95a6c68f23774cba65bee0aacea9fd252965a78b06c095020d5560fc6b8e8a47",
+  "finished_at": "2026-11-27T09:34:52.166077+00:00"
+}

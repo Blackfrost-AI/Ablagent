@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T05:48:15.488960Z",
+  "generated_at": "2026-11-27T23:00:53Z",
   "inclusion_policy": "Only exact snapshots of Blackfrost DWM recipe repositories that were public at import time.",
   "license": "Apache-2.0",
   "recipes": [
@@ -92,6 +92,30 @@
       "snapshot_files": 25,
       "snapshot_identity": "sha256:4754a552cd43a5a2a061cc95c2b49bdfafef263f89ff2f3c6b21fae14796856d",
       "start": "recipes/glm-5.3-flash-a2.8/AGENTS.md",
+      "verify": [
+        "python3",
+        "scripts/verify_package.py"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "inkling-2-small-a3.8",
+      "method_summary": "Inkling-2-Small hard32 capture, L20-37 attention-writer wo_ud OUT-space alpha 3.8 one-pass edit, MTP byte-exact, 4x B300 pinned-image serve; cyber10 and 443 evidence vendored.",
+      "name": "Inkling-2-Small DWM alpha 3.8",
+      "origin": {
+        "commit": "c75bc4f131c2db9aba463e0c9ba6aead92ea4428",
+        "github_detected_license": null,
+        "license_tag": "other",
+        "platform": "huggingface",
+        "repository": "Blackfrost-Research/Inkling-2-Small-Derisked",
+        "url": "https://huggingface.co/Blackfrost-Research/Inkling-2-Small-Derisked",
+        "vendoring_note": "Kit vendored from the pinned HF revision; 7 endpoint-redacted files documented with original+vendored SHA-256 in PROVENANCE.json; raw-capture.npz fetch-only; weights not redistributed.",
+        "visibility_at_import": "public"
+      },
+      "path": "recipes/inkling-2-small-a3.8",
+      "snapshot_files": 85,
+      "snapshot_identity": "sha256:e23fe4016d2ff534979bc52cd7f01985c1d78abe49ae82c8d79e3f79b9cb9303",
+      "start": "recipes/inkling-2-small-a3.8/README.md",
       "verify": [
         "python3",
         "scripts/verify_package.py"
