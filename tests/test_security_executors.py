@@ -46,3 +46,27 @@ def test_local_executor_uses_argv(tmp_path: Path):
 def test_ssh_executor_does_not_build_shell_string():
     executor = SSHExecutor("example.invalid", ["echo", "hello; touch nope"])
     assert executor.argv == ("echo", "hello; touch nope")
+
+
+AWS_SHAPED_KEY = "Ab1/" * 10  # 40 chars, mixed-case base64-ish
+
+
+def test_secret_scan_detects_bare_40_char_key():
+    assert scan_text(AWS_SHAPED_KEY, path="fixture")
+    assert scan_text(f"value {AWS_SHAPED_KEY} trailing", path="fixture")
+    assert scan_text(f'{{"field": "{AWS_SHAPED_KEY}"}}', path="fixture")
+    assert scan_text(f"CREDENTIAL={AWS_SHAPED_KEY}", path="fixture")
+    assert scan_text("/" + AWS_SHAPED_KEY[1:], path="fixture")
+
+
+def test_secret_scan_no_false_positive_on_long_filesystem_paths():
+    # macOS per-user temp root: every "/" is a word boundary, so a 40-char
+    # window of this path used to match the bare-key pattern.
+    macos_tmp = "/private/var/folders/ab/abcdefghij0123456789abcdefghij/T/pytest"
+    assert not scan_text(
+        f'{{"run_directory": "{macos_tmp}-of-user/pytest-0/runs"}}', path="fixture"
+    )
+    assert not scan_text("/srv/data/checkpoints/experiments/baseline/artifacts/run", path="fixture")
+    # A 40-hex id stays excluded; a longer hex digest was never a 40-char key.
+    assert not scan_text("a" * 40, path="fixture")
+    assert not scan_text("sha256:" + "0123456789abcdef" * 4, path="fixture")
