@@ -23,7 +23,14 @@ PATTERNS = (
     # base64; an all-lowercase-hex key has probability ~(16/64)^40 = 4^-40.
     # Keyword-labeled assignments (api_key=<40 hex>) are still caught by the
     # keyword pattern above; only bare unlabeled 40-hex tokens are excluded.
-    re.compile(r"\b(?![0-9a-f]{40}\b)[A-Za-z0-9/+=]{40}\b"),
+    # The token must be a whole run of exactly 40 characters. Matching any
+    # 40-char window of a longer run flags ordinary filesystem paths ("/" is in
+    # the class and also a word boundary), e.g. the macOS per-user temp root
+    # /private/var/folders/<2>/<30>/T/... recorded in run evidence. "=" may
+    # precede the token so an unlabeled NAME=<key> assignment is still caught.
+    re.compile(
+        r"(?<![A-Za-z0-9/+])(?![0-9a-f]{40}(?![A-Za-z0-9/+=]))[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])"
+    ),
 )
 
 
