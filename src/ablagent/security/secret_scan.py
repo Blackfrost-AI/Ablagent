@@ -28,8 +28,15 @@ PATTERNS = (
     # the class and also a word boundary), e.g. the macOS per-user temp root
     # /private/var/folders/<2>/<30>/T/... recorded in run evidence. "=" may
     # precede the token so an unlabeled NAME=<key> assignment is still caught.
+    # Boundaries use \w (Unicode-aware, like the \b they replace) plus the
+    # non-word class members: an identifier tail such as cache_<40 alnum> or
+    # café<40 alnum> is one longer run, not a key. The hex exclusion's inner
+    # boundary mirrors the trailing boundary so <40 hex>_tail stays unflagged.
     re.compile(
-        r"(?<![A-Za-z0-9/+])(?![0-9a-f]{40}(?![A-Za-z0-9/+=]))[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])"
+        r"(?<!\w)(?<![/+])"
+        r"(?![0-9a-f]{40}(?!\w)(?![/+=]))"
+        r"[A-Za-z0-9/+=]{40}"
+        r"(?!\w)(?![/+=])"
     ),
 )
 

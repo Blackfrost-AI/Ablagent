@@ -70,3 +70,40 @@ def test_secret_scan_no_false_positive_on_long_filesystem_paths():
     # A 40-hex id stays excluded; a longer hex digest was never a 40-char key.
     assert not scan_text("a" * 40, path="fixture")
     assert not scan_text("sha256:" + "0123456789abcdef" * 4, path="fixture")
+
+
+def test_secret_scan_no_false_positive_on_identifier_tails():
+    # A 40-char alnum tail of a longer identifier is one run, not a bare key.
+    # \b is Unicode-aware; the run boundaries must be too, or non-ASCII
+    # identifiers (café…, 变量…) false-positive the same way "_" ones do.
+    mixed40 = "Zz9" * 13 + "Y"  # 40 chars, mixed-case (not hex)
+    hex40 = "0123456789abcdef" * 2 + "01234567"  # 40 lowercase hex
+    assert len(mixed40) == len(hex40) == 40
+    assert not scan_text(f"cache_{mixed40}", path="fixture")
+    assert not scan_text(f"{mixed40}_tail", path="fixture")
+    assert not scan_text(f"prefix_{hex40}", path="fixture")
+    assert not scan_text(f"{hex40}_suffix", path="fixture")
+    assert not scan_text(f"café{mixed40}", path="fixture")
+    assert not scan_text(f"{mixed40}café", path="fixture")
+    assert not scan_text(f"变量{mixed40}变量", path="fixture")
+
+
+def test_secret_scan_detects_labeled_and_edge_char_keys():
+    # "=" may precede the token even when the label itself contains "_" or
+    # is not one of the keyword-pattern labels (AUTH, CRED get no keyword hit).
+    assert scan_text(f"AUTH_={AWS_SHAPED_KEY}", path="fixture")
+    assert scan_text(f"CREDENTIAL_={AWS_SHAPED_KEY}", path="fixture")
+    # Full keys ending in the non-word class members are caught whole.
+    assert scan_text("Z" * 39 + "+", path="fixture")
+    assert scan_text("Z" * 39 + "=", path="fixture")
+    assert scan_text("Z" * 39 + "/", path="fixture")
+    # Keyword-labeled 40-hex is still caught by the keyword pattern even
+    # though the bare pattern excludes unlabeled 40-hex runs.
+    assert scan_text("api_key=" + "a" * 40, path="fixture")
+
+
+def test_secret_scan_still_flags_exact_40_char_runs():
+    # Conservative by design: an exactly-40-char run delimited by non-class
+    # characters is indistinguishable from a bare key without an entropy
+    # heuristic. Fail loud; do not silently whitelist dotted path components.
+    assert scan_text("checkpoint." + "Zz9" * 13 + "Y", path="fixture")
